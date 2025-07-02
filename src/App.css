@@ -1,0 +1,577 @@
+.Nav {
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.Navspan {
+  font-size: 20px;
+  cursor: default;
+}
+.Navtext {
+  color: #1e40af;
+}
+.NavSection {
+  padding-top: 1.5vh;
+  padding-bottom: 1.5vh;
+  padding-left: 10%;
+  padding-right: 10%;
+  display: flex;
+  justify-content: space-between;
+}
+.NavOptions {
+  display: flex;
+  list-style: none;
+  gap: 1.2rem;
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+  align-items: center;
+}
+
+/* .hero-section {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  background-image: url("./assets/FrontImage.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  z-index: 0;
+  overflow: hidden;
+} */
+ .hero-section {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;  /* since we're stacking image and text */
+  overflow: visible; /* allows dropdowns to show */
+}
+.hero-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: 80vh; /* keeps a similar feel as before */
+  z-index: 0;
+}
+
+
+/* .hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+} */
+ .hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+
+/* .hero-text {
+  position: relative;
+  z-index: 2;
+  padding: 1rem;
+  border-radius: 8px;
+} */
+ .hero-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  z-index: 2;
+  color: white;
+  text-align: center;
+  padding: 4rem;
+  /* width: 100%; */
+}
+
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+}
+
+.hero-text {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-text p {
+  font-size: 1.25rem;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  /* gap: 10px; Optional spacing between buttons */
+  margin: 20px 0;
+}
+
+.packageButton {
+  padding: 12px;
+  font-size: 16px;
+  background-color: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.firstbutton {
+  border-radius: 10px 0px 0px 0px;
+}
+.lastbutton {
+  border-radius: 0px 10px 0px 0px;
+}
+
+.packageButton:hover {
+  background-color: #f0f0f0;
+}
+
+.Selected {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #2589f3;
+  color: white;
+  border: 1px solid #2589f3;
+  cursor: pointer;
+}
+.Selected:hover {
+  background-color: #58a2f1;
+}
+
+.searchSection {
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  /* gap:2vh; */
+}
+
+.tab-content {
+  /* display: none; */
+  padding: 15px;
+  border: 1px solid #ccc;
+  background: white;
+  margin-top: -1px;
+}
+
+.selectsection {
+  color: black;
+}
+
+.package-search-container {
+  max-width: 100%;
+  margin: 10px auto;
+  padding: 20px 0px;
+  /* background-color: #ffffff; */
+  border-radius: 8px;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+}
+
+.title {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.2fr;
+  gap: 0px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.form-grid2 {
+  display: grid;
+  grid-template-columns: 0.7fr 1fr 1fr 0.2fr ;
+  gap: 0px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.form-grid3 {
+  display: grid;
+  grid-template-columns: 0.7fr 0.7fr 0.6fr 0.5fr 0.2fr ;
+  gap: 0px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.date{
+  background-color: #e9e9ed;
+  color: black !important;
+}
+.react-datepicker__close-icon::after{
+  background-color: #2589f3;
+}
+.react-datepicker {
+  position: absolute !important; /* ensures the calendar overlays */
+  z-index: 9999 !important;      /* keeps it on top */
+}
+.custom-datepicker{
+  z-index: 9999 !important;
+}
+
+.react-datepicker__tab-loop {
+  position: absolute !important;
+}
+
+
+
+
+@media only screen and (max-width: 768px) {
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  .form-grid2 {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  .form-grid3 {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  .first {
+    border-radius: 6px 6px 0px 0px;
+  }
+  .search-button {
+    border-radius: 0px 0px 6px 6px;
+  }
+  .hero-text{
+    width: 100%;
+    padding: 2rem;
+    /* margin-top: 213px; */
+  }
+  .hero-img {
+    height: 100vh;
+  }
+  .css-kimw2q{
+    width: 95% !important;
+  }
+}
+
+.input-field {
+  padding: 20px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background-color: #e9e9ed;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-field {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.input-field2 {
+  padding: 22px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background-color: #e9e9ed;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media only screen and (min-width: 768px) {
+  .first {
+    border-radius: 6px 0px 0px 6px;
+  }
+  .search-button {
+    border-radius: 0px 6px 6px 0px;
+  }
+}
+
+.search-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #2589f3;
+  border: none;
+  color: white;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+
+.guest-selector-wrapper {
+  position: relative;
+  width: 100%;
+}
+.guest-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 100%;
+}
+
+.guest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.guest-row span {
+  flex: 1;
+  text-align: center;
+}
+
+.guest-row button {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+
+.NavRight {
+  display: flex;
+  align-items: center;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+.modal {
+  background: white;
+  padding: 2rem;
+  margin: 10% auto;
+  width: 300px;
+  border-radius: 8px;
+}
+.profile-dropdown {
+  position: relative;
+}
+.dropdown-content {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
+
+
+.LoginBtn {
+  color: #fff;
+  cursor: pointer;
+  padding:5px 20px;
+  background: linear-gradient(to right, #4285f4, #3367d6);
+  border: none;
+  border-radius: 5px;
+}
+
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.PhoneInput {
+  display: block;
+  margin: 1rem auto;
+  padding: 0.5rem;
+  width: 80%;
+}
+
+.GoogleBtn {
+  background: #4285f4;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.Googlebuttondiv {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.google-button {
+  border: 1px solid #ccc; /* thin border */
+  background-color: transparent;
+  border-radius: 6px; /* small border radius */
+  padding: 15px 50px; /* wider shape */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.google-button:hover {
+  background-color: #e6f4ff; /* lightest blue */
+}
+
+.googleImage {
+  width: 30px;
+  height: auto;
+}
+.css-kimw2q{
+  padding:0px !important;
+  height:45vh !important
+}
+.modal{
+  height: 100%;
+  width: 100%;
+}
+.moadalHeader{
+  height: 20%;
+  padding: 0;
+  width: 100%;
+  background: linear-gradient(to right, #4285f4, #3367d6);
+  border-radius: 8px 8px 0px 0px;
+}
+.modalHeader-text{
+  width: 100%;
+  height:100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* color: #ccc; */
+}
+.ModalContent{
+  height: 80%;
+}
+
+.ModalContentText{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 3%;
+}
+.content{
+  margin-bottom: 5%;
+  width: 100%;
+  /* height: 50%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5%;
+}
+.finger{
+  color: #4285f4;
+  padding: 3%;
+  background-color: #9ebff5;
+  border-radius: 50px;
+  width: 17%;
+  height: auto;
+}
+/* .googleButton{
+  width: 70%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.googlediv{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 2%;
+
+}
+.GoogleImage{
+  width: 20%;
+  height: auto;
+} */
+.googleButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* width: 80%;            Make it full width of container; adjust as needed */
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  /* background-color: #fff; */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  /* margin-top: 5%; */
+}
+
+.googleButton:hover {
+  background-color: #f7f7f7;
+}
+
+.googlediv {
+  display: flex;
+  align-items: center;
+  gap: 10px;             /* Space between icon and text */
+}
+
+.GoogleImage {
+  width: 20px;           /* Adjust size as needed */
+  height: 20px;
+}
+
+.googleButton p {
+  margin: 0;
+  font-size: 14px;
+  /* color: #555; */
+  font-weight: 500;
+}
