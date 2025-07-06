@@ -9,3 +9,8 @@ const api = axios.create({
 });
 
 export default api;
+export const api2 = axios.create({
+  baseURL: import.meta.env.VITE_API_PUBLICDOMAIN,
+});
+
+// export default api2;

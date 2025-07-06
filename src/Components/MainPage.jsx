@@ -1,15 +1,16 @@
 import React from "react";
-import Navbar from "../Navbar/Navbar";
-import Search from "./HomePageComponents/Search";
-import HomePage from "./HomePage";
+import Navbar from "./Navbar";
+// import Search from "../Components/HomePageComponents/Search";
+// import HomePage from "../Components/HomePage";
 import Footer from "./Footer";
+import HomePage from "../Pages/HomePage";
 
-const MainPage = () => {
+const MainPage = ({ children }) => {
   return (
     <>
       <Navbar />
-      {/* <Search /> */}
-      <HomePage />
+      {/* <HomePage /> */}
+      <main>{children}</main>
       <Footer />
     </>
   );

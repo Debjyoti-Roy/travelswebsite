@@ -1,3 +1,35 @@
+
+
+/* @keyframes gradientMove {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-move {
+  background-size: 200% 200%;
+  animation: gradientMove 3s ease infinite;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.5s ease forwards;
+} */
+
+
 .Nav {
   width: 100%;
   background-color: white;
@@ -78,7 +110,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.3); */
   z-index: 1;
 }
 
@@ -99,7 +131,7 @@
   color: white;
   text-align: center;
   padding: 4rem;
-  /* width: 100%; */
+  width: 65%;
 }
 
 
@@ -157,13 +189,13 @@
 .Selected {
   padding: 12px;
   font-size: 16px;
-  background-color: #2589f3;
+  background-color: #0036ac;
   color: white;
-  border: 1px solid #2589f3;
+  border: 1px solid #0036ac;
   cursor: pointer;
 }
 .Selected:hover {
-  background-color: #58a2f1;
+  background-color: #1e4cb1;
 }
 
 .searchSection {
@@ -314,7 +346,7 @@
   width: 100%;
   padding: 12px;
   font-size: 16px;
-  background-color: #2589f3;
+  background-color: #0036ac;
   border: none;
   color: white;
 
@@ -323,7 +355,7 @@
 }
 
 .search-button:hover {
-  background-color: #0056b3;
+  background-color: #1e4cb1;
 }
 
 

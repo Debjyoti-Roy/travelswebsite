@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import side from "./../../assets/queryImage.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import { sendPrivateQuery, sendPublicQuery } from "../../Redux/store/querySlice";
+import {
+  sendPrivateQuery,
+  sendPublicQuery,
+} from "../../Redux/store/querySlice";
 import TicketModalComponent from "../ModalComponent/TicketModalComponent";
 import toast from "react-hot-toast";
 
@@ -47,7 +50,6 @@ const Query = () => {
           console.log("userData cookie not found");
         }
       } else {
-        console.log("0");
         setContact("");
         setName("");
         setLoggedIn(false);
@@ -152,49 +154,46 @@ const Query = () => {
         // console.log("Data:", push.payload.data);
         setTokenModal(true);
         const ticket = push.payload?.data;
-            setTicketId(ticket.ticketId);
-            const rawTime = ticket.createdAt;
-            const fixedTime = rawTime.replace(/;/g, ":");
-            const dateObj = new Date(fixedTime);
+        setTicketId(ticket.ticketId);
+        const rawTime = ticket.createdAt;
+        const fixedTime = rawTime.replace(/;/g, ":");
+        const dateObj = new Date(fixedTime);
 
-            // Get individual parts
-            const options = { month: "short" };
-            const month = new Intl.DateTimeFormat("en-US", options).format(
-              dateObj
-            ); // "Jul"
-            const day = dateObj.getDate(); // 3
-            const year = dateObj.getFullYear(); // 2025
+        // Get individual parts
+        const options = { month: "short" };
+        const month = new Intl.DateTimeFormat("en-US", options).format(dateObj); // "Jul"
+        const day = dateObj.getDate(); // 3
+        const year = dateObj.getFullYear(); // 2025
 
-            // Get hours and minutes with leading zeros
-            const hours = dateObj.getHours().toString().padStart(2, "0");
-            const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+        // Get hours and minutes with leading zeros
+        const hours = dateObj.getHours().toString().padStart(2, "0");
+        const minutes = dateObj.getMinutes().toString().padStart(2, "0");
 
-            const formatted = `${month} ${day}, ${year} • ${hours}:${minutes}`;
-            setSubmittedOn(formatted);
-            setCategory(ticket.queryType);
-            const res =
-              ticket.queryType === "GENERIC"
-                ? "Within 24 Hours"
-                : "Within 12 Hours";
-            setResponse(res);
-            const pr =
-              ticket.queryType === "GENERIC" ? "STANDARD" : "IMPORTANT";
-            setPriority(pr);
+        const formatted = `${month} ${day}, ${year} • ${hours}:${minutes}`;
+        setSubmittedOn(formatted);
+        setCategory(ticket.queryType);
+        const res =
+          ticket.queryType === "GENERIC"
+            ? "Within 24 Hours"
+            : "Within 12 Hours";
+        setResponse(res);
+        const pr = ticket.queryType === "GENERIC" ? "STANDARD" : "IMPORTANT";
+        setPriority(pr);
       } else {
         console.log("Error:", push.error);
         toast.error(push.payload.message, {
-              style: {
-                borderRadius: "10px",
-                background: "#333",
-                color: "#fff",
-              },
-            });
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
       }
     }
   };
   return (
     <>
-      <div className="flex flex-col gap-[50px] justify-center items-center min-h-screen bg-blue-50 p-4">
+      <div className="flex flex-col gap-[50px] justify-center items-center min-h-screen bg-blue-50 p-4 pt-[80px] md:pt-0">
         <div className="w-[80vw] flex flex-col justify-center">
           <p className="text-bold text-4xl flex justify-center">
             Get in touch!

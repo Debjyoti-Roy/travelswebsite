@@ -5,6 +5,8 @@ import {
   FaTwitter,
   FaLinkedinIn,
   FaYoutube,
+  FaAndroid,
+  FaApple,
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -108,30 +110,32 @@ const Footer = () => {
       </div>
       {/* Divider Line */}
       <div className="md:w-full flex justify-center md:mt-5">
-
-      <div
-  className="mt-10 w-[60%] h-px mx-auto"
-  style={{
-      background: "linear-gradient(to right, transparent, #1d4ed8, transparent)",
-    }}
-></div>
-    </div>
-
+        <div
+          className="mt-10 w-[60%] h-px mx-auto"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, #1d4ed8, transparent)",
+          }}
+        ></div>
+      </div>
 
       <div className="md:w-full flex justify-center">
         <div className="md:w-[60%] mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-300">Download our mobile app</p>
-          <div className="flex space-x-4">
+
+          <div className="flex flex-wrap gap-4">
             <a
               href="#"
-              className="bg-blue-700 px-4 py-2 rounded-md text-white hover:bg-blue-600 transition-all duration-300"
+              className="bg-[#1a2238] px-5 py-2.5 rounded-md text-white font-medium shadow hover:bg-[#232c47] flex items-center gap-2 transition-all duration-300 "
             >
+              <FaAndroid className="text-green-400 text-lg" />
               Download Android App
             </a>
             <a
               href="#"
-              className="bg-blue-700 px-4 py-2 rounded-md text-white hover:bg-blue-600 transition-all duration-300"
+              className="bg-[#1a2238] px-5 py-2.5 rounded-md text-white font-medium shadow hover:bg-[#232c47] flex items-center gap-2 transition-all duration-300 "
             >
+              <FaApple className="text-gray-300 text-lg" />
               Download iOS App
             </a>
           </div>
