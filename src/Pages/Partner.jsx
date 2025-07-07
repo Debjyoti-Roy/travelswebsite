@@ -15,11 +15,11 @@ const Partner = () => {
     const [gst, setGst] = useState("")
     const [pan, setPan] = useState("")
     const [address, setAddress] = useState("")
-    const [status, setStatus] = useState()
+    const [status, setStatus] = useState(401)
     const [rejectionStatus, setRejectionStatus] = useState("")
     const [reason, setReason] = useState("")
 
-    const navigate=useNavigate()
+    const navigate = useNavigate()
 
     const dispatch = useDispatch();
 
@@ -72,13 +72,14 @@ const Partner = () => {
             const newToken = localStorage.getItem("token");
             //   setToken(newToken);
             if (newToken) {
-                setLoggedIn(true);
+
                 const cookies = document.cookie.split("; ");
                 const userDataCookie = cookies.find((row) =>
                     row.startsWith("userData=")
                 );
 
                 if (userDataCookie) {
+                    setLoggedIn(true);
                     const value = userDataCookie.split("=")[1];
                     const decoded = JSON.parse(decodeURIComponent(value));
                     // console.log(decoded);
@@ -103,6 +104,7 @@ const Partner = () => {
 
         return () => window.removeEventListener("tokenUpdated", handleTokenUpdate);
     }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -264,7 +266,7 @@ const Partner = () => {
                                     Your property has been successfully approved and is now part of our exclusive network. Get ready to welcome more guests and grow your business with us!
                                 </p>
                                 <button
-                                onClick={()=>navigate("/partnerdashboard")}
+                                    onClick={() => navigate("/partnerdashboard")}
                                     type="button"
                                     className="w-[58%] cursor-pointer bg-[#2589f3] text-white font-semibold py-3 rounded-full shadow-md transition-all duration-300 hover:bg-[#0036ac] hover:shadow-lg hover:scale-105"
                                 >
