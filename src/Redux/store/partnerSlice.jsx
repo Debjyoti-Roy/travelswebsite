@@ -40,6 +40,25 @@ export const fetchPartnerProfile = createAsyncThunk(
   }
 );
 
+export const getPartnerArea = createAsyncThunk(
+  "partner/getPartnerArea",
+  async ({ token }, { rejectWithValue }) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "xyz",
+      };
+      const response = await api.get("/v1/partner/get-area", { headers });
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 const partnerSlice = createSlice({
   name: "partner",
   initialState: {
@@ -74,6 +93,18 @@ const partnerSlice = createSlice({
         state.profileData = action.payload;
       })
       .addCase(fetchPartnerProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getPartnerArea.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPartnerArea.fulfilled, (state, action) => {
+        state.loading = false;
+        state.areaData = action.payload;
+      })
+      .addCase(getPartnerArea.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
