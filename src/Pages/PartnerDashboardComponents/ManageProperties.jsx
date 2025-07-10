@@ -187,7 +187,7 @@ const BasicDetailsForm = ({ tab, setBasicDetails, basicDetails }) => {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 bg-white md:p-8 p-1 rounded-2xl max-w-xl mx-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 bg-white p-1 rounded-2xl w-full mx-auto">
             {/* <form onSubmit={handleSubmit}> */}
             <div>
 
@@ -441,14 +441,6 @@ const MediaUpload = ({ mediaImages, setMediaImages, mediaVideo, setMediaVideo, t
                             className="w-full p-2 border border-gray-300 rounded"
                         />
                     )}
-
-                    {/* <button
-                        onClick={uploadImages}
-                        disabled={uploadingImg || imageFiles.length === 0}
-                        className="bg-[#2589f3] text-white font-medium py-2 px-4 rounded shadow transition hover:bg-[#0036ac] disabled:opacity-50"
-                    >
-                        {uploadingImg ? "Uploading..." : "Upload Images"}
-                    </button> */}
                 </div>
                 <p className="text-sm text-gray-500 mt-2">Minimum 1 image required, maximum 5 allowed.</p>
             </div>
@@ -535,7 +527,6 @@ const MediaUpload = ({ mediaImages, setMediaImages, mediaVideo, setMediaVideo, t
     );
 };
 const amenitiesList = [
-    // const tagsList = [
     { id: 1, label: "On-site Restaurant / Kitchen", icon: <FaUtensils /> },
     { id: 2, label: "Room Service", icon: <FaConciergeBell /> },
     { id: 3, label: "Power Backup", icon: <MdPower /> },
@@ -761,7 +752,7 @@ const AdditionalDetails = ({ selectedTags, setSelectedTags, selectedAmenities, s
 
 
 
-const ManageProperties = () => {
+const ManageProperties = ({ setRoom, setHotelId }) => {
     const [tab, setTab] = useState("basic");
     const [basicDetails, setBasicDetails] = useState({
         name: "",
@@ -923,6 +914,9 @@ const ManageProperties = () => {
                     setSelectedTags([])
                     setSelectedTags([])
                     setTab("basic")
+                    setRoom(true)
+                    // console.log(res.payload.data)
+                    setHotelId(res.payload.data)
                 } else {
                     setSubmitLoading(false)
                     await deleteImages(imageLinks)
