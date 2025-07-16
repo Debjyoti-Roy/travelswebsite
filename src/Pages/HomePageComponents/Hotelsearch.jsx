@@ -1,7 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { places } from "./Places";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
+import { FaCalendar, FaMapPin, FaUsers } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { getLocations } from "../../Redux/store/hotelSlice";
+
+const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
+  <div
+    onClick={onClick}
+    ref={ref}
+    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <FaCalendar className="absolute left-3 text-blue-500 w-5 h-5" />
+    <span className={value ? "text-black" : "text-gray-400"}>
+      {value || placeholder}
+    </span>
+  </div>
+));
 
 const Hotelsearch = () => {
   const [startDate, setStartDate] = useState();
@@ -10,76 +27,177 @@ const Hotelsearch = () => {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [location, setLocation] = useState("")
+  const [locationOptions, setLocationOptions] = useState([])
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
+
+  const formattedDate = (dateString) => {
+    const date = new Date(dateString);
+
+    const formattedDate = date.toISOString().split("T")[0];
+
+    return formattedDate
+
+  }
+
+  const handleSearch = () => {
+    console.log(formattedDate(startDate))
+    console.log(formattedDate(endDate))
+    const total = adults + children
+    console.log(total)
+    const myData = {
+      location: location,
+      startDate: formattedDate(startDate),
+      endDate: formattedDate(endDate),
+      rooms: rooms,
+      total:total
+    };
+
+    navigate("/hotelsearch", { state: myData });
+  }
+
+  useEffect(() => {
+    const job = async () => {
+      const options = await dispatch(getLocations())
+      console.log(options.payload.data)
+      if (options.payload.status === 200) {
+        setLocationOptions(options.payload.data)
+      }
+    }
+    job()
+  }, [])
+
+
   return (
     <div className="package-search-container">
-      <h2 className="title">Find Your Hotels</h2>
-      <div className="form-grid2">
-        <select className="input-field first">
-          <option value="">Select Location</option>
-          {places.map((place, index) => (
-            <option key={index} value={place.name}>
-              {place.name}
-            </option>
-          ))}
-        </select>
+      <h2 className="flex md:justify-start justify-center font-bold md:pl-6 text-2xl text-black pt-5 pb-3">Find Your Perfect Stay</h2>
+      <div className="flex w-full md:p-4">
 
-        <DatePicker
-          selectsRange
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(update) => {
-            setStartDate(update[0]);
-            setEndDate(update[1]);
-          }}
-          isClearable={true}
-          placeholderText="Select Check-in - Check-out"
-          className="input-field date"
-          popperPlacement="bottom-start"
-          popperClassName="custom-datepicker"
-        />
-
-        <div className="guest-selector-wrapper">
-          <div
-            className="input-field"
-            onClick={() => setShowGuestOptions(!showGuestOptions)}
-          >
-            {`${adults} Adults${
-              children > 0 ? ` · ${children} Children` : ""
-            } · ${rooms} Rooms`}
+        <div className="w-full w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col md:flex-row gap-4 md:gap-6 items-center">
+          <div className="flex-1 w-full">
+            <label className="block flex pb-1 text-sm font-medium mb-1">Location</label>
+            <div className="relative">
+              <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
+              <select
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Location</option>
+                {locationOptions.map((place, index) => (
+                  <option key={index} value={place}>
+                    {place}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {showGuestOptions && (
-            <div className="guest-dropdown">
-              <div className="guest-row">
-                <span>Adults</span>
-                <button onClick={() => setAdults(Math.max(1, adults - 1))}>
-                  -
-                </button>
-                <span>{adults}</span>
-                <button onClick={() => setAdults(adults + 1)}>+</button>
-              </div>
-
-              <div className="guest-row">
-                <span>Children</span>
-                <button onClick={() => setChildren(Math.max(0, children - 1))}>
-                  -
-                </button>
-                <span>{children}</span>
-                <button onClick={() => setChildren(children + 1)}>+</button>
-              </div>
-
-              <div className="guest-row">
-                <span>Rooms</span>
-                <button onClick={() => setRooms(Math.max(1, rooms - 1))}>
-                  -
-                </button>
-                <span>{rooms}</span>
-                <button onClick={() => setRooms(rooms + 1)}>+</button>
-              </div>
+          <div className="flex-[1.5] w-full">
+            <label className="block text-sm font-medium mb-1 flex pb-1">Dates</label>
+            <div className="relative">
+              <DatePicker
+                selectsRange
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(update) => {
+                  setStartDate(update[0]);
+                  setEndDate(update[1]);
+                }}
+                isClearable
+                placeholderText="Check-in - Check-out"
+                customInput={<CustomDateInput />}
+                popperPlacement="bottom-start"
+                popperClassName="custom-datepicker"
+                className="w-full"
+              />
             </div>
-          )}
+          </div>
+
+
+          <div className="relative flex-1 w-full">
+            <label className="block text-sm font-medium mb-1 flex pb-1">Guests & Rooms</label>
+            <div
+              onClick={() => setShowGuestOptions(!showGuestOptions)}
+              className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <FaUsers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
+              {`${adults} Adults${children > 0 ? ` · ${children} Children` : ""} · ${rooms} Rooms`}
+            </div>
+
+            {showGuestOptions && (
+              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg p-4 z-10">
+                <div className="flex justify-between items-center mb-2">
+                  <span>Adults</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setAdults(Math.max(1, adults - 1))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                    >
+                      -
+                    </button>
+                    <span>{adults}</span>
+                    <button
+                      onClick={() => setAdults(adults + 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center mb-2">
+                  <span>Children</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setChildren(Math.max(0, children - 1))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                    >
+                      -
+                    </button>
+                    <span>{children}</span>
+                    <button
+                      onClick={() => setChildren(children + 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span>Rooms</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setRooms(Math.max(1, rooms - 1))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                    >
+                      -
+                    </button>
+                    <span>{rooms}</span>
+                    <button
+                      onClick={() => setRooms(rooms + 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="h-full w-full md:w-auto flex items-end">
+
+            <button
+              onClick={handleSearch}
+              className="bg-blue-600 flex w-full md:w-auto justify-center
+            items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+            >
+              Search
+            </button>
+          </div>
         </div>
-        <button className="search-button">Search</button>
       </div>
     </div>
   );

@@ -5,13 +5,15 @@ import queryReducer from "./querySlice";
 import profileReducer from "./profileSlice"
 import partnerReducer from "./partnerSlice"
 import hotelReducer from "./hotelSlice"
+import paymentReducer from './paymentSlice'
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     query: queryReducer,
     profile: profileReducer,
-    partner:partnerReducer,
-    hotel:hotelReducer
+    partner: partnerReducer,
+    hotel: hotelReducer,
+    payment: paymentReducer
   },
 });

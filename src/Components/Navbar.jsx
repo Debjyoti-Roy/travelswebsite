@@ -356,7 +356,7 @@ const Navbar = () => {
       <div className="NavSection w-[79%]">
         <h2 className="Navspan Navtext">Ino Travels</h2>
         <ul className="NavOptions Navtext">
-          <li onClick={()=>{
+          <li onClick={() => {
             navigate("/")
           }} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
             Home
@@ -368,10 +368,10 @@ const Navbar = () => {
             Contact us
           </li>
           <li
-          onClick={()=>{
-            navigate("/partner")
-          }}
-          className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
+            onClick={() => {
+              navigate("/partner")
+            }}
+            className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
             Be a Partner
           </li>
           {!user ? (
@@ -440,12 +440,20 @@ const Navbar = () => {
                       My Profile
                     </button>
 
-                    <button className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                    <button
+                    onClick={() => {
+                        navigate("/mybookings")
+                        setShowDropdown(false)
+                      }
+                      }
+                     className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                       <FiClipboard className="text-gray-500 text-lg" />
                       My Bookings
                     </button>
 
-                    <button className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                    <button
+                      
+                      className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                       <FiHelpCircle className="text-gray-500 text-lg" />
                       Help & Center
                     </button>

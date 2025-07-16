@@ -78,6 +78,35 @@ export const fetchUserQueries = createAsyncThunk(
   }
 );
 
+// ----------------- Fetch user bookings -----------------
+export const fetchUserBookings = createAsyncThunk(
+  "profile/fetchUserBookings",
+  async ({ token, page, size, status }, { rejectWithValue }) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true", // optional if ngrok is blocking
+      };
+
+      let url=`/v1/private/get-bookings?page=${page}&size=${size}`
+
+      if (status !== "ALL") {
+        url += `&status=${status}`;
+      }
+
+      const response = await api.get(url, { headers });
+
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 // ----------------- Slice -----------------
 const profileSlice = createSlice({
   name: "profile",
@@ -88,6 +117,9 @@ const profileSlice = createSlice({
     queries: [], // <- new state for queries
     queriesLoading: false,
     queriesError: null,
+    bookings: [], // <== Add this
+    bookingsLoading: false,
+    bookingsError: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -135,6 +167,22 @@ const profileSlice = createSlice({
         state.queriesLoading = false;
         state.queriesError = action.payload;
       });
+
+    // Fetch User Bookings
+    builder
+      .addCase(fetchUserBookings.pending, (state) => {
+        state.bookingsLoading = true;
+        state.bookingsError = null;
+      })
+      .addCase(fetchUserBookings.fulfilled, (state, action) => {
+        state.bookingsLoading = false;
+        state.bookings = action.payload.data;
+      })
+      .addCase(fetchUserBookings.rejected, (state, action) => {
+        state.bookingsLoading = false;
+        state.bookingsError = action.payload;
+      });
+
   },
 });
 

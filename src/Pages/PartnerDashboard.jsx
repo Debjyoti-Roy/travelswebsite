@@ -109,7 +109,9 @@ const PartnerDashboard = () => {
           )}
           {tab === "properties" && (
             <>
-              {hotelPresent && <PropertyDashboard hotelList={hotelList} />}
+              {hotelPresent && <div className='w-full'>
+                <PropertyDashboard hotelList={hotelList} />
+              </div>}
               {!hotelPresent && (
                 <>
                   {!room && (

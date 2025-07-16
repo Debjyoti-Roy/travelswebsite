@@ -4,6 +4,7 @@ import Hotelsearch from "./Hotelsearch";
 // import img from "../assets/FrontImage.jpg"
 import img from "../../assets/FrontImage.jpg"
 import CarRental from "./CarRental";
+import { FaBoxOpen, FaCar, FaHotel } from "react-icons/fa";
 
 const Search = () => {
   const [tab, setTab] = useState("Package");
@@ -20,32 +21,47 @@ const Search = () => {
             lifetime.
           </p>
 
-          <div className="searchSection">
-            <div className="tabs">
-              <button
-                className={` firstbutton ${tab === "Package" ? "Selected" : "packageButton text-black"
-                  } `}
-                onClick={() => setTab("Package")}
-              >
-                Packages
-              </button>
-              <button
-                className={` ${tab === "Hotels" ? "Selected" : "packageButton text-black"}`}
-                onClick={() => setTab("Hotels")}
-              >
-                Hotels
-              </button>
-              <button
-                className={` lastbutton ${tab === "Cars" ? "Selected" : "packageButton text-black"}`}
-                onClick={() => setTab("Cars")}
-              >
-                Cars
-              </button>
-            </div>
-            <div className="selectsection">
-              {tab === "Package" && <PackagesSearch />}
-              {tab === "Hotels" && <Hotelsearch />}
-              {tab === "Cars" && <CarRental />}
+          {/* <div className="searchSection"> */}
+          <div className="pt-5">
+
+            <div className="bg-white shadow-lg rounded-xl">
+              <div className="flex justify-start w-full border-b border-gray-300">
+                <button
+                  onClick={() => setTab("Package")}
+                  className={`flex items-center gap-2 px-5 py-5  border-b-2 transition-all duration-300
+      ${tab === "Package" ? "border-blue-500 text-blue-500" : "border-transparent text-gray-600 hover:text-blue-400"}
+    `}
+                >
+                  <FaBoxOpen size={18} />
+                  <span className="hidden md:inline">Packages</span>
+                </button>
+
+                <button
+                  onClick={() => setTab("Hotels")}
+                  className={`flex items-center gap-2 px-5 py-5  border-b-2 transition-all duration-300
+      ${tab === "Hotels" ? "border-blue-500 text-blue-500" : "border-transparent text-gray-600  hover:text-blue-400"}
+    `}
+                >
+                  <FaHotel size={18} className={`${tab === 'hotels' ? 'text-blue-500' : ''}`} />
+                  <span className="hidden md:inline">Hotels</span>
+                </button>
+
+                <button
+                  onClick={() => setTab("Cars")}
+                  className={`flex items-center gap-2 px-5 py-5  border-b-2 transition-all duration-300
+      ${tab === "Cars" ? "border-blue-500 text-blue-500" : "border-transparent text-gray-600 hover:text-blue-400"}
+    `}
+                >
+                  <FaCar size={18} />
+                  <span className="hidden md:inline">Cars</span>
+                </button>
+              </div>
+
+              <div className="selectsection">
+                {tab === "Package" && <PackagesSearch />}
+                {tab === "Hotels" && <Hotelsearch />}
+                {tab === "Cars" && <CarRental />}
+              </div>
             </div>
           </div>
         </div>

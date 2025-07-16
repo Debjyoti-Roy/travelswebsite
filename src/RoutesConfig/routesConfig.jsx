@@ -4,6 +4,9 @@ const HomePage = lazy(() => import("../Pages/HomePage"));
 const Profile = lazy(() => import("../Pages/Profile"));
 const Partner = lazy(() => import("../Pages/Partner"));
 const PartnerDashboard = lazy(() => import("../Pages/PartnerDashboard"));
+const HotelSearchResult = lazy(() => import("../Pages/HotelSearchResult"));
+const HotelDetails = lazy(() => import("../Pages/HotelDetails"));
+const MyBookings = lazy(() => import("../Pages/MyBookings"));
 
 export const routes = [
   {
@@ -21,5 +24,17 @@ export const routes = [
   {
     path: "/partnerdashboard",
     element: <PartnerDashboard />,
+  },
+  {
+    path: "/hotelsearch",
+    element: <HotelSearchResult />,
+  },
+  {
+    path: "/details",
+    element: <HotelDetails />,
+  },
+  {
+    path: "/mybookings",
+    element: <MyBookings />,
   },
 ];

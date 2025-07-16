@@ -9,12 +9,15 @@ const PropertyDashboard = ({ hotelList }) => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center">Property Dashboard</h1>
+      {/* <h1 className="text-3xl font-bold mb-6 text-center">Property Dashboard</h1> */}
 
       <div className="grid gap-8">
         {hotelList && hotelList.length > 0 ? (
           hotelList.map((hotel, index) => (
-            <HotelCard key={index} hotel={hotel} />
+            <div key={index} className="w-full">
+
+              <HotelCard key={index} hotel={hotel} />
+            </div>
           ))
         ) : (
           <p className="text-center text-gray-600">No hotels found.</p>

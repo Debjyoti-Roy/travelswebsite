@@ -1013,24 +1013,6 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
         <div className="flex w-full min-h-screen">
             {/* Tabs */}
             <div className="flex flex-col w-1/4 border-r border-gray-300">
-                {/* <button
-                    className={`p-4 text-left ${tab === "basic" ? "bg-blue-500 text-white" : ""}`}
-                    onClick={() => setTab("basic")}
-                >
-                    Basic Details
-                </button>
-                <button
-                    className={`p-4 text-left ${tab === "media" ? "bg-blue-500 text-white" : ""}`}
-                    onClick={() => setTab("media")}
-                >
-                    Media Upload
-                </button>
-                <button
-                    className={`p-4 text-left ${tab === "attractions" ? "bg-blue-500 text-white" : ""}`}
-                    onClick={() => setTab("attractions")}
-                >
-                    Additional Details
-                </button> */}
                 <button
                     className={`p-4 text-left ${tab === "basic" ? "bg-blue-500 text-white" : ""}`}
                     onClick={() => handleTabChange("basic")}
