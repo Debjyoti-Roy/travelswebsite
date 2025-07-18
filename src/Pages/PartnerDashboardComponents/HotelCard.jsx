@@ -20,6 +20,20 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { getRoomsByPartner } from "../../Redux/store/hotelSlice";
 import RoomCard from "./RoomCard";
+import AddRoom from "./AddRoom";
+import { useKeenSlider } from "keen-slider/react.es";
+import "keen-slider/keen-slider.min.css";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+
+const getOverlappingChunks = (rooms, size = 3) => {
+  const chunks = [];
+  for (let i = 0; i <= rooms.length - size; i++) {
+    chunks.push(rooms.slice(i, i + size));
+  }
+  return chunks;
+};
+
 
 const amenitiesList = [
   { id: 1, label: "On-site Restaurant / Kitchen", icon: <FaUtensils /> },
@@ -67,6 +81,44 @@ const HotelCard = ({ hotel }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [rooms, setRooms] = useState([])
   const dispatch = useDispatch()
+  const [showMore, setShowMore] = useState(false);
+  const [roomModal, setRoomModal] = useState(false)
+  const [hotelPresent, setHotelPresent] = useState(true)
+  const backdropRef = React.useRef();
+
+  const [sliderRef] = useKeenSlider({
+    loop: false,
+    mode: "free-snap",
+    slides: {
+      perView: 3,
+      spacing: 15,
+    },
+    breakpoints: {
+      "(max-width: 1024px)": {
+        slides: {
+          perView: 2,
+          spacing: 10,
+        },
+      },
+      "(max-width: 640px)": {
+        slides: {
+          perView: 1,
+          spacing: 8,
+        },
+      },
+    },
+  });
+
+  const handleBackdropClick = (e) => {
+    if (e.target === backdropRef.current) {
+      setRoomModal(false)
+    }
+  };
+
+  const toggleShow = () => setShowMore((prev) => !prev);
+
+  const isLongText = hotel.about?.length > 500;
+  const displayText = showMore ? hotel.about : hotel.about.slice(0, 500);
   useEffect(() => {
     console.log(hotel.id)
     const job = async () => {
@@ -126,10 +178,19 @@ const HotelCard = ({ hotel }) => {
     slides.push(validVideoUrl);
   }
 
+  const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const roomChunks = getOverlappingChunks(rooms, 3);
 
 
   return (
-    <div className="w-full p-4 flex justify-center">
+    <div className="w-[100%] p-4 flex justify-center">
       <div className="bg-white rounded-xl shadow-lg w-full overflow-hidden transition-all duration-500">
 
         {/* Combined Carousel */}
@@ -187,9 +248,30 @@ const HotelCard = ({ hotel }) => {
 
         {/* Hotel info */}
         <div className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-800">{hotel.name}</h2>
+          <div className="flex justify-between">
+
+            <h2 className="text-2xl font-semibold text-gray-800">{hotel.name}</h2>
+            <button
+              onClick={() => setRoomModal(true)}
+              className="bg-blue-600 flex w-full md:w-auto justify-center
+            items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition">Add Room</button>
+          </div>
           <p className="text-gray-500 text-sm pt-1">{hotel.address}</p>
-          <p className="pt-2 text-gray-700 text-sm">{hotel.about}</p>
+          {/* <p className="pt-2 text-gray-700 text-sm">{hotel.about}</p> */}
+          <div>
+            <p className="pt-2 text-gray-700 text-sm">
+              {displayText}
+              {isLongText && !showMore && "..."}
+            </p>
+            {isLongText && (
+              <button
+                onClick={toggleShow}
+                className="text-blue-500 text-sm font-medium mt-1 cursor-pointer"
+              >
+                {showMore ? "Show less" : "Show more"}
+              </button>
+            )}
+          </div>
 
           <div className="flex flex-wrap gap-2 pt-4">
             {hotel.tags.slice(0, 3).map((tag, idx) => (
@@ -288,7 +370,7 @@ const HotelCard = ({ hotel }) => {
                     key={idx}
                     className="w-full flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg"
                   >
-                    <div className="text-xl text-blue-700 p-1 rounded-md bg-blue-100 flex-shrink-0">
+                    <div className="text-xl text-blue-700 p-1 rounded-md bg-blue-100 ">
                       {getAttractionIcon(attraction.type)}
                     </div>
                     <div className="truncate text-gray-700 text-sm" title={attraction.name}>
@@ -303,14 +385,36 @@ const HotelCard = ({ hotel }) => {
             </div>
           )}
 
+
           {rooms.length > 0 && (
-            <div className="pt-4">
+            <div className="flex-wrap pt-4">
               <h3 className="font-semibold text-gray-700 mb-2">Available Rooms</h3>
               <RoomCard rooms={rooms} />
             </div>
           )}
+
+
+
+
+
         </div>
       </div>
+      {roomModal && (
+
+        <div
+          ref={backdropRef}
+          onClick={handleBackdropClick}
+          className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl shadow-xl max-h-[90vh] overflow-y-auto p-6"
+          >
+            <AddRoom hotelId={hotel.id} setHotelPresent={() => setHotelPresent(true)} />
+          </div>
+        </div>
+
+      )}
     </div>
 
   );

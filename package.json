@@ -17,7 +17,11 @@
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.10.0",
     "country-state-city": "^3.2.1",
+    "date-fns": "^4.1.0",
     "firebase": "^11.9.1",
+    "flowbite": "^3.1.2",
+    "keen-slider": "^6.8.6",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
@@ -28,6 +32,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^7.6.3",
     "react-select": "^5.10.1",
+    "swiper": "^11.2.10",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

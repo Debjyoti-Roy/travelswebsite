@@ -171,6 +171,12 @@
   width: 100% !important;
 }
 
+.react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle{
+  display: hidden !important;
+}
+
+
+
 .package-search-container {
   max-width: 100%;
   /* margin: 10px auto; */
@@ -213,7 +219,7 @@
   color: black !important;
 }
 .react-datepicker__close-icon::after {
-  background-color: #2589f3;
+  background-color: #2589f3 !important;
 }
 .react-datepicker {
   position: absolute !important; /* ensures the calendar overlays */

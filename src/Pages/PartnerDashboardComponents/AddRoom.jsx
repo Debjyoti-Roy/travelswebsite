@@ -1,12 +1,3 @@
-// import React from 'react'
-
-// const AddRoom = ({hotelId}) => {
-//   return (
-//     <div>AddRoom</div>
-//   )
-// }
-
-// export default AddRoom
 import React, { useState } from "react";
 import { FiPlus, FiMinus, FiX } from "react-icons/fi";
 import { storage } from "../../auth/firebase";
@@ -17,6 +8,7 @@ import { addRooms } from "../../Redux/store/hotelSlice";
 import toast from "react-hot-toast";
 
 const AddRoom = ({ hotelId, setHotelPresent }) => {
+  console.log(hotelId)
   const initialRoom = {
     id: uuidv4(),
     name: "",
@@ -323,11 +315,11 @@ const AddRoom = ({ hotelId, setHotelPresent }) => {
                   Image Upload <span className="text-red-500">*</span>
                 </h3>
                 <div className="flex flex-col gap-3">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-wrap gap-4">
                     {room.imagePreviews?.map((preview, idx) => (
                       <div
                         key={idx}
-                        className="relative bg-gray-100 rounded-lg overflow-hidden shadow"
+                        className="relative bg-gray-100 rounded-lg overflow-hidden shadow w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.5rem)]"
                       >
                         <img
                           src={preview}
@@ -345,9 +337,9 @@ const AddRoom = ({ hotelId, setHotelPresent }) => {
                           {room.imageFiles[idx]?.name}
                         </span>
                       </div>
-
                     ))}
                   </div>
+
 
                   {room.imageFiles.length < 2 && (
                     <input

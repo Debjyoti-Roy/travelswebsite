@@ -5,7 +5,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./RoutesConfig/routesConfig";
 import { Suspense } from "react";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-
+// import 'swiper/css';
+import "swiper/css";
+import "swiper/css/navigation";
 
 function App() {
   return (

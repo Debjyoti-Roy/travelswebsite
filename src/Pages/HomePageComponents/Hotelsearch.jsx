@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCalendar, FaMapPin, FaUsers } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { getLocations } from "../../Redux/store/hotelSlice";
+import { addDays } from "date-fns";
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
   <div
@@ -51,7 +52,7 @@ const Hotelsearch = () => {
       startDate: formattedDate(startDate),
       endDate: formattedDate(endDate),
       rooms: rooms,
-      total:total
+      total: total
     };
 
     navigate("/hotelsearch", { state: myData });
@@ -68,13 +69,16 @@ const Hotelsearch = () => {
     job()
   }, [])
 
+  const tomorrow = addDays(new Date(), 1);
+
+
 
   return (
     <div className="package-search-container">
       <h2 className="flex md:justify-start justify-center font-bold md:pl-6 text-2xl text-black pt-5 pb-3">Find Your Perfect Stay</h2>
       <div className="flex w-full md:p-4">
 
-        <div className="w-full w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col md:flex-row gap-4 md:gap-6 items-center">
+        <div className="w-full w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col md:flex-row gap-4 md:gap-2 items-center">
           <div className="flex-1 w-full">
             <label className="block flex pb-1 text-sm font-medium mb-1">Location</label>
             <div className="relative">
@@ -105,6 +109,7 @@ const Hotelsearch = () => {
                   setStartDate(update[0]);
                   setEndDate(update[1]);
                 }}
+                minDate={tomorrow} // 👈 this ensures you can't pick a date before tomorrow
                 isClearable
                 placeholderText="Check-in - Check-out"
                 customInput={<CustomDateInput />}

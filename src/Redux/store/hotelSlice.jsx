@@ -31,7 +31,7 @@ export const addRooms = createAsyncThunk(
   "hotel/addRooms",
   async ({ token, roomsData, partnerId }, { rejectWithValue }) => {
     try {
-      const id = 7
+      const id = partnerId
       const response = await api.post(
         `/v1/partner/${id}/rooms`,
         roomsData,
