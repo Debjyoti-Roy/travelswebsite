@@ -58,11 +58,11 @@ const HotelSearchResult = () => {
   }, [dispatch, state, page]);
 
   useEffect(() => {
-    console.log("Search results updated:", searchResults);
+    // console.log("Search results updated:", searchResults);
   }, [searchResults]);
 
   const hotelDetails = (id) => {
-    console.log(id)
+    // console.log(id)
     const data = {
       room: state.rooms,
       location: state.location,

@@ -324,7 +324,7 @@ const MediaUpload = ({ mediaImages, setMediaImages, mediaVideo, setMediaVideo, t
     const [videoPreview, setVideoPreview] = useState(null);
 
     useEffect(() => {
-        console.log(mediaImages)
+        // console.log(mediaImages)
     }, [mediaImages])
 
 
@@ -752,7 +752,7 @@ const AdditionalDetails = ({ selectedTags, setSelectedTags, selectedAmenities, s
 
 
 
-const ManageProperties = ({ setRoom, setHotelId }) => {
+const ManageProperties = ({ setRoom, setHotelId, setIsLoading }) => {
     const [tab, setTab] = useState("basic");
     const [basicDetails, setBasicDetails] = useState({
         name: "",
@@ -783,7 +783,7 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
     const { loading, error, hotelData } = useSelector((state) => state.hotel);
 
     useEffect(() => {
-        console.log(attractions)
+        // console.log(attractions)
     }, [attractions])
 
     const uploadImages = async () => {
@@ -828,9 +828,9 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
 
                 // Delete
                 await deleteObject(fileRef);
-                console.log(`Deleted: ${path}`);
+                // console.log(`Deleted: ${path}`);
             }
-            console.log("All images deleted successfully.");
+            // console.log("All images deleted successfully.");
         } catch (error) {
             console.error("Error deleting images:", error);
         }
@@ -846,7 +846,7 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
 
             // Delete file
             await deleteObject(fileRef);
-            console.log(`Deleted video: ${path}`);
+            // console.log(`Deleted video: ${path}`);
         } catch (error) {
             console.error("Error deleting video:", error);
         }
@@ -855,6 +855,7 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
     const handleSubmit = async () => {
 
         setSubmitLoading(true)
+        if (setIsLoading) setIsLoading(true)
 
         const imageLinks = await uploadImages()
         const videoLink = await uploadVideo()
@@ -887,7 +888,7 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
                         distance: attraction.distance || ""
                     })),
                 };
-                console.log(finalData)
+                // console.log(finalData)
                 const token = localStorage.getItem("token")
                 const res = await dispatch(createHotel({ token: token, data: finalData }));
                 if (res.payload.status == 201) {
@@ -912,11 +913,11 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
                         longitude: ""
                     })
                     setSelectedTags([])
-                    setSelectedTags([])
+                    setSelectedAmenities([])
                     setTab("basic")
-                    setRoom(true)
                     // console.log(res.payload.data)
                     setHotelId(res.payload.data)
+                    setRoom(res.payload.data) // Pass the hotel ID to trigger room addition
                 } else {
                     setSubmitLoading(false)
                     await deleteImages(imageLinks)
@@ -1012,7 +1013,7 @@ const ManageProperties = ({ setRoom, setHotelId }) => {
     return (
         <div className="flex w-full min-h-screen">
             {/* Tabs */}
-            <div className="flex flex-col w-1/4 border-r border-gray-300">
+            <div className="flex overflow-hidden flex-col w-1/4 border-r border-gray-300">
                 <button
                     className={`p-4 text-left ${tab === "basic" ? "bg-blue-500 text-white" : ""}`}
                     onClick={() => handleTabChange("basic")}

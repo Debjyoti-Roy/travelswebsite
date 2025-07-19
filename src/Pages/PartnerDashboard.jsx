@@ -29,7 +29,7 @@ const PartnerDashboard = () => {
     const job = async () => {
       const token = localStorage.getItem('token')
       const res = await dispatch(getHotels({ token }))
-      console.log(res.payload.status)
+      // console.log(res.payload.status)
       if (res.payload.status == 200) {
         setHotelPresent(true)
         setHotelList(res.payload.data)

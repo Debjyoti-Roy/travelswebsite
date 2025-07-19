@@ -40,12 +40,15 @@ const Partner = () => {
 
                 res = await dispatch(fetchPartnerProfile({ token }))
             }
-            // console.log(res.payload.data)
+            // console.log(res.payload)
             setRejectionStatus(res?.payload?.data?.status)
             if (res?.payload.data?.status === "REJECTED") {
                 setReason(res?.payload.data?.rejectionReason)
             }
-            setStatus(res?.payload?.status)
+            if (res?.payload?.status) {
+
+                setStatus(res?.payload?.status)
+            }
         }
         window.addEventListener("tokenUpdated", partner);
 
@@ -54,7 +57,6 @@ const Partner = () => {
 
         return () => window.removeEventListener("tokenUpdated", partner);
     }, [])
-
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -88,11 +90,11 @@ const Partner = () => {
                     setAddress(decoded.address || "")
                     setPhone(decoded.phoneNumber || "")
                 } else {
-                    console.log("userData cookie not found");
+                    // console.log("userData cookie not found");
                 }
             } else {
                 setLoggedIn(false)
-                console.log(1)
+                // console.log(1)
             }
         };
 
@@ -274,7 +276,7 @@ const Partner = () => {
                                 </button>
                             </div>
                         ) : (
-                            status === 404 && (
+                            status === 404 || status === 401 && (
                                 <div className="w-full flex justify-center px-4 py-12">
                                     <div className="md:w-[60%] w-[90%] bg-gray-50 rounded-xl shadow-xl p-8 flex flex-col gap-6">
                                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">

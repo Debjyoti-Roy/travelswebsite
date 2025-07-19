@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import ProtectedRoute from "../Components/ProtectedRoute";
 
 const HomePage = lazy(() => import("../Pages/HomePage"));
 const Profile = lazy(() => import("../Pages/Profile"));
@@ -23,7 +24,11 @@ export const routes = [
   },
   {
     path: "/partnerdashboard",
-    element: <PartnerDashboard />,
+    element: (
+      <ProtectedRoute>
+        <PartnerDashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/hotelsearch",

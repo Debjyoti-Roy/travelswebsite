@@ -7,8 +7,8 @@ import { useDispatch } from "react-redux";
 import { addRooms } from "../../Redux/store/hotelSlice";
 import toast from "react-hot-toast";
 
-const AddRoom = ({ hotelId, setHotelPresent }) => {
-  console.log(hotelId)
+const AddRoom = ({ hotelId, setHotelPresent, setIsLoading }) => {
+  // console.log(hotelId)
   const initialRoom = {
     id: uuidv4(),
     name: "",
@@ -108,6 +108,7 @@ const AddRoom = ({ hotelId, setHotelPresent }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    if (setIsLoading) setIsLoading(true);
 
     const finalData = [];
 
@@ -131,23 +132,25 @@ const AddRoom = ({ hotelId, setHotelPresent }) => {
     }
 
 
-    console.log("🔥 Final Room Data:", finalData);
+    // console.log("🔥 Final Room Data:", finalData);
 
     // You can now send finalData to your backend or further process it
     const token = localStorage.getItem("token")
     const res = await dispatch(addRooms({ token: token, roomsData: finalData, partnerId: hotelId }))
     if (res.payload.status === 201) {
       setSubmitting(false);
-      setHotelPresent(true)
-      toast.success("Hotel Created", {
+      if (setIsLoading) setIsLoading(false);
+      toast.success("Rooms Added Successfully", {
         style: {
           borderRadius: "10px",
           background: "#333",
           color: "#fff",
         },
       });
+      setHotelPresent(true) // This will trigger the callback to close modal
     } else {
       setSubmitting(false);
+      if (setIsLoading) setIsLoading(false);
       toast.error("Error Creating Room!!", {
         style: {
           borderRadius: "10px",

@@ -13,10 +13,10 @@
 .NavSection {
   padding-top: 1.5vh;
   padding-bottom: 1.5vh;
-  padding-left: 10%;
-  padding-right: 10%;
-  display: flex;
-  justify-content: space-between;
+  /* padding-left: 10%; */
+  /* padding-right: 10%; */
+  width: 60%;
+  margin: 0 auto;
 }
 .NavOptions {
   display: flex;
@@ -233,7 +233,43 @@
   position: absolute !important;
 }
 
-@media only screen and (max-width: 768px) {
+/* Mobile Navigation Styles */
+.mobile-nav {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  white-space: nowrap;
+  padding: 0 1rem;
+  gap: 1.5rem;
+  min-width: max-content;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Responsive adjustments for mobile/tablet */
+@media only screen and (max-width: 1023px) {
+  .NavSection {
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    padding-left: 5%;
+    padding-right: 5%;
+    width: 100%;
+  }
+  
+  .Navspan {
+    font-size: 18px;
+  }
+  
+  .NavOptions {
+    gap: 1rem;
+    font-size: 14px;
+  }
+}
+
+/* Original responsive styles for form grids */
+@media only screen and (max-width: 1024px) {
   .form-grid {
     display: flex;
     flex-direction: column;
@@ -265,6 +301,46 @@
   }
   .css-kimw2q {
     width: 95% !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .NavSection {
+    padding-left: 3%;
+    padding-right: 3%;
+  }
+  
+  .Navspan {
+    font-size: 16px;
+  }
+  
+  .NavOptions {
+    gap: 0.8rem;
+    font-size: 13px;
+  }
+  
+  .mobile-nav {
+    gap: 1rem;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .NavSection {
+    padding-left: 2%;
+    padding-right: 2%;
+  }
+  
+  .Navspan {
+    font-size: 15px;
+  }
+  
+  .NavOptions {
+    gap: 0.6rem;
+    font-size: 12px;
+  }
+  
+  .mobile-nav {
+    gap: 0.8rem;
   }
 }
 

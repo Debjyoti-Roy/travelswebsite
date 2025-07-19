@@ -6,14 +6,14 @@ import api from "../api";
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async ({ data, token }, { rejectWithValue }) => {
-    console.log(token);
+    // console.log(token);
     try {
       const response = await api.post("/v1/private/register", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
+      // console.log(response.data);
       return {
         data: response.data,
         status: response.status,
@@ -27,7 +27,7 @@ export const registerUser = createAsyncThunk(
 export const fetchUserProfile = createAsyncThunk(
   "user/fetchUserProfile",
   async ({ uid, token }, { rejectWithValue }) => {
-    console.log(token);
+    // console.log(token);
     try {
       const response = await api.get(`/v1/private/profile`, {
         params: { uid },

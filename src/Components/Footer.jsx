@@ -12,9 +12,9 @@ import {
 const Footer = () => {
   return (
     <footer className="bg-[#020a20] text-white pt-10 flex flex-col justify-center">
-      <div className="md:w-full flex justify-center">
-        <div className="w-full md:w-[60%] mx-auto px-6">
-          <div className="flex flex-col md:flex-row flex-wrap justify-between gap-10">
+      <div className="lg:w-full flex justify-center">
+        <div className="w-full lg:w-[60%] mx-auto px-6">
+          <div className="flex flex-col lg:flex-row flex-wrap justify-between gap-10">
             <div className="flex-1">
               <h2 className="text-xl font-bold mb-3">INO Travels</h2>
               <p className="mb-4 text-gray-300">
@@ -109,7 +109,7 @@ const Footer = () => {
         </div>
       </div>
       {/* Divider Line */}
-      <div className="md:w-full flex justify-center md:mt-5">
+      <div className="lg:w-full flex justify-center lg:mt-5">
         <div
           className="mt-10 w-[60%] h-px mx-auto"
           style={{
@@ -119,8 +119,8 @@ const Footer = () => {
         ></div>
       </div>
 
-      <div className="md:w-full flex justify-center">
-        <div className="md:w-[60%] mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="lg:w-full flex justify-center">
+        <div className="lg:w-[60%] mx-auto px-6 py-6 flex flex-col lg:flex-row items-center justify-between gap-4">
           <p className="text-gray-300">Download our mobile app</p>
 
           <div className="flex flex-wrap gap-4">

@@ -76,7 +76,7 @@ const Navbar = () => {
       const refreshedToken = await user.getIdToken(true);
       localStorage.setItem("token", refreshedToken);
       // window.dispatchEvent(new Event("tokenUpdated"));
-      console.log("Token refreshed");
+      // console.log("Token refreshed");
     }, 40 * 60 * 1000);
   };
 
@@ -94,16 +94,16 @@ const Navbar = () => {
           try {
             const uid = currentUser.uid;
             const token = await currentUser.getIdToken();
-            console.log(token);
+            // console.log(token);
 
             const pulledData = await dispatch(
               fetchUserProfile({ uid: uid, token: token })
             );
 
-            console.log(pulledData);
+            // console.log(pulledData);
 
             if (pulledData.payload?.status === 200) {
-              console.log(pulledData.payload?.data);
+              // console.log(pulledData.payload?.data);
               setUserData(pulledData.payload?.data);
 
               // Save to cookie
@@ -112,7 +112,7 @@ const Navbar = () => {
               )}; path=/; max-age=2592000`;
 
               refreshTokenTimer(currentUser);
-              console.log("Existing user");
+              // console.log("Existing user");
               setShowModal(false);
             } else {
               await auth.signOut();
@@ -152,13 +152,13 @@ const Navbar = () => {
       registerUser({ data: userData, token: initialToken })
     );
 
-    console.log(thunkResponse);
+    // console.log(thunkResponse);
 
     if (thunkResponse.payload?.status === 201) {
       const refreshedToken = await currentuser.getIdToken(true);
       console.log(refreshedToken);
       localStorage.setItem("token", refreshedToken);
-      setUser(pulledData.payload?.data);
+      setUser(thunkResponse.payload?.data);
       document.cookie = `userData=${encodeURIComponent(
         JSON.stringify(pulledData.payload?.data)
       )}; path=/; max-age=2592000`;
@@ -180,7 +180,7 @@ const Navbar = () => {
     }
   };
   const phoneNumberChange2 = async (currentUser, phone, token) => {
-    console.log(token);
+    // console.log(token);
     const userData = {
       uid: currentUser.uid,
       name: currentUser.displayName || "",
@@ -200,7 +200,7 @@ const Navbar = () => {
       const refreshedToken = await currentUser.getIdToken(true);
       console.log(refreshedToken);
       localStorage.setItem("token", refreshedToken);
-      setUser(pulledData.payload?.data);
+      setUser(thunkResponse.payload?.data);
       document.cookie = `userData=${encodeURIComponent(
         JSON.stringify(pulledData.payload?.data)
       )}; path=/; max-age=2592000`;
@@ -237,7 +237,7 @@ const Navbar = () => {
       setInitialToken(initialtoken);
 
       if (isNewUser) {
-        console.log(currentUser.phoneNumber);
+        // console.log(currentUser.phoneNumber);
         if (
           currentUser.phoneNumber === "" ||
           currentUser.phoneNumber === undefined ||
@@ -352,132 +352,270 @@ const Navbar = () => {
   }, [userDetails.imageUrl]);
 
   return (
-    <div className="Nav sticky top-0 z-50 shadow flex justify-center">
-      <div className="NavSection w-[79%]">
-        <h2 className="Navspan Navtext">Ino Travels</h2>
-        <ul className="NavOptions Navtext">
-          <li onClick={() => {
-            navigate("/")
-          }} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-            Home
-          </li>
-          <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-            About
-          </li>
-          <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-            Contact us
-          </li>
-          <li
-            onClick={() => {
-              navigate("/partner")
-            }}
-            className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-            Be a Partner
-          </li>
-          {!user ? (
-            <button onClick={() => setShowModal(true)} className="LoginBtn">
-              Login
-            </button>
-          ) : (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="focus:outline-none"
-              >
-                {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
-                  <img
-                    src={userDetails.imageUrl}
-                    alt="user"
-                    className="w-[34px] h-[34px] rounded-full object-cover border border-gray-300"
-                  />
-                ) : (
-                  <div className="w-[34px] h-[34px] rounded-full bg-blue-500 flex items-center justify-center border border-gray-300">
-                    <span className="text-white font-semibold">
-                      {userDetails.name?.charAt(0).toUpperCase() || "U"}
-                    </span>
-                  </div>
-                )}
+    <div className="Nav sticky top-0 z-50 shadow">
+      <div className="NavSection">
+        {/* Desktop Layout - Single Row */}
+        <div className="hidden lg:flex justify-between items-center">
+          <h2 className="Navspan Navtext">Ino Travels</h2>
+          <ul className="NavOptions Navtext">
+            <li onClick={() => {
+              navigate("/")
+            }} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
+              Home
+            </li>
+            <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
+              About
+            </li>
+            <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
+              Contact us
+            </li>
+            <li
+              onClick={() => {
+                navigate("/partner")
+              }}
+              className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
+              Be a Partner
+            </li>
+            {!user ? (
+              <button onClick={() => setShowModal(true)} className="LoginBtn">
+                Login
               </button>
+            ) : (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="focus:outline-none"
+                >
+                  {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
+                    <img
+                      src={userDetails.imageUrl}
+                      alt="user"
+                      className="w-[34px] h-[34px] rounded-full object-cover border border-gray-300"
+                    />
+                  ) : (
+                    <div className="w-[34px] h-[34px] rounded-full bg-blue-500 flex items-center justify-center border border-gray-300">
+                      <span className="text-white font-semibold">
+                        {userDetails.name?.charAt(0).toUpperCase() || "U"}
+                      </span>
+                    </div>
+                  )}
+                </button>
 
-              {showDropdown && (
-                <div className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
-                  {/* Header */}
-                  <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-gray-50">
-                    {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
-                      <img
-                        src={userDetails.imageUrl}
-                        alt="user"
-                        className="w-12 h-12 rounded-full object-cover border border-gray-200"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center border border-gray-200">
-                        <span className="text-white font-semibold text-lg">
-                          {userDetails.name?.charAt(0).toUpperCase() || "U"}
-                        </span>
+                {showDropdown && (
+                  <div className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                    {/* Header */}
+                    <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-gray-50">
+                      {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
+                        <img
+                          src={userDetails.imageUrl}
+                          alt="user"
+                          className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center border border-gray-200">
+                          <span className="text-white font-semibold text-lg">
+                            {userDetails.name?.charAt(0).toUpperCase() || "U"}
+                          </span>
+                        </div>
+                      )}
+
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {userDetails.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {userDetails.email}
+                        </p>
                       </div>
-                    )}
+                    </div>
 
-                    <div>
-                      <p className="font-semibold text-gray-800">
-                        {userDetails.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {userDetails.email}
-                      </p>
+                    {/* Options */}
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => {
+                          navigate("/profile")
+                          setShowDropdown(false)
+                        }}
+                        className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition"
+                      >
+                        <FiUser className="text-gray-500 text-lg" />
+                        My Profile
+                      </button>
+
+                      <button
+                      onClick={() => {
+                          navigate("/mybookings")
+                          setShowDropdown(false)
+                        }
+                        }
+                       className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                        <FiClipboard className="text-gray-500 text-lg" />
+                        My Bookings
+                      </button>
+
+                      <button
+                        
+                        className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                        <FiHelpCircle className="text-gray-500 text-lg" />
+                        Help & Center
+                      </button>
+
+                      <hr className="my-1 border-gray-200" />
+
+                      <button
+                        onClick={() => {
+                          auth.signOut();
+                          localStorage.removeItem("token");
+                          window.dispatchEvent(new Event("tokenUpdated"));
+                          setShowDropdown(false);
+                        }}
+                        className="px-4 py-2 text-left hover:bg-gray-50 text-red-500 flex items-center gap-2 transition"
+                      >
+                        <FiLogOut className="text-red-500 text-lg" />
+                        Sign Out
+                      </button>
                     </div>
                   </div>
+                )}
+              </div>
+            )}
+          </ul>
+        </div>
 
-                  {/* Options */}
-                  <div className="flex flex-col">
-                    <button
+        {/* Mobile/Tablet Layout - Two Rows */}
+        <div className="lg:hidden">
+          {/* First Row - Logo and Login/User */}
+          <div className="flex justify-between items-center py-3">
+            <h2 className="Navspan Navtext">Ino Travels</h2>
+            {!user ? (
+              <button onClick={() => setShowModal(true)} className="LoginBtn">
+                Login
+              </button>
+            ) : (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="focus:outline-none"
+                >
+                  {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
+                    <img
+                      src={userDetails.imageUrl}
+                      alt="user"
+                      className="w-[34px] h-[34px] rounded-full object-cover border border-gray-300"
+                    />
+                  ) : (
+                    <div className="w-[34px] h-[34px] rounded-full bg-blue-500 flex items-center justify-center border border-gray-300">
+                      <span className="text-white font-semibold">
+                        {userDetails.name?.charAt(0).toUpperCase() || "U"}
+                      </span>
+                    </div>
+                  )}
+                </button>
+
+                {showDropdown && (
+                  <div className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                    {/* Header */}
+                    <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-gray-50">
+                      {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
+                        <img
+                          src={userDetails.imageUrl}
+                          alt="user"
+                          className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center border border-gray-200">
+                          <span className="text-white font-semibold text-lg">
+                            {userDetails.name?.charAt(0).toUpperCase() || "U"}
+                          </span>
+                        </div>
+                      )}
+
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {userDetails.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {userDetails.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Options */}
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => {
+                          navigate("/profile")
+                          setShowDropdown(false)
+                        }}
+                        className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition"
+                      >
+                        <FiUser className="text-gray-500 text-lg" />
+                        My Profile
+                      </button>
+
+                      <button
                       onClick={() => {
-                        navigate("/profile")
-                        setShowDropdown(false)
-                      }}
-                      className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition"
-                    >
-                      <FiUser className="text-gray-500 text-lg" />
-                      My Profile
-                    </button>
+                          navigate("/mybookings")
+                          setShowDropdown(false)
+                        }
+                        }
+                       className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                        <FiClipboard className="text-gray-500 text-lg" />
+                        My Bookings
+                      </button>
 
-                    <button
-                    onClick={() => {
-                        navigate("/mybookings")
-                        setShowDropdown(false)
-                      }
-                      }
-                     className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
-                      <FiClipboard className="text-gray-500 text-lg" />
-                      My Bookings
-                    </button>
+                      <button
+                        
+                        className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                        <FiHelpCircle className="text-gray-500 text-lg" />
+                        Help & Center
+                      </button>
 
-                    <button
-                      
-                      className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
-                      <FiHelpCircle className="text-gray-500 text-lg" />
-                      Help & Center
-                    </button>
+                      <hr className="my-1 border-gray-200" />
 
-                    <hr className="my-1 border-gray-200" />
-
-                    <button
-                      onClick={() => {
-                        auth.signOut();
-                        localStorage.removeItem("token");
-                        window.dispatchEvent(new Event("tokenUpdated"));
-                        setShowDropdown(false);
-                      }}
-                      className="px-4 py-2 text-left hover:bg-gray-50 text-red-500 flex items-center gap-2 transition"
-                    >
-                      <FiLogOut className="text-red-500 text-lg" />
-                      Sign Out
-                    </button>
+                      <button
+                        onClick={() => {
+                          auth.signOut();
+                          localStorage.removeItem("token");
+                          window.dispatchEvent(new Event("tokenUpdated"));
+                          setShowDropdown(false);
+                        }}
+                        className="px-4 py-2 text-left hover:bg-gray-50 text-red-500 flex items-center gap-2 transition"
+                      >
+                        <FiLogOut className="text-red-500 text-lg" />
+                        Sign Out
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-        </ul>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Second Row - Navigation Menu */}
+          <div className="flex justify-center pb-3">
+            <ul className="NavOptions Navtext mobile-nav">
+              <li onClick={() => {
+                navigate("/")
+              }} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
+                Home
+              </li>
+              <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
+                About
+              </li>
+              <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
+                Contact us
+              </li>
+              <li
+                onClick={() => {
+                  navigate("/partner")
+                }}
+                className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
+                Be a Partner
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <Modal

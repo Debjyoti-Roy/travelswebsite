@@ -145,7 +145,7 @@ const MyBookings = () => {
                                 className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log("View ticket for:", item.bookingGroupCode);
+                                    // console.log("View ticket for:", item.bookingGroupCode);
                                 }}
                             >
                                 Cancel

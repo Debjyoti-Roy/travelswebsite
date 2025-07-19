@@ -24,6 +24,7 @@ import LoginModal from '../Components/LoginModal';
 import { confirmPayment } from '../Redux/store/paymentSlice';
 import PaymentSuccessfullModal from './ModalComponent/PaymentSuccessfullModal';
 import PaymentFailedModal from './ModalComponent/PaymentFailModal';
+import ShareButton from '../Components/ShareButton';
 
 const iconMap = {
   MONUMENT: MdLocationCity,
@@ -148,7 +149,7 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
   };
   const handleBookNow2 = () => {
     const bookingData = prepareBookingData();
-    console.log("Booking Data:", bookingData);
+    // console.log("Booking Data:", bookingData);
     handleBookNow(bookingData);
 
     // You can do anything with bookingData here (e.g., show modal, send to backend, etc.)
@@ -298,11 +299,26 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
 
 
 const HotelDetails = () => {
-  console.log("HotelDetails function body running");
+  // console.log("HotelDetails function body running");
 
   const location = useLocation();
   const { state } = location;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  // Get parameters from URL if state is not available
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlState = {
+    id: urlParams.get('id'),
+    checkIn: urlParams.get('checkIn'),
+    checkOut: urlParams.get('checkOut'),
+    total: parseInt(urlParams.get('total')) || 1,
+    room: parseInt(urlParams.get('room')) || 1,
+    location: urlParams.get('location')
+  };
+  
+  // Use state if available, otherwise use URL parameters
+  const currentState = state || urlState;
   const [hotel, setHotelData] = useState({});
   const [numberofDays, setnumberofDays] = useState()
   const [showFull, setShowFull] = useState(false);
@@ -322,7 +338,6 @@ const HotelDetails = () => {
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [hotelRooms, setHotelRooms] = useState([])
-  const navigate = useNavigate()
 
   const [bookingData, setBookingData] = useState(null);
   const [bookingData2, setBookingData2] = useState(null);
@@ -384,11 +399,11 @@ const HotelDetails = () => {
       registerUser({ data: userData, token: initialToken })
     );
 
-    console.log(thunkResponse);
+    // console.log(thunkResponse);
 
     if (thunkResponse.payload?.status === 201) {
       const refreshedToken = await currentuser.getIdToken(true);
-      console.log(refreshedToken);
+      // console.log(refreshedToken);
       localStorage.setItem("token", refreshedToken);
       setUser(pulledData.payload?.data);
       document.cookie = `userData=${encodeURIComponent(
@@ -413,7 +428,7 @@ const HotelDetails = () => {
   };
 
   const phoneNumberChange2 = async (currentUser, phone, token) => {
-    console.log(token);
+    // console.log(token);
     const userData = {
       uid: currentUser.uid,
       name: currentUser.displayName || "",
@@ -427,11 +442,11 @@ const HotelDetails = () => {
       registerUser({ data: userData, token: token })
     );
 
-    console.log(thunkResponse);
+    // console.log(thunkResponse);
 
     if (thunkResponse.payload?.status === 201) {
       const refreshedToken = await currentUser.getIdToken(true);
-      console.log(refreshedToken);
+      // console.log(refreshedToken);
       localStorage.setItem("token", refreshedToken);
       setUser(pulledData.payload?.data);
       document.cookie = `userData=${encodeURIComponent(
@@ -471,7 +486,7 @@ const HotelDetails = () => {
       setInitialToken(initialtoken);
 
       if (isNewUser) {
-        console.log(currentUser.phoneNumber);
+        // console.log(currentUser.phoneNumber);
         if (
           currentUser.phoneNumber === "" ||
           currentUser.phoneNumber === undefined ||
@@ -481,7 +496,7 @@ const HotelDetails = () => {
           setCurrentUser(currentUser);
         } else {
           setShowModal(false);
-          console.log(initialtoken);
+          // console.log(initialtoken);
           phoneNumberChange2(
             currentUser,
             currentUser.phoneNumber,
@@ -489,15 +504,15 @@ const HotelDetails = () => {
           );
         }
       } else {
-        console.log(result);
+        // console.log(result);
         // const user = auth.currentUser;
         // await user.delete();
         const uid = currentUser.uid;
         const pulledData = await dispatch(
           fetchUserProfile({ uid: uid, token: initialtoken })
         );
-        console.log(pulledData);
-        console.log(initialtoken);
+        // console.log(pulledData);
+        // console.log(initialtoken);
         if (pulledData.payload?.status === 200) {
           // console.log(pulledData.payload?.data);p
           setUserData(pulledData.payload?.data);
@@ -508,7 +523,7 @@ const HotelDetails = () => {
           )}; path=/; max-age=2592000`;
           // refreshTokenTimer(currentUser);
           window.dispatchEvent(new Event("tokenUpdated"));
-          console.log("Existing user");
+          // console.log("Existing user");
           setShowModal(false);
         } else {
           auth.signOut();
@@ -553,40 +568,42 @@ const HotelDetails = () => {
   }, [showInfo]);
 
   useEffect(() => {
-    console.log("HELLO");
+    // console.log("HELLO");
   }, []);
 
   useEffect(() => {
-    console.log("state in effect", state);
-    const checkIn = new Date(state.checkIn);
-    const checkOut = new Date(state.checkOut);
+    // console.log("state in effect", currentState);
+    if (currentState.checkIn && currentState.checkOut) {
+      const checkIn = new Date(currentState.checkIn);
+      const checkOut = new Date(currentState.checkOut);
 
-    const diffTime = checkOut - checkIn;
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      const diffTime = checkOut - checkIn;
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-    console.log(diffDays);
+      // console.log(diffDays);
 
-    setnumberofDays(diffDays)
-  }, [state]);
+      setnumberofDays(diffDays)
+    }
+  }, [currentState]);
 
   useEffect(() => {
-    if (state) {
+    if (currentState && currentState.id && currentState.checkIn && currentState.checkOut) {
       const job = async () => {
         try {
-          const htl = await dispatch(fetchHotel({ checkIn: state.checkIn, checkOut: state.checkOut, id: state.id }));
-          console.log(htl);
+          const htl = await dispatch(fetchHotel({ checkIn: currentState.checkIn, checkOut: currentState.checkOut, id: currentState.id }));
+          // console.log(htl);
           if (htl.payload && htl.payload.status == 200) {
-            console.log(htl.payload.data?.nearbyAttractions);
+            // console.log(htl.payload.data?.nearbyAttractions);
             setNearbyAttractions(htl.payload.data?.nearbyAttractions)
             setHotelRooms(htl.payload.data?.rooms)
             setAmenititeslist(htl.payload.data?.amenities)
-            setAdults(state.total)
-            setStartDate(state.checkIn)
-            setEndDate(state.checkOut)
+            setAdults(currentState.total)
+            setStartDate(currentState.checkIn)
+            setEndDate(currentState.checkOut)
             setHotelData(htl.payload.data);
             setText(htl.payload.data.about)
           } else {
-            console.log("Fetch did not return status 200:", htl.payload);
+            // console.log("Fetch did not return status 200:", htl.payload);
           }
         } catch (error) {
           console.error("Error in fetchHotel:", error);
@@ -595,11 +612,11 @@ const HotelDetails = () => {
 
       job();
     }
-  }, [state, dispatch]);
+  }, [currentState, dispatch]);
 
   let limit = 500
 
-  const totalPeople = state?.total || 1;
+  const totalPeople = currentState?.total || 1;
 
   const allocatedRooms = useMemo(() => {
     if (!hotel?.rooms || !totalPeople) return [];
@@ -607,8 +624,8 @@ const HotelDetails = () => {
   }, [hotel, totalPeople]);
 
   // Move early returns AFTER effects
-  if (!state) {
-    return <div className="min-h-screen flex items-center justify-center">Invalid request: Missing state.</div>;
+  if (!currentState || !currentState.id || !currentState.checkIn || !currentState.checkOut) {
+    return <div className="min-h-screen flex items-center justify-center">Invalid request: Missing required parameters. Please ensure you have a valid hotel ID, check-in, and check-out dates.</div>;
   }
 
   if (!hotel || Object.keys(hotel).length === 0) {
@@ -634,16 +651,16 @@ const HotelDetails = () => {
 
   const handleSearch = () => {
     // Calculate total people
-    console.log(startDate)
+    // console.log(startDate)
 
 
     const totalPeople = adults
 
     // Create new state object
     const newState = {
-      ...state,
-      checkIn: startDate ? startDate : state.checkIn,
-      checkOut: endDate ? endDate : state.checkOut,
+      ...currentState,
+      checkIn: startDate ? startDate : currentState.checkIn,
+      checkOut: endDate ? endDate : currentState.checkOut,
       total: totalPeople,
       room: rooms,
     };
@@ -668,28 +685,28 @@ const HotelDetails = () => {
   //   }
   // };
   const handleBookNow = (rooms) => {
-    console.log("Rooms array from child:", rooms);
+    // console.log("Rooms array from child:", rooms);
 
     const newBookingData = {
       roomBookings: rooms.map((item) => ({
         roomId: item.room.id,
-        checkInDate: state.checkIn,
-        checkOutDate: state.checkOut,
+        checkInDate: currentState.checkIn,
+        checkOutDate: currentState.checkOut,
         numberOfRooms: item.count,
-        numberOfGuests: state.total
+        numberOfGuests: currentState.total
       }))
     };
 
-    console.log("Prepared Booking Data JSON:", newBookingData);
+    // console.log("Prepared Booking Data JSON:", newBookingData);
     setBookingData2(newBookingData)
     setBookingData(rooms);
 
     const user = auth.currentUser;
     if (user) {
-      console.log(1); // user is logged in
+      // console.log(1); // user is logged in
       setShowModal2(true); // show modal
     } else {
-      console.log(0); // user not logged in
+      // console.log(0); // user not logged in
       setShowModal(true);
       window.location.reload();
     }
@@ -707,12 +724,12 @@ const HotelDetails = () => {
       })
     );
     if (res.payload.status == 200) {
-      console.log(res.payload.data)
+      // console.log(res.payload.data)
       setPaidAt(res.payload.data?.paidAt)
       setBookingModal(true)
-      console.log("SUCCESSFULL")
+      // console.log("SUCCESSFULL")
     } else {
-      console.log("NOT SUCCESSFULL")
+      // console.log("NOT SUCCESSFULL")
       setFailModal(true)
     }
   };
@@ -725,7 +742,7 @@ const HotelDetails = () => {
       order_id: orderId,
 
       handler: async function (response) {
-        console.log("Payment successful!", response);
+        // console.log("Payment successful!", response);
 
         // Send to backend for verification
         // Example: verifyPayment(response)
@@ -764,16 +781,16 @@ const HotelDetails = () => {
 
 
   const handleBook = async () => {
-    console.log(bookingData2)
+    // console.log(bookingData2)
     // console.log()
     const token = localStorage.getItem("token")
-    const book = await dispatch(bookRooms({ hotelId: state.id, roomBookings: bookingData2.roomBookings, token: token }))
-    console.log(book)
+    const book = await dispatch(bookRooms({ hotelId: currentState.id, roomBookings: bookingData2.roomBookings, token: token }))
+    // console.log(book)
     if (book.payload.status == 200) {
       const data = book.payload.data;
       setBookingId(data?.bookingGroupCode)
       setRazorpayId(data?.razorpayOrderId)
-      console.log(book.payload.data)
+      // console.log(book.payload.data)
 
       openRazorpay(data?.razorpayOrderId);
     }
@@ -823,16 +840,21 @@ const HotelDetails = () => {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-        <div className="absolute bottom-6 left-6 text-white">
-          <h1 className="text-3xl md:text-5xl font-bold">{hotel?.name}</h1>
-          <p className="mt-2 text-sm md:text-base">{hotel?.address}</p>
+        <div className="absolute bottom-6 left-6 right-6 text-white">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-5xl font-bold">{hotel?.name}</h1>
+              <p className="mt-2 text-sm md:text-base">{hotel?.address}</p>
+            </div>
+            <ShareButton hotel={hotel} className="self-start md:self-end" />
+          </div>
         </div>
       </div>
 
       {/* About Section */}
       <div className="flex justify-center">
 
-        <div className="w-[60%] flex justify-center flex-col">
+        <div className="lg:w-[60%] w-full flex justify-center flex-col">
 
 
 
@@ -840,7 +862,7 @@ const HotelDetails = () => {
 
           <div className="max-w-6xl mx-auto px-6 pb-3 pt-8">
             <h2 className="text-2xl font-semibold pb-6 text-gray-800">
-              Recomended Rooms allocated for {totalPeople} {totalPeople > 1 ? "people" : "person"}
+              Recommended Rooms allocated for {totalPeople} {totalPeople > 1 ? "people" : "person"}
             </h2>
 
             <div className='flex flex-col gap-[10px]'>
@@ -1092,7 +1114,7 @@ const HotelDetails = () => {
           <RoomSelectionTable
             hotelRooms={hotelRooms}
             numberofDays={numberofDays}
-            totalPeople={state.total}
+            totalPeople={currentState.total}
             handleBookNow={(e) => handleBookNow(e)}
           />
 
@@ -1190,9 +1212,9 @@ const HotelDetails = () => {
                 <h2 className="text-2xl font-bold mb-4 text-gray-800">Booking Summary</h2>
 
                 <div className="mb-6 text-gray-700">
-                  <p><strong>Check-In Date:</strong> {state.checkIn}</p>
-                  <p><strong>Check-Out Date:</strong> {state.checkOut}</p>
-                  <p><strong>Total Guests:</strong> {state.total}</p>
+                  <p><strong>Check-In Date:</strong> {currentState.checkIn}</p>
+                  <p><strong>Check-Out Date:</strong> {currentState.checkOut}</p>
+                  <p><strong>Total Guests:</strong> {currentState.total}</p>
                 </div>
 
                 {bookingData.map((item, index) => {
@@ -1241,7 +1263,7 @@ const HotelDetails = () => {
                 <div className="flex justify-end mt-6">
                   <button
                     onClick={() => {
-                      console.log("Final booking confirmed!", bookingData);
+                      // console.log("Final booking confirmed!", bookingData);
                       handleBook()
                       setShowModal2(false);
                     }}
@@ -1254,16 +1276,14 @@ const HotelDetails = () => {
             </div>
           )}
 
-
-
         </div>
       </div>
       {bookingModal && (
         <PaymentSuccessfullModal
           bookingId={bookingId}
-          checkIn={state.checkIn}
-          checkOut={state.checkOut}
-          total={state.total}
+          checkIn={currentState.checkIn}
+          checkOut={currentState.checkOut}
+          total={currentState.total}
           paidAt={paidAt}
           onClose={() => {
             setBookingModal(false)

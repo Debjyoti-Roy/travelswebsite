@@ -75,10 +75,10 @@ const Hotelsearch = () => {
 
   return (
     <div className="package-search-container">
-      <h2 className="flex md:justify-start justify-center font-bold md:pl-6 text-2xl text-black pt-5 pb-3">Find Your Perfect Stay</h2>
-      <div className="flex w-full md:p-4">
+      <h2 className="flex lg:justify-start justify-center font-bold lg:pl-6 text-2xl text-black pt-5 pb-3">Find Your Perfect Stay</h2>
+      <div className="flex w-full lg:p-4">
 
-        <div className="w-full w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col md:flex-row gap-4 md:gap-2 items-center">
+        <div className="w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
           <div className="flex-1 w-full">
             <label className="block flex pb-1 text-sm font-medium mb-1">Location</label>
             <div className="relative">
@@ -128,7 +128,10 @@ const Hotelsearch = () => {
               className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <FaUsers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
-              {`${adults} Adults${children > 0 ? ` · ${children} Children` : ""} · ${rooms} Rooms`}
+              <span className="flex lg:justify-center justify-start">
+
+                {`${adults} Adults${children > 0 ? ` · ${children} Children` : ""} · ${rooms} Rooms`}
+              </span>
             </div>
 
             {showGuestOptions && (
@@ -192,11 +195,11 @@ const Hotelsearch = () => {
               </div>
             )}
           </div>
-          <div className="h-full w-full md:w-auto flex items-end">
+          <div className="h-full w-full lg:w-auto flex items-end">
 
             <button
               onClick={handleSearch}
-              className="bg-blue-600 flex w-full md:w-auto justify-center
+              className="bg-blue-600 flex w-full lg:w-auto justify-center
             items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
             >
               Search

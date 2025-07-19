@@ -193,7 +193,7 @@ const Query = () => {
   };
   return (
     <>
-      <div className="flex flex-col gap-[50px] justify-center items-center min-h-screen bg-blue-50 p-4 pt-[80px] md:pt-0">
+      <div className="flex flex-col gap-[50px] justify-center items-center min-h-screen bg-blue-50 p-4 pt-[80px] lg:pt-0">
         <div className="w-[80vw] flex flex-col justify-center">
           <p className="text-bold text-4xl flex justify-center">
             Get in touch!
@@ -203,9 +203,9 @@ const Query = () => {
             perfect trip? Our travel experts are here to help.
           </p>
         </div>
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row w-full md:max-w-[60%]">
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col lg:flex-row w-full lg:max-w-[60%]">
           {/* Left side: Contact Info */}
-          <div className="w-full md:w-[50%] h-60 md:h-auto">
+          <div className="w-full lg:w-[50%] h-60 lg:h-auto">
             <img
               src={side}
               alt="Query illustration"
@@ -220,14 +220,14 @@ const Query = () => {
           >
             <h2 className="text-2xl font-bold mb-6">Send us a message</h2>
 
-            <div className="flex flex-col gap-[15px] md:flex-row md:space-x-4">
+            <div className="flex flex-col gap-[15px] lg:flex-row lg:space-x-4">
               <input
                 type="text"
                 value={name}
                 required
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full Name"
-                className="border border-gray-300 rounded-md p-3 mb-4 md:mb-0 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded-md p-3 mb-4 lg:mb-0 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {/* <div className="flex flex-col gap-[0px]"> */}
               <div className="relative inline-block">
@@ -237,7 +237,7 @@ const Query = () => {
                   onChange={(e) => setContact(e.target.value)}
                   onBlur={validateContact}
                   placeholder="Contact"
-                  className={`border ${
+                  className={`border w-full lg-w-auto ${
                     error2 ? "border-red-500" : "border-gray-300"
                   } rounded-md p-3 mb-2 focus:outline-none focus:ring-2 ${
                     error2 ? "focus:ring-red-500" : "focus:ring-blue-500"
