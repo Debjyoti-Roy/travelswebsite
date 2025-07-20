@@ -305,18 +305,28 @@ const HotelDetails = () => {
   const { state } = location;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   // Get parameters from URL if state is not available
   const urlParams = new URLSearchParams(window.location.search);
-  const urlState = {
-    id: urlParams.get('id'),
-    checkIn: urlParams.get('checkIn'),
-    checkOut: urlParams.get('checkOut'),
-    total: parseInt(urlParams.get('total')) || 1,
-    room: parseInt(urlParams.get('room')) || 1,
-    location: urlParams.get('location')
-  };
-  
+  let urlState = {};
+  if (urlParams.get('data')) {
+    try {
+      urlState = JSON.parse(decodeURIComponent(atob(urlParams.get('data'))));
+    } catch (e) {
+      urlState = {};
+    }
+  } else {
+    urlState = {
+      id: urlParams.get('id'),
+      checkIn: urlParams.get('checkIn'),
+      checkOut: urlParams.get('checkOut'),
+      total: parseInt(urlParams.get('total')) || 1,
+      room: parseInt(urlParams.get('room')) || 1,
+      location: urlParams.get('location'),
+      startingPrice: urlParams.get('startingPrice') ? parseInt(urlParams.get('startingPrice')) : undefined
+    };
+  }
+
   // Use state if available, otherwise use URL parameters
   const currentState = state || urlState;
   const [hotel, setHotelData] = useState({});
@@ -350,7 +360,7 @@ const HotelDetails = () => {
   const [totalAmt, setTotalAmount] = useState("")
   const [bookingModal, setBookingModal] = useState(false)
   const [failModal, setFailModal] = useState(false)
-  const [paidAt, setPaidAt]=useState("")
+  const [paidAt, setPaidAt] = useState("")
   const { paymentLoading, paymentStatus, paymentError } = useSelector((state) => state.payment);
 
 
@@ -618,10 +628,15 @@ const HotelDetails = () => {
 
   const totalPeople = currentState?.total || 1;
 
+  const filteredRooms = useMemo(() => {
+    if (!hotel?.rooms || !currentState?.startingPrice) return hotel?.rooms || [];
+    return hotel.rooms.filter(room => room.pricePerNight === currentState.startingPrice);
+  }, [hotel, currentState]);
+
   const allocatedRooms = useMemo(() => {
-    if (!hotel?.rooms || !totalPeople) return [];
-    return allocateRooms(hotel.rooms, totalPeople);
-  }, [hotel, totalPeople]);
+    if (!filteredRooms || !totalPeople) return [];
+    return allocateRooms(filteredRooms, totalPeople);
+  }, [filteredRooms, totalPeople]);
 
   // Move early returns AFTER effects
   if (!currentState || !currentState.id || !currentState.checkIn || !currentState.checkOut) {
@@ -1126,16 +1141,17 @@ const HotelDetails = () => {
               <div>
                 <h3 className="text-lg font-semibold">Flexible & Hassle-Free Cancellations</h3>
                 <p className="text-gray-700 text-sm pt-2">
-                  At <strong>{hotel?.name}</strong>, we understand that plans can change, and we want to offer you flexibility and peace of mind.
+                  At <strong>{hotel?.name}</strong>, we strive to offer clarity and fairness in all bookings.
 
-                  We provide <strong>free cancellation up to 1 month before your scheduled check-in</strong>. If your plans change closer to your arrival date, you can still cancel up to <strong>15 days before check-in and receive a 50% refund</strong>.
+                  We provide a <strong>100% refund for cancellations made 10 days or more before your scheduled arrival</strong>. This gives you the flexibility to change your plans with peace of mind.
 
-                  For cancellations made <strong>within 1 week of check-in</strong>, we are unable to offer a refund, as your room and personalized arrangements have already been prepared.
+                  However, <strong>no refund will be provided for cancellations made within 10 days of the arrival date</strong>, as preparations for your stay would have already been initiated.
 
-                  This policy is designed to give you clear options at every stage, allowing you to book with confidence and adjust as needed.
+                  In the event of <strong>natural disasters or force majeure situations</strong> (such as floods, landslides, earthquakes, or government-imposed restrictions), <strong>no refunds will be processed</strong>, regardless of the cancellation date.
 
-
+                  This policy ensures transparency while helping us maintain the quality of service and arrangements we commit to every guest.
                 </p>
+
               </div>
             </div>
 

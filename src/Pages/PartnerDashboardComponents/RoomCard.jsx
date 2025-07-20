@@ -47,7 +47,7 @@ const RoomCard = ({ rooms = [] }) => {
                 {rooms.map((room) => (
                     <div
                         key={room.id}
-                        className="w-full md:w-full lg:w-1/3 px-2 shrink-0"
+                        className="w-full md:w-1/2 lg:w-1/3 px-2 shrink-0"
                     >
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col">
                             <CustomCarousel images={room.imageUrls || []} />

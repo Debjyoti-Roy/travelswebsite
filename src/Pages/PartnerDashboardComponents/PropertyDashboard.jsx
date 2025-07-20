@@ -48,7 +48,7 @@ const PropertyDashboard = ({ hotelList }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-2 lg:p-6 bg-gray-50 min-h-screen">
       {/* Header with Add Hotel Button */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Property Dashboard</h1>
@@ -66,7 +66,7 @@ const PropertyDashboard = ({ hotelList }) => {
       <div className="grid gap-8">
         {hotelList && hotelList.length > 0 ? (
           hotelList.map((hotel, index) => (
-            <div key={index} className="w-[65%] md:w-[80%] lg:w-full">
+            <div key={index} className="w-[55%] md:w-full lg:w-full">
               <HotelCard key={index} hotel={hotel} />
             </div>
           ))

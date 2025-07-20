@@ -40,7 +40,7 @@ const Partner = () => {
 
                 res = await dispatch(fetchPartnerProfile({ token }))
             }
-            // console.log(res.payload)
+            console.log(res.payload)
             setRejectionStatus(res?.payload?.data?.status)
             if (res?.payload.data?.status === "REJECTED") {
                 setReason(res?.payload.data?.rejectionReason)

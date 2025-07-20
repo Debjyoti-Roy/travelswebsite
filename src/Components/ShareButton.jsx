@@ -30,6 +30,7 @@ const ShareButton = ({ hotel, className = "" }) => {
   const total = urlParams.get('total') || currentState.total;
   const room = urlParams.get('room') || currentState.room;
   const location = urlParams.get('location') || currentState.location;
+  const startingPrice = urlParams.get('startingPrice') || currentState.startingPrice || hotel?.startingPrice;
   
   if (id) shareParams.set('id', id);
   if (checkIn) shareParams.set('checkIn', checkIn);
@@ -37,8 +38,21 @@ const ShareButton = ({ hotel, className = "" }) => {
   if (total) shareParams.set('total', total);
   if (room) shareParams.set('room', room);
   if (location) shareParams.set('location', location);
+  if (startingPrice) shareParams.set('startingPrice', startingPrice);
   
-  const shareUrl = shareParams.toString() ? `${baseUrl}?${shareParams.toString()}` : baseUrl;
+  const shareData = {
+    id,
+    checkIn,
+    checkOut,
+    total,
+    room,
+    location,
+    startingPrice
+  };
+
+  // Encode as base64
+  const encoded = btoa(encodeURIComponent(JSON.stringify(shareData)));
+  const shareUrl = `${baseUrl}?data=${encoded}`;
   const shareText = `Check out this amazing hotel: ${hotel?.name} - ${hotel?.address}`;
 
   const handleNativeShare = async () => {

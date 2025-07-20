@@ -351,6 +351,10 @@ const Navbar = () => {
     console.log(userDetails.imageUrl);
   }, [userDetails.imageUrl]);
 
+  useEffect(() => {
+    console.log('hello');
+  }, [showDropdown]);
+
   return (
     <div className="Nav sticky top-0 z-50 shadow">
       <div className="NavSection">
@@ -432,9 +436,9 @@ const Navbar = () => {
                     {/* Options */}
                     <div className="flex flex-col">
                       <button
-                        onClick={() => {
-                          navigate("/profile")
-                          setShowDropdown(false)
+                        onMouseDown={() => {
+                          navigate("/profile");
+                          setShowDropdown(false);
                         }}
                         className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition"
                       >
@@ -443,12 +447,11 @@ const Navbar = () => {
                       </button>
 
                       <button
-                      onClick={() => {
-                          navigate("/mybookings")
-                          setShowDropdown(false)
-                        }
-                        }
-                       className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                        onMouseDown={() => {
+                          navigate("/mybookings");
+                          setShowDropdown(false);
+                        }}
+                        className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                         <FiClipboard className="text-gray-500 text-lg" />
                         My Bookings
                       </button>
@@ -543,9 +546,9 @@ const Navbar = () => {
                     {/* Options */}
                     <div className="flex flex-col">
                       <button
-                        onClick={() => {
-                          navigate("/profile")
-                          setShowDropdown(false)
+                        onMouseDown={() => {
+                          navigate("/profile");
+                          setShowDropdown(false);
                         }}
                         className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition"
                       >
@@ -554,12 +557,11 @@ const Navbar = () => {
                       </button>
 
                       <button
-                      onClick={() => {
-                          navigate("/mybookings")
-                          setShowDropdown(false)
-                        }
-                        }
-                       className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
+                        onMouseDown={() => {
+                          navigate("/mybookings");
+                          setShowDropdown(false);
+                        }}
+                        className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                         <FiClipboard className="text-gray-500 text-lg" />
                         My Bookings
                       </button>

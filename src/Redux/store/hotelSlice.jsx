@@ -124,17 +124,37 @@ export const getLocations = createAsyncThunk(
 
 export const searchHotels = createAsyncThunk(
   "hotel/searchHotels",
-  async ({ location, checkIn, checkOut, requiredRoomCount, page, size }, { rejectWithValue }) => {
+  async ({ location, checkIn, checkOut, requiredRoomCount, page, size, minPrice, maxPrice, tags, amenities }, { rejectWithValue }) => {
     try {
+      // Build params object with required parameters
+      const params = {
+        location,
+        checkIn,
+        checkOut,
+        requiredRoomCount,
+        page,
+        size,
+      };
+
+      // Add optional filter parameters only if they have valid values
+      if (minPrice !== null && minPrice !== undefined && minPrice !== "" && minPrice !== 0) {
+        params.minPrice = minPrice;
+      }
+
+      if (maxPrice !== null && maxPrice !== undefined && maxPrice !== "" && maxPrice !== 0) {
+        params.maxPrice = maxPrice;
+      }
+
+      if (tags && Array.isArray(tags) && tags.length > 0) {
+        params.tags = tags.join(',');
+      }
+
+      if (amenities && Array.isArray(amenities) && amenities.length > 0) {
+        params.amenities = amenities.join(',');
+      }
+
       const response = await api.get("/v1/public/search-hotel", {
-        params: {
-          location,
-          checkIn,
-          checkOut,
-          requiredRoomCount,
-          page,
-          size,
-        },
+        params,
         headers: {
           "ngrok-skip-browser-warning": "xyz", // optional if needed
         },
@@ -159,7 +179,7 @@ export const fetchHotel = createAsyncThunk(
           checkIn,
           checkOut,
         },
-         headers: {
+        headers: {
           "ngrok-skip-browser-warning": "xyz", // optional if needed
         },
       });
@@ -201,6 +221,48 @@ export const bookRooms = createAsyncThunk(
   }
 );
 
+export const cancelBooking = createAsyncThunk(
+  "booking/cancelBooking",
+  async ({ token, bookingGroupCode, cancelReason }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        "/v1/private/hotel/cancel",
+        {
+          bookingGroupCode,
+          cancelReason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Cancel failed" });
+    }
+  }
+);
+
+export const getRefundStatus = createAsyncThunk(
+  "hotel/getRefundStatus",
+  async ({ token, bookingGroupCode }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/v1/private/hotel/${bookingGroupCode}/refund-status`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "xyz",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Refund status fetch failed");
+    }
+  }
+);
 
 
 
@@ -217,6 +279,13 @@ const hotelSlice = createSlice({
     bookingResponse: null,
     bookingLoading: false,
     bookingError: null,
+    cancelBookingResponse: null,
+    cancelBookingLoading: false,
+    cancelBookingError: null,
+    refundStatus: null,
+    refundLoading: false,
+    refundError: null,
+
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -331,6 +400,32 @@ const hotelSlice = createSlice({
       .addCase(bookRooms.rejected, (state, action) => {
         state.bookingLoading = false;
         state.bookingError = action.payload;
+      })
+      .addCase(cancelBooking.pending, (state) => {
+        state.cancelBookingLoading = true;
+        state.cancelBookingError = null;
+        state.cancelBookingResponse = null;
+      })
+      .addCase(cancelBooking.fulfilled, (state, action) => {
+        state.cancelBookingLoading = false;
+        state.cancelBookingResponse = action.payload;
+      })
+      .addCase(cancelBooking.rejected, (state, action) => {
+        state.cancelBookingLoading = false;
+        state.cancelBookingError = action.payload;
+      })
+      .addCase(getRefundStatus.pending, (state) => {
+        state.refundLoading = true;
+        state.refundError = null;
+        state.refundStatus = null;
+      })
+      .addCase(getRefundStatus.fulfilled, (state, action) => {
+        state.refundLoading = false;
+        state.refundStatus = action.payload;
+      })
+      .addCase(getRefundStatus.rejected, (state, action) => {
+        state.refundLoading = false;
+        state.refundError = action.payload;
       });
   },
 });
