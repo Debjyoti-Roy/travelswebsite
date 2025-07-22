@@ -4,6 +4,7 @@ import AddRoom from './PartnerDashboardComponents/AddRoom';
 import PropertyDashboard from './PartnerDashboardComponents/PropertyDashboard';
 import { useDispatch } from 'react-redux';
 import { getHotels } from '../Redux/store/hotelSlice';
+import HotelAnalytics from './PartnerDashboardComponents/HotelAnalytics';
 
 const PartnerDashboard = () => {
   const options = ["Hotel", "Car", "Guest house"];
@@ -103,8 +104,8 @@ const PartnerDashboard = () => {
       <div className="w-full flex justify-center">
         <div className="lg:w-[60%] w-full px-6 lg:px-0">
           {tab === "overview" && (
-            <div className="text-center text-gray-700">
-              <p className="text-lg">This is your overview & bookings dashboard.</p>
+            <div className='w-full'>
+              <HotelAnalytics hotelList={hotelList} />
             </div>
           )}
           {tab === "properties" && (

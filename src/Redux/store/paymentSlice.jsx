@@ -16,8 +16,10 @@ export const confirmPayment = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          validateStatus: (status) => status === 200 || status === 409,
         }
       );
+      console.log(response)
       return {
         data: response.data,
         status: response.status,

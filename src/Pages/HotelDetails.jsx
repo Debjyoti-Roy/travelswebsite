@@ -738,7 +738,8 @@ const HotelDetails = () => {
         razorpaySignature: razorpaySignature,
       })
     );
-    if (res.payload.status == 200) {
+    console.log(res)
+    if (res.payload.status == 200 || res.payload.status == 409) {
       // console.log(res.payload.data)
       setPaidAt(res.payload.data?.paidAt)
       setBookingModal(true)

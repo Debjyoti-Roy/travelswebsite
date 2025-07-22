@@ -28,6 +28,10 @@
   align-items: center;
 }
 
+.css-ra8wgq-MuiChartsAxis-root-MuiChartsYAxis-root {
+  display: none !important;
+}
+
 .hero-section {
   position: relative;
   width: 100%;
