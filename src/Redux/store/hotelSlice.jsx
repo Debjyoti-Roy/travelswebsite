@@ -264,6 +264,50 @@ export const getRefundStatus = createAsyncThunk(
   }
 );
 
+export const updateHotelDetails = createAsyncThunk(
+  "hotel/updateHotelDetails",
+  async ({ hotelId, payload, token }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(
+        `/v1/partner/${hotelId}/updatehotel`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Update failed");
+    }
+  }
+);
+
+export const updateRoomFeatures = createAsyncThunk(
+  "rooms/updateRoomFeatures",
+  async ({ id, features }, thunkAPI) => {
+    try {
+      const response = await app.patch(`/v1/partner/${id}/rooms`, {
+        features,
+      });
+
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
 
 
 const hotelSlice = createSlice({
@@ -285,6 +329,11 @@ const hotelSlice = createSlice({
     refundStatus: null,
     refundLoading: false,
     refundError: null,
+    hotelInfo: null,
+    success: false,
+    updateLoading: false,
+  updateError: null,
+  updateResult: null,
 
   },
   reducers: {},
@@ -426,6 +475,34 @@ const hotelSlice = createSlice({
       .addCase(getRefundStatus.rejected, (state, action) => {
         state.refundLoading = false;
         state.refundError = action.payload;
+      })
+      .addCase(updateHotelDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(updateHotelDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.hotelInfo = action.payload;
+        state.success = true;
+      })
+      .addCase(updateHotelDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Update failed";
+        state.success = false;
+      })
+      builder
+      .addCase(updateRoomFeatures.pending, (state) => {
+        state.updateLoading = true;
+        state.updateError = null;
+      })
+      .addCase(updateRoomFeatures.fulfilled, (state, action) => {
+        state.updateLoading = false;
+        state.updateResult = action.payload;
+      })
+      .addCase(updateRoomFeatures.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload;
       });
   },
 });

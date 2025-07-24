@@ -71,8 +71,8 @@ export const fetchTodayCheckins = createAsyncThunk(
   "analytics/fetchTodayCheckins",
   async ({ token, id, date }, thunkAPI) => {
     const response = await api.get(
-    //   `/v1/partner/analytics/${id}/today-checkins`,
-      `/v1/partner/analytics/${id}/today-checkins?date=${date}`,
+      `/v1/partner/analytics/${id}/today-checkins`,
+      // `/v1/partner/analytics/${id}/today-checkins?date=${date}`,
       {
         headers: { Authorization: `Bearer ${token}`,
         "ngrok-skip-browser-warning": "xyz", // optional if needed
@@ -80,6 +80,29 @@ export const fetchTodayCheckins = createAsyncThunk(
       }
     );
     return response.data;
+  }
+);
+
+//6. Booking Analytics
+export const fetchBookingAnalytics = createAsyncThunk(
+  "analytics/fetchBookingAnalytics",
+  async ({ token, bookingCode }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/v1/partner/analytics/search/booking?bookingCode=${bookingCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "xyz",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch analytics"
+      );
+    }
   }
 );
 
@@ -91,6 +114,7 @@ const analyticsSlice = createSlice({
       earningsByMonth: null,
       recentBookings: null,
       todayCheckins: null,
+      bookingAnalytics: null,
       loading: false,
       error: null,
     },
@@ -112,7 +136,18 @@ const analyticsSlice = createSlice({
         .addCase(fetchTodayCheckins.fulfilled, (state, action) => {
           state.todayCheckins = action.payload;
         })
-  
+        .addCase(fetchBookingAnalytics.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(fetchBookingAnalytics.fulfilled, (state, action) => {
+          state.loading = false;
+          state.bookingAnalytics = action.payload;
+        })
+        .addCase(fetchBookingAnalytics.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload || "Something went wrong";
+        })
         // handle loading and error (optional but recommended)
         .addMatcher(
           (action) => action.type.endsWith("/pending"),

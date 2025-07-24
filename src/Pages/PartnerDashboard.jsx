@@ -15,6 +15,7 @@ const PartnerDashboard = () => {
   const [hotelId, setHotelId] = useState("")
   const [hotelPresent, setHotelPresent] = useState(false)
   const [hotelList, setHotelList] = useState([])
+  const [counter, setCounter] = useState(false)
   const dispatch = useDispatch()
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,7 +41,7 @@ const PartnerDashboard = () => {
       }
     }
     job()
-  }, [])
+  }, [counter])
 
   return (
     <div className="min-h-screen">
@@ -111,7 +112,7 @@ const PartnerDashboard = () => {
           {tab === "properties" && (
             <>
               {hotelPresent && <div className='w-full'>
-                <PropertyDashboard hotelList={hotelList} />
+                <PropertyDashboard hotelList={hotelList} setCounter={() => setCounter(!counter)} />
               </div>}
               {!hotelPresent && (
                 <>

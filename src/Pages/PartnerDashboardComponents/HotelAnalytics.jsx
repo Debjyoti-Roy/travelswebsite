@@ -5,10 +5,12 @@ import {
   fetchEarningSummary,
   fetchEarningsByMonth,
   fetchRecentBookings,
-  fetchTodayCheckins
+  fetchTodayCheckins,
+  fetchBookingAnalytics
 } from '../../Redux/store/analyticsSlice';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { FaRegCalendarAlt, FaMoneyBillWave, FaChartBar, FaHistory, FaRegCalendarCheck, FaSearch } from 'react-icons/fa';
+import BookingAnalyticsModal from './BookingAnalyticsModal';
 
 const timeRanges = [
   { label: '1 M', value: '1m' },
@@ -46,6 +48,9 @@ const HotelAnalytics = ({ hotelList }) => {
   const [bookingRange, setBookingRange] = useState({});
   const [earningRange, setEarningRange] = useState({});
   const [recentDays, setRecentDays] = useState({});
+  // Booking search state
+  const [searchCode, setSearchCode] = useState("");
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   const handleExpand = (hotel) => {
     if (expanded === hotel.id) {
@@ -86,18 +91,56 @@ const HotelAnalytics = ({ hotelList }) => {
     dispatch(fetchRecentBookings({ token: localStorage.getItem('token'), id: hotelId, days: value }));
   };
 
+  const handleSearch = () => {
+    if (!searchCode.trim()) return;
+    dispatch(fetchBookingAnalytics({ token: localStorage.getItem('token'), bookingCode: searchCode.trim() }))
+      .then((res) => {
+        if (res.type.endsWith('fulfilled')) setShowBookingModal(true);
+      });
+  };
+  const handleSearchInput = (e) => {
+    setSearchCode(e.target.value);
+  };
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') handleSearch();
+  };
+  const closeBookingModal = () => {
+    setShowBookingModal(false);
+  };
+
   const months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
 
   return (
     <div className="flex flex-col gap-8">
-        <div className="flex justify-center gap-5">
-            <input type="text" placeholder='Search Booking details by Booking ID' className='border rounded px-2 py-1 text-sm bg-white w-full px-4 py-2' />
-            <button className='px-2 py-1 bg-[#5dacf2] rounded'>
-                <FaSearch className='text-white' />
-            </button>
-        </div>
+      <div className="flex justify-center gap-3 items-center w-full mx-auto relative">
+        <input
+          type="text"
+          value={searchCode}
+          onChange={handleSearchInput}
+          onKeyDown={handleSearchKeyDown}
+          placeholder="Search Booking details by Booking ID"
+          className="border border-blue-200 rounded-full px-5 py-3 text-base bg-white w-full shadow focus:ring-2 focus:ring-blue-300 focus:outline-none transition-all pr-12"
+        />
+        <button
+          className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 shadow-lg transition-all"
+          onClick={handleSearch}
+          disabled={analytics.loading}
+        >
+          {analytics.loading ? (
+            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+          ) : (
+            <FaSearch className="text-white" />
+          )}
+        </button>
+      </div>
+      {analytics.error && searchCode && (
+        <div className="text-center text-red-500 text-sm">{analytics.error}</div>
+      )}
+      {showBookingModal && analytics.bookingAnalytics && (
+        <BookingAnalyticsModal data={analytics.bookingAnalytics} onClose={closeBookingModal} />
+      )}
       {hotelList && hotelList.length > 0 ? hotelList.map((hotel) => (
         <div
           key={hotel.id}

@@ -4,7 +4,7 @@ import ManageProperties from "./ManageProperties";
 import AddRoom from "./AddRoom";
 // import HotelCard from "./HotelCard"; // adjust import path if needed
 
-const PropertyDashboard = ({ hotelList }) => {
+const PropertyDashboard = ({ hotelList, setCounter }) => {
   const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState("hotel"); // "hotel" or "room"
   const [hotelId, setHotelId] = useState(null);
@@ -21,6 +21,7 @@ const PropertyDashboard = ({ hotelList }) => {
     setHotelId(null);
     setHotelPresent(false);
     setIsLoading(false);
+    setCounter()
   };
 
   const handleHotelCreated = (newHotelId) => {
@@ -67,7 +68,7 @@ const PropertyDashboard = ({ hotelList }) => {
         {hotelList && hotelList.length > 0 ? (
           hotelList.map((hotel, index) => (
             <div key={index} className="w-[55%] md:w-full lg:w-full">
-              <HotelCard key={index} hotel={hotel} />
+              <HotelCard key={index} hotel={hotel} setCounter={setCounter} />
             </div>
           ))
         ) : (

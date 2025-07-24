@@ -25,6 +25,7 @@ import { useKeenSlider } from "keen-slider/react.es";
 import "keen-slider/keen-slider.min.css";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import EditHotelModal from './EditHotelModal';
 
 const getOverlappingChunks = (rooms, size = 3) => {
   const chunks = [];
@@ -75,7 +76,7 @@ const attractionTypes = [
   { type: "OTHER", icon: <FaStar /> },
 ];
 
-const HotelCard = ({ hotel }) => {
+const HotelCard = ({ hotel, setCounter }) => {
   const [expanded, setExpanded] = useState(false);
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -85,6 +86,7 @@ const HotelCard = ({ hotel }) => {
   const [roomModal, setRoomModal] = useState(false)
   const [hotelPresent, setHotelPresent] = useState(true)
   const backdropRef = React.useRef();
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const [sliderRef] = useKeenSlider({
     loop: false,
@@ -251,10 +253,16 @@ const HotelCard = ({ hotel }) => {
           <div className="flex justify-between">
 
             <h2 className="text-2xl font-semibold text-gray-800">{hotel.name}</h2>
-            <button
-              onClick={() => setRoomModal(true)}
-              className="bg-blue-600 flex w-full md:w-auto justify-center
-            items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition">Add Room</button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setRoomModal(true)}
+                className="bg-blue-600 flex w-full md:w-auto justify-center items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+              >Add Room</button>
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="bg-yellow-500 flex w-full md:w-auto justify-center items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-yellow-600 transition"
+              >Edit</button>
+            </div>
           </div>
           <p className="text-gray-500 text-sm pt-1">{hotel.address}</p>
           {/* <p className="pt-2 text-gray-700 text-sm">{hotel.about}</p> */}
@@ -414,6 +422,9 @@ const HotelCard = ({ hotel }) => {
           </div>
         </div>
 
+      )}
+      {showEditModal && (
+        <EditHotelModal hotel={hotel} onClose={() => setShowEditModal(false)} setCounter={setCounter} />
       )}
     </div>
 
