@@ -49,7 +49,7 @@ const PropertyDashboard = ({ hotelList, setCounter }) => {
   };
 
   return (
-    <div className="p-2 lg:p-6 bg-gray-50 min-h-screen">
+    <div className="p-2 lg:p-0 min-h-screen">
       {/* Header with Add Hotel Button */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Property Dashboard</h1>

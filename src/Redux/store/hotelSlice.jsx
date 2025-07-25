@@ -290,10 +290,14 @@ export const updateHotelDetails = createAsyncThunk(
 
 export const updateRoomFeatures = createAsyncThunk(
   "rooms/updateRoomFeatures",
-  async ({ id, features }, thunkAPI) => {
+  async ({ id, features, token }, thunkAPI) => {
     try {
-      const response = await app.patch(`/v1/partner/${id}/rooms`, {
-        features,
+      console.log("update room features", id, features)
+      const response = await api.patch(`/v1/partner/${id}/rooms`, features, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       return {
@@ -332,8 +336,8 @@ const hotelSlice = createSlice({
     hotelInfo: null,
     success: false,
     updateLoading: false,
-  updateError: null,
-  updateResult: null,
+    updateError: null,
+    updateResult: null,
 
   },
   reducers: {},
@@ -491,7 +495,7 @@ const hotelSlice = createSlice({
         state.error = action.payload || "Update failed";
         state.success = false;
       })
-      builder
+    builder
       .addCase(updateRoomFeatures.pending, (state) => {
         state.updateLoading = true;
         state.updateError = null;

@@ -4,6 +4,7 @@ import { storage } from "../../auth/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
+import { updateRoomFeatures } from "../../Redux/store/hotelSlice";
 // import { updateRoomDetails } from "../../Redux/store/hotelSlice"; // Uncomment and implement if not present
 
 const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails }) => {
@@ -83,7 +84,8 @@ const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails }) => {
     }
     try {
       // You may need to implement updateRoomDetails in your Redux slice
-      const res = await dispatch(updateRoomDetails({ roomId: room.id, payload }));
+      const token = localStorage.getItem("token");
+      const res = await dispatch(updateRoomFeatures({ id: room.id, features: payload, token: token }));
       if (res && res.payload && (res.payload.status === 200 || res.payload.status === 201)) {
         // Delete images from Firebase only after success
         for (const url of toBeDeletedImages) {
@@ -103,6 +105,7 @@ const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails }) => {
         setImageUrls((prev) => [...prev, ...toBeDeletedImages]);
         setImagePreviews((prev) => [...prev, ...toBeDeletedImages]);
         setToBeDeletedImages([]);
+        console.log("update failed")
         toast.error("Update failed");
         setSubmitting(false);
       }
@@ -110,6 +113,7 @@ const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails }) => {
       setImageUrls((prev) => [...prev, ...toBeDeletedImages]);
       setImagePreviews((prev) => [...prev, ...toBeDeletedImages]);
       setToBeDeletedImages([]);
+      console.log("update failed")
       toast.error("Update failed");
       setSubmitting(false);
     }

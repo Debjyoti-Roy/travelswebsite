@@ -466,8 +466,9 @@ const Navbar = () => {
                       <hr className="my-1 border-gray-200" />
 
                       <button
-                        onClick={() => {
+                        onMouseDown={() => {
                           auth.signOut();
+                          console.log("signing out");
                           localStorage.removeItem("token");
                           window.dispatchEvent(new Event("tokenUpdated"));
                           setShowDropdown(false);
@@ -576,7 +577,7 @@ const Navbar = () => {
                       <hr className="my-1 border-gray-200" />
 
                       <button
-                        onClick={() => {
+                        onMouseDown={() => {
                           auth.signOut();
                           localStorage.removeItem("token");
                           window.dispatchEvent(new Event("tokenUpdated"));

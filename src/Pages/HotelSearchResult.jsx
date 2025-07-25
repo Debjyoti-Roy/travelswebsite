@@ -434,14 +434,15 @@ const HotelSearchResult = () => {
                 .map((hotel) => (
                   <div
                     key={hotel.id}
-                    className="flex bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-64"
+                    className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-80 md:h-55"
                   >
                     {/* Image */}
-                    <div className="w-48 flex-shrink-0 h-full">
+                    <div style={{marginLeft:"10px"}} className="flex items-center justify-center w-[30%] h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-full h-full ml-2"> 
                       {hotel.photoUrls.length === 1 ? (
                         <img
                           src={hotel.photoUrls[0]}
-                          alt={hotel.name}
+                        alt={hotel.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -460,6 +461,7 @@ const HotelSearchResult = () => {
                           ))}
                         </Carousel>
                       )}
+                      </div>
                     </div>
 
                     {/* Info section */}
@@ -474,7 +476,7 @@ const HotelSearchResult = () => {
                         {hotel.city}, {hotel.district} - {hotel.pinCode}
                       </div>
 
-                      <div className="flex items-center flex-wrap gap-2 pt-2">
+                      <div className="flex items-center flex-wrap gap-2 pt-1">
                         {hotel.tags.map((tag, idx) => (
                           <span
                             key={idx}

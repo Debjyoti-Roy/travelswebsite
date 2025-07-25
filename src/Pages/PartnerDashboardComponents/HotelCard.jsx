@@ -75,6 +75,13 @@ const attractionTypes = [
   { type: "VIEWPOINT", icon: <FaBinoculars /> },
   { type: "OTHER", icon: <FaStar /> },
 ];
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+};
 
 const HotelCard = ({ hotel, setCounter }) => {
   const [expanded, setExpanded] = useState(false);
@@ -190,6 +197,30 @@ const HotelCard = ({ hotel, setCounter }) => {
 
   const roomChunks = getOverlappingChunks(rooms, 3);
 
+  const slidesToRender = [
+    ...validImages.map((url, idx) => (
+      <div key={`img-${idx}`}>
+        <img src={url} alt={`Hotel ${idx}`} className="w-full h-72 object-cover" />
+      </div>
+    )),
+    validVideoUrl && validVideoUrl !== "" ? (
+      <div key="video" className="relative group cursor-pointer" onClick={toggleVideo}>
+        <video
+          ref={videoRef}
+          src={validVideoUrl}
+          className="w-full h-72 object-cover"
+          autoPlay
+          muted
+          loop
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-sm font-medium">
+          {isPlaying ? "Click to Pause" : "Click to Play"}
+        </div>
+      </div>
+    ) : null
+  ];
+  
+
 
   return (
     <div className="w-[100%] p-4 flex justify-center">
@@ -205,13 +236,13 @@ const HotelCard = ({ hotel, setCounter }) => {
             interval={3000}
             className="w-full"
           >
-            {validImages.map((url, idx) => (
+            {/* {validImages.map((url, idx) => (
               <div key={`img-${idx}`}>
                 <img src={url} alt={`Hotel ${idx}`} className="w-full h-72 object-cover" />
               </div>
             ))}
 
-            {validVideoUrl && (
+            {validVideoUrl && validVideoUrl!=="" && (
               <div key="video" className="relative group cursor-pointer" onClick={toggleVideo}>
                 <video
                   ref={videoRef}
@@ -225,7 +256,8 @@ const HotelCard = ({ hotel, setCounter }) => {
                   {isPlaying ? "Click to Pause" : "Click to Play"}
                 </div>
               </div>
-            )}
+            )} */}
+             {slidesToRender.filter(Boolean)}
           </Carousel>
         ) : (
           <>

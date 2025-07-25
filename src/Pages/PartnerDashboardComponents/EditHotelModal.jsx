@@ -73,11 +73,15 @@ const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
   });
   // For image preview, keep URLs only
   const [mediaImages, setMediaImages] = useState(hotel.imageUrls ? [...hotel.imageUrls] : []);
-const [mediaImagesPreview, setMediaImagesPreview] = useState(hotel.imageUrls ? [...hotel.imageUrls] : []);
-const [mediaVideo, setMediaVideo] = useState(hotel.videoUrl || "");
-const [mediaVideoPreview, setMediaVideoPreview] = useState(hotel.videoUrl || "");
-const [toBeDeletedImages, setToBeDeletedImages] = useState([]);
-const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
+  const [mediaImagesPreview, setMediaImagesPreview] = useState(hotel.imageUrls ? [...hotel.imageUrls] : []);
+  const [mediaVideo, setMediaVideo] = useState(hotel.videoUrl || "");
+  const [mediaVideoPreview, setMediaVideoPreview] = useState(hotel.videoUrl || "");
+  const [toBeDeletedImages, setToBeDeletedImages] = useState([]);
+  const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [tobeImages, setTobeImages] = useState([])
+  const [tobeVideos, setTobeVideos] = useState("")
+  const [submitCounter, setSubmitCounter] = useState(false)
 
   // Fix amenities and tags initialization
   const [selectedAmenities, setSelectedAmenities] = useState(
@@ -86,11 +90,11 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
   const [selectedTags, setSelectedTags] = useState(
     hotel.tags
       ? hotel.tags
-          .map(tagName => {
-            const tagObj = tagsList.find(t => t.label === tagName);
-            return tagObj ? tagObj.id : null;
-          })
-          .filter(Boolean)
+        .map(tagName => {
+          const tagObj = tagsList.find(t => t.label === tagName);
+          return tagObj ? tagObj.id : null;
+        })
+        .filter(Boolean)
       : []
   );
   const [attractions, setAttractions] = useState(hotel.nearbyAttractions ? [...hotel.nearbyAttractions] : []);
@@ -111,6 +115,7 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
 
   // Image/video upload/delete logic
   const handleImageChange = async (e) => {
+    setUploadingMedia(true);
     const file = e.target.files[0];
     if (file && mediaImages.length < MAX_IMAGES) {
       const formattedName = basicDetails.name ? basicDetails.name.replace(/\s+/g, '').toLowerCase() : "";
@@ -119,7 +124,9 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
       const url = await getDownloadURL(imageRef);
       setMediaImages((prev) => [...prev, url]);
       setMediaImagesPreview((prev) => [...prev, url]);
+      setTobeImages((prev) => [...prev, url])
     }
+    setUploadingMedia(false);
   };
   // Image/video remove logic (deferred deletion)
   const handleRemoveImage = (index) => {
@@ -127,8 +134,10 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
     setToBeDeletedImages((prev) => [...prev, url]);
     setMediaImages((prev) => prev.filter((_, i) => i !== index));
     setMediaImagesPreview((prev) => prev.filter((_, i) => i !== index));
+    setTobeImages((prev) => prev.filter((_, i) => i !== index))
   };
   const handleVideoChange = async (e) => {
+    setUploadingMedia(true);
     const file = e.target.files[0];
     if (file) {
       const formattedName = basicDetails.name ? basicDetails.name.replace(/\s+/g, '').toLowerCase() : "";
@@ -137,7 +146,9 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
       const url = await getDownloadURL(videoRef);
       setMediaVideo(url);
       setMediaVideoPreview(url);
+      setTobeVideos(url)
     }
+    setUploadingMedia(false);
   };
   // Video remove logic (deferred deletion)
   const handleRemoveVideo = () => {
@@ -181,7 +192,7 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
       payload.media.imageUrls = original.current.mediaImages;
       payload.media.videoUrl = mediaVideo;
     }
-    
+
     // Tags
     if (JSON.stringify(selectedTags) !== JSON.stringify(original.current.selectedTags)) {
       payload.tagIds = selectedTags;
@@ -198,6 +209,7 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
   };
 
   const handleSubmit = async () => {
+    setSubmitCounter(true)
     setSubmitLoading(true);
     const payload = getUpdatePayload();
     if (Object.keys(payload).length === 0) {
@@ -217,7 +229,7 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
             const path = decodeURIComponent(url.split("/o/")[1].split("?alt=")[0]);
             const fileRef = ref(storage, path);
             await deleteObject(fileRef);
-          } catch {}
+          } catch { }
         }
         // Delete video
         if (toBeDeletedVideo) {
@@ -225,7 +237,7 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
             const path = decodeURIComponent(toBeDeletedVideo.split("/o/")[1].split("?alt=")[0]);
             const fileRef = ref(storage, path);
             await deleteObject(fileRef);
-          } catch {}
+          } catch { }
         }
         setToBeDeletedImages([]);
         setToBeDeletedVideo(null);
@@ -260,12 +272,37 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
       setSubmitLoading(false);
     }
   };
+  const SubmitCounterOperations = async () => {
+    if (!submitCounter) {
+      if (tobeImages.length > 0) {
+        console.log("deleting images")
+        for (const url of tobeImages) {
+          try {
+            const path = decodeURIComponent(url.split("/o/")[1].split("?alt=")[0]);
+            const fileRef = ref(storage, path);
+            await deleteObject(fileRef);
+          } catch { }
+        }
+      }
+      if (tobeVideos !== "") {
+        try {
+          const path = decodeURIComponent(tobeVideos.split("/o/")[1].split("?alt=")[0]);
+          const fileRef = ref(storage, path);
+          await deleteObject(fileRef);
+        } catch { }
+      }
+      setSubmitCounter(false)
+    }
+  }
 
   // --- UI ---
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl p-0 overflow-y-auto max-h-[90vh] relative flex min-h-[600px]">
-        <button onClick={onClose} className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-200 text-gray-600"><FiX size={22} /></button>
+        <button onClick={async () => {
+          await SubmitCounterOperations()
+          onClose()
+        }} className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-200 text-gray-600"><FiX size={22} /></button>
         {/* Sidebar */}
         <div className="flex flex-col w-1/4 border-r border-gray-300 min-w-[200px] bg-gray-50">
           <button className={`p-4 text-left ${tab === "basic" ? "bg-blue-500 text-white" : ""}`} onClick={() => handleTabChange("basic")}>Basic Details</button>
@@ -403,7 +440,8 @@ const [toBeDeletedVideo, setToBeDeletedVideo] = useState(null);
           )}
           <div className="flex justify-end gap-3 mt-8">
             <button onClick={onClose} className="px-6 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
-            <button onClick={handleSubmit} disabled={submitLoading} className="px-6 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">{submitLoading ? "Saving..." : "Save Changes"}</button>
+            {!uploadingMedia && <button onClick={handleSubmit} disabled={submitLoading} className="px-6 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">{submitLoading ? "Saving..." : "Save Changes"}</button>}
+            {uploadingMedia && <button disabled={true} className="px-6 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">Saving...</button>}
           </div>
         </div>
       </div>
