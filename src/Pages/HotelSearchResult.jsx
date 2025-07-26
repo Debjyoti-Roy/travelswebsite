@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchHotels } from '../Redux/store/hotelSlice';
-import { FaMapMarkerAlt, FaUsers, FaWifi, FaFire, FaThermometerHalf, FaTint, FaVideo, FaWater, FaChair, FaFirstAid, FaSuitcase, FaConciergeBell, FaUserTie, FaHamburger, FaCar, FaBolt, FaUtensils } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUsers, FaWifi, FaFire, FaThermometerHalf, FaTint, FaVideo, FaWater, FaChair, FaFirstAid, FaSuitcase, FaConciergeBell, FaUserTie, FaHamburger, FaCar, FaBolt, FaUtensils, FaFilter, FaTimes } from "react-icons/fa";
 import { Carousel } from 'react-responsive-carousel';
 import Slider from '@mui/material/Slider';
 
@@ -190,8 +190,23 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
     };
   }, []);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Initial check
+    checkScreenSize();
+
+    // Listen to resize
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
   return (
-    <div className="md:w-1/3 bg-white shadow-2xl rounded-2xl p-6 border border-gray-200">
+    <div className="bg-white md:shadow-2xl  rounded-2xl p-6 md:border md:border-gray-200">
       <div className="flex justify-between items-center pb-4">
         <h2 className="text-xl font-bold text-gray-800">Filters</h2>
         <button
@@ -202,7 +217,12 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
         </button>
       </div>
 
-      <div className="space-y-8">
+      <div
+        style={{
+          marginBottom: isMobile ? "50px" : 0,
+        }}
+        className="space-y-8"
+      >
         {/* Price Range */}
         <div>
           <h3 className="text-md font-semibold text-gray-700 mb-3">Price Range</h3>
@@ -318,6 +338,9 @@ const HotelSearchResult = () => {
     priceSort: ''
   });
 
+  // Mobile filter overlay state
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   const fetchHotels = useCallback(() => {
     dispatch(searchHotels({
       location: state.location,
@@ -370,27 +393,24 @@ const HotelSearchResult = () => {
     navigate("/details", { state: data })
   }
 
-  // if (loading) return <div className='min-h-screen p-8'>Loading...</div>;
-  // if (error) return <div className='min-h-screen p-8 text-red-500'>Error: {error}</div>;
+
 
   return (
     <div className='w-full bg-[#f2f2f2] flex justify-center'>
 
-      <div className="flex flex-col md:flex-row lg:w-[60%] w-full  justify-center px-6 lg:px-2 py-6 gap-6 min-h-screen">
-        {/* Left Filter Section - Now a separate memoized component */}
-        <FilterSection
-          onFilterChange={handleFilterChange}
-          onApplyFilters={handleApplyFilters}
-          initialFilters={filters}
-        />
+      <div className="flex flex-col md:flex-row lg:w-[60%] w-full  md:justify-center px-6 lg:px-2 py-6 gap-6 min-h-screen">
 
-        {/* Right content section */}
+        <div className="hidden md:block md:w-1/3 ">
+          <FilterSection
+            onFilterChange={handleFilterChange}
+            onApplyFilters={handleApplyFilters}
+            initialFilters={filters}
+          />
+        </div>
 
-        {/* Hotel Cards Section */}
 
-        {/* {searchResults.content.length === 0 && <div className='min-h-screen p-8 text-red-500'>No results found</div> } */}
 
-        <div className="w-full flex flex-col items-center mt-6">
+        <div className="w-full flex flex-col md:min-h-screen">
           <div className="w-full flex justify-between items-center pb-4">
             <div className="text-2xl font-bold">
               Showing properties in {state.location}
@@ -414,13 +434,13 @@ const HotelSearchResult = () => {
                 <option value="highToLow">High to Low</option>
               </select>
             </div>
-
           </div>
+
           {loading && <div className="w-full flex-1 gap-6">Loading...</div>}
           {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {error}</div>}
 
           {searchResults && !loading && !error && (
-            <div className="w-full flex-1 gap-6">
+            <div className="w-full flex-1 gap-6 mb-6">
               {[...(searchResults.content || [])]
                 .sort((a, b) => {
                   if (appliedFilters.priceSort === 'lowToHigh') {
@@ -437,30 +457,30 @@ const HotelSearchResult = () => {
                     className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-80 md:h-55"
                   >
                     {/* Image */}
-                    <div style={{marginLeft:"10px"}} className="flex items-center justify-center w-[30%] h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                      <div className="w-full h-full ml-2"> 
-                      {hotel.photoUrls.length === 1 ? (
-                        <img
-                          src={hotel.photoUrls[0]}
-                        alt={hotel.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Carousel
-                          showThumbs={false}
-                          showStatus={false}
-                          infiniteLoop
-                          autoPlay
-                          interval={3000}
-                          className="w-full h-full"
-                        >
-                          {hotel.photoUrls.map((url, idx) => (
-                            <div key={idx} className="w-full h-full">
-                              <img src={url} alt={`${hotel.name} ${idx + 1}`} className="w-full h-full object-cover" />
-                            </div>
-                          ))}
-                        </Carousel>
-                      )}
+                    <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-full h-full ml-2">
+                        {hotel.photoUrls.length === 1 ? (
+                          <img
+                            src={hotel.photoUrls[0]}
+                            alt={hotel.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Carousel
+                            showThumbs={false}
+                            showStatus={false}
+                            infiniteLoop
+                            autoPlay
+                            interval={3000}
+                            className="w-full h-full"
+                          >
+                            {hotel.photoUrls.map((url, idx) => (
+                              <div key={idx} className="w-full h-full">
+                                <img src={url} alt={`${hotel.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                              </div>
+                            ))}
+                          </Carousel>
+                        )}
                       </div>
                     </div>
 
@@ -508,32 +528,86 @@ const HotelSearchResult = () => {
             </div>
           )}
 
-          {/* Pagination Section */}
-
-          <div className="text-gray-600 mb-2">
-            Total Elements: {searchResults.totalElements} | Total Pages: {searchResults.totalPages}
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-              disabled={page === 0}
-              className={`px-4 py-2 rounded ${page === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
-                }`}
-            >
-              Prev
-            </button>
-            <span>Page {page + 1}</span>
-            <button
-              onClick={() => !searchResults.last && setPage((prev) => prev + 1)}
-              disabled={searchResults.last}
-              className={`px-4 py-2 rounded ${searchResults.last ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
-                }`}
-            >
-              Next
-            </button>
+          {/* Pagination Section - Now positioned at bottom */}
+          <div className="mt-auto pt-6">
+            <div className="text-gray-600 mb-2 text-center">
+              Total Elements: {searchResults.totalElements} | Total Pages: {searchResults.totalPages}
+            </div>
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                disabled={page === 0}
+                className={`px-4 py-2 rounded ${page === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
+                  }`}
+              >
+                Prev
+              </button>
+              <span>Page {page + 1}</span>
+              <button
+                onClick={() => !searchResults.last && setPage((prev) => prev + 1)}
+                disabled={searchResults.last}
+                className={`px-4 py-2 rounded ${searchResults.last ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
+                  }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Filter Bottom Bar - Only visible on mobile */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <FaFilter className="text-blue-600" />
+            <span className="text-sm font-medium text-gray-700">Filters</span>
+            {(appliedFilters.selectedTags.length > 0 || appliedFilters.selectedAmenities.length > 0 ||
+              appliedFilters.priceRange.min > 0 || appliedFilters.priceRange.max < 10000) && (
+                <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {(appliedFilters.selectedTags.length + appliedFilters.selectedAmenities.length +
+                    (appliedFilters.priceRange.min > 0 ? 1 : 0) + (appliedFilters.priceRange.max < 10000 ? 1 : 0))}
+                </span>
+              )}
+          </div>
+          <button
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Filter Overlay */}
+      {isMobileFilterOpen && (
+        <div className="md:hidden fixed inset-0  bg-opacity-50 z-50 flex items-end">
+          <div className="bg-white w-full h-[85vh] rounded-t-3xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition"
+              >
+                <FaTimes className="text-gray-600" />
+              </button>
+            </div>
+
+            <div className="h-full overflow-y-auto">
+              <div className="p-4">
+                <FilterSection
+                  onFilterChange={handleFilterChange}
+                  onApplyFilters={(newFilters) => {
+                    handleApplyFilters(newFilters);
+                    setIsMobileFilterOpen(false);
+                  }}
+                  initialFilters={filters}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

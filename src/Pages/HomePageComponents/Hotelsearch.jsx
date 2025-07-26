@@ -45,6 +45,56 @@ const Hotelsearch = () => {
   const handleSearch = () => {
     console.log(formattedDate(startDate))
     console.log(formattedDate(endDate))
+    if (formattedDate(startDate) === formattedDate(endDate)) {
+      toast.error("Check-in and Check-out dates cannot be the same", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      })
+      return
+    }
+    if (formattedDate(startDate) > formattedDate(endDate)) {
+      toast.error("Check-in date cannot be greater than check-out date", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      })
+      return
+    }
+    if (location === "") {
+      toast.error("Please select a location", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      })
+      return
+    }
+    if (rooms < 1) {
+      toast.error("Please select a number of rooms", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      })
+      return
+    }
+    if (adults < 1) {
+      toast.error("Please select a number of adults", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      })
+      return
+    }
     const total = adults + children
     console.log(total)
     const myData = {

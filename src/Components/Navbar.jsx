@@ -50,7 +50,9 @@ const Navbar = () => {
   const [userData, setUserData] = useState();
   const [userDetails, setUserDetails] = useState({});
   const [showDropdown, setShowDropdown] = useState(false);
+  const [firsttimelogin, setFirstTimeLogin] = useState(false);
   const dropdownRef = useRef();
+  const isAuthenticating = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,7 +83,9 @@ const Navbar = () => {
   };
 
   useEffect(() => {
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (isAuthenticating.current) return;
       if (currentUser) {
         setUser(currentUser);
 
@@ -95,7 +99,7 @@ const Navbar = () => {
             const uid = currentUser.uid;
             const token = await currentUser.getIdToken();
             // console.log(token);
-
+            console.log("USE EFFECT TRIGGERED")
             const pulledData = await dispatch(
               fetchUserProfile({ uid: uid, token: token })
             );
@@ -124,10 +128,13 @@ const Navbar = () => {
             await auth.signOut();
             setShowModal(false);
           }
+
         } else {
           const token = await currentUser.getIdToken();
           localStorage.setItem("token", token);
           refreshTokenTimer(currentUser);
+
+
         }
       } else {
         setUser(null);
@@ -160,11 +167,12 @@ const Navbar = () => {
       localStorage.setItem("token", refreshedToken);
       setUser(thunkResponse.payload?.data);
       document.cookie = `userData=${encodeURIComponent(
-        JSON.stringify(pulledData.payload?.data)
+        JSON.stringify(thunkResponse.payload?.data)
       )}; path=/; max-age=2592000`;
       window.dispatchEvent(new Event("tokenUpdated"));
       refreshTokenTimer(currentuser);
       setShowModal(false);
+      isAuthenticating.current = false;
     } else {
       const user = auth.currentUser;
       document.cookie = "userData=; path=/; max-age=0";
@@ -207,6 +215,7 @@ const Navbar = () => {
       window.dispatchEvent(new Event("tokenUpdated"));
       refreshTokenTimer(currentuser);
       setShowModal(false);
+      isAuthenticating.current = false;
     } else {
       const user = auth.currentUser;
       document.cookie = "userData=; path=/; max-age=0";
@@ -223,80 +232,138 @@ const Navbar = () => {
   };
 
   const handleGoogleLogin = async () => {
+    
     if (isLoggingIn) return;
     setIsLoggingIn(true);
+    isAuthenticating.current = true;
+
     try {
       const result = await signInWithPopup(auth, provider);
       const currentUser = result.user;
 
       const isNewUser = result._tokenResponse?.isNewUser;
-
       const initialtoken = result._tokenResponse.idToken;
-      // console.log(currentUser);
-      // console.log()
+
       setInitialToken(initialtoken);
 
       if (isNewUser) {
-        // console.log(currentUser.phoneNumber);
-        if (
-          currentUser.phoneNumber === "" ||
-          currentUser.phoneNumber === undefined ||
-          currentUser.phoneNumber === null
-        ) {
+        if (!currentUser.phoneNumber) {
+          setFirstTimeLogin(true);
           setLogin("phone");
           setCurrentUser(currentUser);
         } else {
           setShowModal(false);
-          console.log(initialtoken);
-          phoneNumberChange2(
-            currentUser,
-            currentUser.phoneNumber,
-            initialtoken
-          );
+          phoneNumberChange2(currentUser, currentUser.phoneNumber, initialtoken);
         }
       } else {
-        console.log(result);
-        // const user = auth.currentUser;
-        // await user.delete();
         const uid = currentUser.uid;
-        const pulledData = await dispatch(
-          fetchUserProfile({ uid: uid, token: initialtoken })
-        );
-        console.log(pulledData);
-        console.log(initialtoken);
+        const pulledData = await dispatch(fetchUserProfile({ uid, token: initialtoken }));
         if (pulledData.payload?.status === 200) {
-          // console.log(pulledData.payload?.data);p
           setUserData(pulledData.payload?.data);
-          // localStorage.setItem("userData", pulledData.payload?.data);
+          setUser(pulledData.payload?.data)
           localStorage.setItem("token", initialtoken);
           document.cookie = `userData=${encodeURIComponent(
             JSON.stringify(pulledData.payload?.data)
           )}; path=/; max-age=2592000`;
           refreshTokenTimer(currentUser);
           window.dispatchEvent(new Event("tokenUpdated"));
-          console.log("Existing user");
           setShowModal(false);
+          isAuthenticating.current = false;
         } else {
-          auth.signOut();
+          await auth.signOut();
           setShowModal(false);
           document.cookie = "userData=; path=/; max-age=0";
-          toast.error("Some Problem Occurred!!", {
-            style: {
-              borderRadius: "10px",
-              background: "#333",
-              color: "#fff",
-            },
-          });
+          toast.error("Some Problem Occurred!!");
         }
       }
-
-      // setShowModal(false);
     } catch (error) {
       console.error("Google login failed:", error);
     } finally {
       setIsLoggingIn(false);
+      isAuthenticating.current = false;
     }
   };
+
+  // const handleGoogleLogin = async () => {
+  //   if (isLoggingIn) return;
+  //   setIsLoggingIn(true);
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     const currentUser = result.user;
+
+  //     const isNewUser = result._tokenResponse?.isNewUser;
+
+  //     const initialtoken = result._tokenResponse.idToken;
+  //     // console.log(currentUser);
+  //     // console.log()
+  //     setInitialToken(initialtoken);
+
+  //     if (isNewUser) {
+  //       // console.log(currentUser.phoneNumber);
+
+  //       if (
+  //         currentUser.phoneNumber === "" ||
+  //         currentUser.phoneNumber === undefined ||
+  //         currentUser.phoneNumber === null
+  //       ) {
+  //         console.log("NULL TRIGGERED")
+  //         setFirstTimeLogin(true)
+  //         setLogin("phone");
+  //         setCurrentUser(currentUser);
+  //       } else {
+  //         console.log("NOTNULL TRIGGERED")
+  //         setShowModal(false);
+  //         console.log(initialtoken);
+  //         phoneNumberChange2(
+  //           currentUser,
+  //           currentUser.phoneNumber,
+  //           initialtoken
+  //         );
+  //       }
+  //     } else {
+  //       console.log("ELSE TRIGGERED")
+  //       // console.log(result);
+  //       // const user = auth.currentUser;
+  //       // await user.delete();
+  //       const uid = currentUser.uid;
+  //       const pulledData = await dispatch(
+  //         fetchUserProfile({ uid: uid, token: initialtoken })
+  //       );
+  //       console.log(pulledData);
+  //       console.log(initialtoken);
+  //       if (pulledData.payload?.status === 200) {
+  //         // console.log(pulledData.payload?.data);p
+  //         setUserData(pulledData.payload?.data);
+  //         // localStorage.setItem("userData", pulledData.payload?.data);
+  //         localStorage.setItem("token", initialtoken);
+  //         document.cookie = `userData=${encodeURIComponent(
+  //           JSON.stringify(pulledData.payload?.data)
+  //         )}; path=/; max-age=2592000`;
+  //         refreshTokenTimer(currentUser);
+  //         window.dispatchEvent(new Event("tokenUpdated"));
+  //         console.log("Existing user");
+  //         setShowModal(false);
+  //       } else {
+  //         auth.signOut();
+  //         setShowModal(false);
+  //         document.cookie = "userData=; path=/; max-age=0";
+  //         toast.error("Some Problem Occurred!!", {
+  //           style: {
+  //             borderRadius: "10px",
+  //             background: "#333",
+  //             color: "#fff",
+  //           },
+  //         });
+  //       }
+  //     }
+
+  //     // setShowModal(false);
+  //   } catch (error) {
+  //     console.error("Google login failed:", error);
+  //   } finally {
+  //     setIsLoggingIn(false);
+  //   }
+  // };
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -381,7 +448,9 @@ const Navbar = () => {
               Be a Partner
             </li>
             {!user ? (
-              <button onClick={() => setShowModal(true)} className="LoginBtn">
+              <button onClick={() => {setShowModal(true)
+                setLogin("login");
+              }} className="LoginBtn">
                 Login
               </button>
             ) : (
@@ -457,7 +526,7 @@ const Navbar = () => {
                       </button>
 
                       <button
-                        
+
                         className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                         <FiHelpCircle className="text-gray-500 text-lg" />
                         Help & Center
@@ -568,7 +637,7 @@ const Navbar = () => {
                       </button>
 
                       <button
-                        
+
                         className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                         <FiHelpCircle className="text-gray-500 text-lg" />
                         Help & Center
