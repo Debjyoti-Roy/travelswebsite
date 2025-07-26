@@ -20,7 +20,7 @@ function HotelDescription({ description }) {
   const displayedText = isExpanded ? description : description.slice(0, charLimit) + (shouldTruncate ? "..." : "");
 
   return (
-    <p className="text-gray-500 text-sm pt-2">
+    <p className="hidden md:block text-gray-500 text-sm pt-2">
       {displayedText}
       {/* {shouldTruncate && (
         <button
@@ -410,7 +410,7 @@ const HotelSearchResult = () => {
 
 
 
-        <div className="w-full flex flex-col md:min-h-screen">
+        <div className="w-full flex flex-col h-full md:min-h-screen pt-10 md:pt-0">
           <div className="w-full flex justify-between items-center pb-4">
             <div className="text-2xl font-bold">
               Showing properties in {state.location}
@@ -454,17 +454,19 @@ const HotelSearchResult = () => {
                 .map((hotel) => (
                   <div
                     key={hotel.id}
-                    className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-80 md:h-55"
+                    className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-auto md:h-80 md:h-55"
                   >
                     {/* Image */}
-                    <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                      <div className="w-full h-full ml-2">
+                    <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[190px] md:h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-full h-full ml-2 object-cover">
                         {hotel.photoUrls.length === 1 ? (
-                          <img
-                            src={hotel.photoUrls[0]}
-                            alt={hotel.name}
-                            className="w-full h-full object-cover"
-                          />
+                          <div className="w-full h-full overflow-hidden">
+                            <img
+                              src={hotel.photoUrls[0]}
+                              alt={hotel.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                         ) : (
                           <Carousel
                             showThumbs={false}
@@ -472,20 +474,25 @@ const HotelSearchResult = () => {
                             infiniteLoop
                             autoPlay
                             interval={3000}
-                            className="w-full h-full"
+                            className="w-full h-full object-cover"
                           >
                             {hotel.photoUrls.map((url, idx) => (
-                              <div key={idx} className="w-full h-full">
-                                <img src={url} alt={`${hotel.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                              <div key={idx} className="w-full h-full overflow-hidden object-cover">
+                                <img
+                                  src={url}
+                                  alt={`${hotel.name} ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
                               </div>
                             ))}
                           </Carousel>
                         )}
                       </div>
+
                     </div>
 
                     {/* Info section */}
-                    <div className="flex flex-col justify-between p-4 flex-1 h-full">
+                    <div className="flex flex-col justify-between py-4 md:py-0 h-[70%] md:h-[80%] px-4 flex-1 ">
                       <div className="flex justify-between items-start">
                         <h3 className="text-lg font-bold text-gray-800">{hotel.name}</h3>
                         <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Available</span>
@@ -557,7 +564,7 @@ const HotelSearchResult = () => {
       </div>
 
       {/* Mobile Filter Bottom Bar - Only visible on mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+      <div className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <FaFilter className="text-blue-600" />

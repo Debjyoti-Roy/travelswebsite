@@ -750,7 +750,7 @@ const Navbar = () => {
                     </div>
                     <div className="flex gap-[5px] w-full">
                       <button
-                        className="googleButton bg-[#2589f3] w-1/2"
+                        className="googleButton bg-[#fff] w-1/2"
                         onClick={() => {
                           phoneNumberChange("");
                         }}
@@ -760,7 +760,7 @@ const Navbar = () => {
                         </div>
                       </button>
                       <button
-                        className="googleButton bg-[#fff] w-1/2"
+                        className="googleButton bg-[#2589f3] w-1/2"
                         onClick={() => {
                           phoneNumberChange(phone);
                         }}

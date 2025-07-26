@@ -641,3 +641,16 @@
   /* color: #555; */
   font-weight: 500;
 }
+
+.carousel.carousel-slider{
+  height: 100% !important;
+}
+.carousel .slider-wrapper{
+  height: 100% !important;
+}
+.carousel .slider-wrapper .axis-horizontal .slider{
+  height: 100% !important;
+}
+.carousel .slider-wrapper.axis-horizontal .slider{
+  height: 100% !important;
+}
