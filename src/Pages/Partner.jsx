@@ -166,8 +166,8 @@ const Partner = () => {
     return (
         <div className="min-h-screen bg-[#f5f5f5]">
 
-            {/* Header section */}
-            <div className="h-[40vh]">
+            
+            {/* <div className="h-[40vh]">
                 <div className="w-full h-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center">
                     <div className="md:w-[61%] w-[90%] flex flex-col gap-4 justify-center relative">
                         <div className="rounded-xl px-6 py-8">
@@ -189,7 +189,7 @@ const Partner = () => {
                             </p>
                         </div>
 
-                        {/* Register Button */}
+                        
                         <div className="absolute right-4">
                             <button
                                 onClick={handleScrollToRegister}
@@ -201,11 +201,47 @@ const Partner = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
+            <div className="h-[40vh]">
+  <div className="w-full h-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center">
+    <div className="lg:w-[61%] w-[90%] flex flex-col gap-4 justify-center relative">
+      <div className="rounded-xl px-6 py-8">
+        <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 leading-snug">
+          List your
+          <br />
+          <span
+            className={`text-[#0036ac] inline-block transition-opacity duration-500 ease-in-out ${
+              fade ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {options[currentIndex]}
+          </span>
+          <br />
+          on our website
+        </h1>
+
+        <p className="text-white text-sm md:text-lg pt-3 max-w-xl">
+          Join our network of premium hotels and resorts to reach millions of travelers across India.
+        </p>
+      </div>
+
+      {/* Register Button */}
+      <div className="md:absolute md:right-4 lg:bottom-30 md:bottom-50 px-4 md:px-0 ">
+        <button
+          onClick={handleScrollToRegister}
+          className="bg-white text-[#2589f3] font-semibold mb-5 px-6 py-3 rounded-full w-full md:w-auto shadow-md transition-all duration-300 hover:bg-[#2589f3] hover:text-white hover:shadow-lg hover:scale-105"
+        >
+          {status === 200 ? "See your status" : "Register Now"}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
             {/* Why Section */}
             <div className="min-h-[50vh]">
                 <div className="w-full flex justify-center px-4 py-12">
-                    <div className="md:w-[60%] w-[90%] flex flex-col gap-8 justify-center">
+                    <div className="lg:w-[60%] w-[90%] flex flex-col gap-8 justify-center">
 
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
                             Why register your property with us?
@@ -278,7 +314,7 @@ const Partner = () => {
                         ) : (
                             status === 404 || status === 401 && (
                                 <div className="w-full flex justify-center px-4 py-12">
-                                    <div className="md:w-[60%] w-[90%] bg-gray-50 rounded-xl shadow-xl p-8 flex flex-col gap-6">
+                                    <div className="lg:w-[60%] w-[90%] bg-gray-50 rounded-xl shadow-xl p-8 flex flex-col gap-6">
                                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
                                             Register Your Property
                                         </h2>

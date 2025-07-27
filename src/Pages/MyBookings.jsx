@@ -150,7 +150,7 @@ const MyBookings = () => {
             onChange={handleStatusChange}
             className="border w-full md:w-auto border-gray-300 rounded px-3 py-2 text-sm"
           >
-            {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "PARTIALLY_CANCELLED", "COMPLETED"].map((option) => (
+            {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"].map((option) => (
               <option key={option} value={option}>
                 {option.replace("_", " ")}
               </option>

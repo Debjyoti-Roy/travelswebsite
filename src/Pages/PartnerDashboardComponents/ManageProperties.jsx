@@ -469,7 +469,7 @@ const MediaUpload = ({ mediaImages, setMediaImages, mediaVideo, setMediaVideo, t
                 {!mediaVidePreview && (
                     <input
                         type="file"
-                        accept="video/*"
+                        accept="video/mp4"
                         onChange={handleVideoChange}
                         className="w-full p-2 border border-gray-300 rounded"
                     />

@@ -213,7 +213,7 @@ const HotelCard = ({ hotel, setCounter }) => {
           muted
           loop
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-sm font-medium">
+        <div className="absolute inset-0 bg-black-500 bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-sm font-medium">
           {isPlaying ? "Click to Pause" : "Click to Play"}
         </div>
       </div>
@@ -232,31 +232,11 @@ const HotelCard = ({ hotel, setCounter }) => {
             showThumbs={false}
             showStatus={false}
             infiniteLoop
-            autoPlay
-            interval={3000}
+            // autoPlay
+            // interval={3000}
             className="w-full"
           >
-            {/* {validImages.map((url, idx) => (
-              <div key={`img-${idx}`}>
-                <img src={url} alt={`Hotel ${idx}`} className="w-full h-72 object-cover" />
-              </div>
-            ))}
-
-            {validVideoUrl && validVideoUrl!=="" && (
-              <div key="video" className="relative group cursor-pointer" onClick={toggleVideo}>
-                <video
-                  ref={videoRef}
-                  src={validVideoUrl}
-                  className="w-full h-72 object-cover"
-                  autoPlay
-                  muted
-                  loop
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-sm font-medium">
-                  {isPlaying ? "Click to Pause" : "Click to Play"}
-                </div>
-              </div>
-            )} */}
+            
              {slidesToRender.filter(Boolean)}
           </Carousel>
         ) : (
@@ -284,8 +264,8 @@ const HotelCard = ({ hotel, setCounter }) => {
         <div className="p-6">
           <div className="flex justify-between">
 
-            <h2 className="text-2xl font-semibold text-gray-800">{hotel.name}</h2>
-            <div className="flex gap-2">
+            <h2 className="text-2xl w-[60%] md:w-auto  font-semibold text-gray-800">{hotel.name}</h2>
+            <div className="flex flex-col md:flex-row gap-2">
               <button
                 onClick={() => setRoomModal(true)}
                 className="bg-blue-600 flex w-full md:w-auto justify-center items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"

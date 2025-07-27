@@ -752,7 +752,7 @@ const HotelDetails = () => {
 
   const openRazorpay = (orderId) => {
     const options = {
-      key: "rzp_test_sFH5KQrMKB8Kp9", // ⭐ replace with your Razorpay Key ID
+      key: import.meta.env.VITE_RAZORPAY_KEY, // ⭐ replace with your Razorpay Key ID
       name: "INO TRAVELS",
       description: "Hotel Booking Payment",
       order_id: orderId,
@@ -763,6 +763,18 @@ const HotelDetails = () => {
         // Send to backend for verification
         // Example: verifyPayment(response)
         await handlePaymentConfirm(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature)
+      },
+      modal: {
+        ondismiss: () => {
+          // Called when user closes the Razorpay popup
+          toast.error("Booking not confirmed. Payment was cancelled.",{
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+        },
       },
 
       //       const verifyPayment = async (response) => {
@@ -903,7 +915,7 @@ const HotelDetails = () => {
                             {count} × {room.name}
                           </h3>
                           <p className="text-gray-600 text-sm mt-1">Max Occupancy: {room.maxOccupancy}</p>
-                          <p className="text-gray-600 text-sm">Beds: {room.bedsDescription ?? "—"}</p>
+                          {/* <p className="text-gray-600 text-sm">Beds: {room.bedsDescription ?? "—"}</p> */}
                           <ul className="list-disc list-inside text-gray-500 text-sm mt-2 space-y-1">
                             {room.features.map((feat, idx) => (
                               <li key={idx}>{feat}</li>

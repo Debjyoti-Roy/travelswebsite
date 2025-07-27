@@ -7,6 +7,7 @@ import { FaCalendar, FaMapPin, FaUsers } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { getLocations } from "../../Redux/store/hotelSlice";
 import { addDays } from "date-fns";
+import toast from "react-hot-toast";
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
   <div
@@ -35,16 +36,29 @@ const Hotelsearch = () => {
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
-
+  
+    if (isNaN(date.getTime())) {
+      
+      return "NOT_VALID"; // or return null / undefined based on your app's logic
+    }
+  
     const formattedDate = date.toISOString().split("T")[0];
-
-    return formattedDate
-
-  }
+    return formattedDate;
+  };
 
   const handleSearch = () => {
     console.log(formattedDate(startDate))
     console.log(formattedDate(endDate))
+    if(formattedDate(startDate) === "1970-01-01" || formattedDate(endDate) === "1970-01-01"||formattedDate(startDate) === "1970-01-02" || formattedDate(endDate) === "NOT_VALID" || formattedDate(endDate)==="NOT_VALID" ){
+      toast.error("Please select a date", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      })
+      return
+    }
     if (formattedDate(startDate) === formattedDate(endDate)) {
       toast.error("Check-in and Check-out dates cannot be the same", {
         style: {

@@ -477,7 +477,7 @@ const Navbar = () => {
                 {showDropdown && (
                   <div className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
                     {/* Header */}
-                    <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-gray-50">
+                    <div className="flex items-center gap-3 p-2 border-b border-gray-100 bg-gray-50">
                       {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
                         <img
                           src={userDetails.imageUrl}
@@ -588,7 +588,7 @@ const Navbar = () => {
                 {showDropdown && (
                   <div className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
                     {/* Header */}
-                    <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-gray-50">
+                    <div className="flex items-center gap-3 p-2 border-b border-gray-100 bg-gray-50">
                       {userDetails.imageUrl && userDetails.imageUrl !== "" ? (
                         <img
                           src={userDetails.imageUrl}
@@ -596,7 +596,7 @@ const Navbar = () => {
                           className="w-12 h-12 rounded-full object-cover border border-gray-200"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center border border-gray-200">
+                        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-start border border-gray-200">
                           <span className="text-white font-semibold text-lg">
                             {userDetails.name?.charAt(0).toUpperCase() || "U"}
                           </span>

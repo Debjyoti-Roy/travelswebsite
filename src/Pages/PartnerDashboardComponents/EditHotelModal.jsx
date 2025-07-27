@@ -387,7 +387,7 @@ const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
                   </div>
                 )}
                 {!mediaVideoPreview && (
-                  <input type="file" accept="video/*" onChange={handleVideoChange} className="w-full p-2 border border-gray-300 rounded" />
+                  <input type="file" accept="video/mp4" onChange={handleVideoChange} className="w-full p-2 border border-gray-300 rounded" />
                 )}
               </div>
             </div>
