@@ -537,7 +537,7 @@ const Navbar = () => {
                       <button
                         onMouseDown={() => {
                           auth.signOut();
-                          console.log("signing out");
+                          navigate("/")
                           localStorage.removeItem("token");
                           window.dispatchEvent(new Event("tokenUpdated"));
                           setShowDropdown(false);
@@ -648,6 +648,7 @@ const Navbar = () => {
                       <button
                         onMouseDown={() => {
                           auth.signOut();
+                          navigate("/")
                           localStorage.removeItem("token");
                           window.dispatchEvent(new Event("tokenUpdated"));
                           setShowDropdown(false);

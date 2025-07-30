@@ -5,9 +5,11 @@ import { fetchUserBookings } from "../Redux/store/profileSlice";
 import { cancelBooking, getRefundStatus } from "../Redux/store/hotelSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const MyBookings = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [bookings, setBookings] = useState([]);
   const [expandedCards, setExpandedCards] = useState({});
@@ -15,6 +17,8 @@ const MyBookings = () => {
   const [size] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [status, setStatus] = useState("ALL");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Cancel modal state
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -57,13 +61,32 @@ const MyBookings = () => {
   };
 
   const fetchBookings = async (pageNum, selectedStatus = status) => {
-    const token = localStorage.getItem("token");
-    const res = await dispatch(fetchUserBookings({ token, page: pageNum, size, status: selectedStatus }));
-    if (res.payload.status) {
-      const data = res.payload.data;
-      setBookings(data.content);
-      setTotalPages(data.totalPages);
-      setPage(data.pageNumber);
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await dispatch(fetchUserBookings({ token, page: pageNum, size, status: selectedStatus }));
+      
+      if (res.payload && res.payload.status === 200) {
+        const data = res.payload.data;
+        setBookings(data.content);
+        setTotalPages(data.totalPages);
+        setPage(data.pageNumber);
+      } else {
+        // Handle API errors (404, 401, etc.)
+        setError("Failed to fetch bookings. Please try again later.");
+        setBookings([]);
+        setTotalPages(1);
+        setPage(0);
+      }
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+      setError("Something went wrong. Please try again later.");
+      setBookings([]);
+      setTotalPages(1);
+      setPage(0);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -144,131 +167,204 @@ const MyBookings = () => {
         <h2 className="text-2xl font-bold text-gray-800 pb-6 text-center">My Bookings</h2>
 
         {/* Filter */}
-        <div className="md:w-auto w-full pb-4 flex justify-end">
-          <select
-            value={status}
-            onChange={handleStatusChange}
-            className="border w-full md:w-auto border-gray-300 rounded px-3 py-2 text-sm"
-          >
-            {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"].map((option) => (
-              <option key={option} value={option}>
-                {option.replace("_", " ")}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* {!loading && ( */}
+          <div className="md:w-auto w-full pb-4 flex justify-end">
+            <select
+              value={status}
+              onChange={handleStatusChange}
+              className="border w-full md:w-[20%] border-gray-300 rounded px-3 py-2 text-sm"
+            >
+              {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"].map((option) => (
+                <option key={option} value={option}>
+                  {option.replace("_", " ")}
+                </option>
+              ))}
+            </select>
+          </div>
+        
 
         {/* Bookings */}
-        {bookings.map((item) => (
-          <div
-            key={item.bookingGroupCode}
-            onClick={() => toggleExpand(item.bookingGroupCode)}
-            className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex-1 pr-4">
-                <p className="text-sm text-gray-500 pb-1">
-                  Booking ID: <span className="font-medium">{item.bookingGroupCode}</span>
-                </p>
-                <h3 className="text-lg font-semibold text-gray-800 pb-2">
-                  {item.numberOfGuests} Guest{item.numberOfGuests > 1 ? "s" : ""} |{" "}
-                  {item.roomBookingsList.length} Room Type{item.roomBookingsList.length > 1 ? "s" : ""}
-                </h3>
-
-                <div className="flex gap-[5px] items-center">
-                  <h4 className="text-lg font-semibold text-gray-800">{item.hotelName}</h4>
-                  <span
-                    className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
-                      ${item.status === "CONFIRMED"
-                        ? "bg-green-100 text-green-700"
-                        : item.status === "CANCELLED"
-                          ? "bg-red-100 text-red-700"
-                          : item.status === "PARTIALLY_CANCELLED"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : item.status === "COMPLETED"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-gray-100 text-gray-700"
-                      }
-                    `}
-                  >
-                    {item.status.replace("_", " ")}
-                  </span>
+        {loading ? (
+          <div className="space-y-4">
+            {/* Skeleton Cards */}
+            {[1, 2, 3].map((index) => (
+              <div
+              key={index}
+              className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white animate-pulse"
+            >
+              <div className="flex justify-between items-start">
+                {/* Left side */}
+                <div className="flex-1 pr-4 space-y-3">
+                  <div className="h-5 bg-gray-200 rounded w-40"></div>
+                  <div className="h-4 bg-gray-200 rounded w-60"></div>
+                  <div className="h-4 bg-gray-200 rounded w-48"></div>
                 </div>
-
-                {item.roomBookingsList.map((room, idx) => (
-                  <div key={idx} className="flex gap-[5px]">
-                    <div className="text-sm text-gray-700 pb-1">
-                      <span className="font-medium">{room.roomName}</span> ({room.numberOfRooms} room{room.numberOfRooms > 1 ? "s" : ""}) — ₹{room.totalPrice}
-                    </div>
-                    {item.status === "PARTIALLY_CANCELLED" && (
-
-                      <span
-                        className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
-                            ${room.status === "CONFIRMED"
-                            ? "bg-green-100 text-green-700"
-                            : room.status === "CANCELLED"
-                              ? "bg-red-100 text-red-700"
-                              : room.status === "PARTIALLY_CANCELLED"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : room.status === "COMPLETED"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-700"
-                          }
-                          `}
-                      >
-                        {room.status.replace("_", " ")}
-                      </span>
-                    )}
-                  </div>
-                ))}
+            
+                {/* Right side */}
+                <div className="flex flex-col justify-start gap-3 items-end text-right pl-4">
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                </div>
               </div>
-
-              <div className="flex flex-col items-end text-right text-xs text-gray-500">
-                <p>Check-in: {item.checkIn}</p>
-                <p>Check-out: {item.checkOut}</p>
-                <p>Total Guests: {item.numberOfGuests}</p>
-                <p>Total Price: {item.totalPrice}</p>
+            
+              {/* Button */}
+              <div className="absolute bottom-4 right-4">
+                <div className="h-8 bg-gray-200 rounded w-24"></div>
               </div>
             </div>
-
-            {/* Show Button only for confirmed bookings */}
-            {item.status === "CONFIRMED" && (
-              <button
-                className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={e => {
-                  e.stopPropagation();
-                  // Calculate days difference
-                  const today = new Date();
-                  const checkInDate = new Date(item.checkIn);
-                  const diffTime = checkInDate - today;
-                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                  if (diffDays <= 10) {
-                    setPendingCancelBookingId(item.bookingGroupCode);
-                    setShowNotEligibleConfirmModal(true);
-                  } else {
-                    setShowCancelModal(true);
-                    setCancelBookingId(item.bookingGroupCode);
-                    setCancelReason("");
-                    setShowCustomReason(false);
-                  }
-                }}
-              >
-                Cancel
-              </button>
-            )}
-            {item.status === "CANCELLED" && (
-              <button
-                className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleRefundStatus(item.bookingGroupCode);
-                }}
-              >
-                See Refund Status
-              </button>
-            )}
+            
+            
+            ))}
           </div>
-        ))}
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
+            
+            {/* <button
+              onClick={() => fetchBookings(0, status)}
+              className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Retry
+            </button> */}
+          </div>
+        ) : bookings.length > 0 ? (
+          bookings.map((item) => (
+            <div
+              key={item.bookingGroupCode}
+              onClick={() => toggleExpand(item.bookingGroupCode)}
+              className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1 pr-4">
+                  <p className="text-sm text-gray-500 pb-1">
+                    Booking ID: <span className="font-medium">{item.bookingGroupCode}</span>
+                  </p>
+                  <h3 className="text-lg font-semibold text-gray-800 pb-2">
+                    {item.numberOfGuests} Guest{item.numberOfGuests > 1 ? "s" : ""} |{" "}
+                    {item.roomBookingsList.length} Room Type{item.roomBookingsList.length > 1 ? "s" : ""}
+                  </h3>
+
+                  <div className="flex gap-[5px] items-center">
+                    <h4 className="text-lg font-semibold text-gray-800">{item.hotelName}</h4>
+                    <span
+                      className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
+                        ${item.status === "CONFIRMED"
+                          ? "bg-green-100 text-green-700"
+                          : item.status === "CANCELLED"
+                            ? "bg-red-100 text-red-700"
+                            : item.status === "PARTIALLY_CANCELLED"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : item.status === "COMPLETED"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-700"
+                        }
+                      `}
+                    >
+                      {item.status.replace("_", " ")}
+                    </span>
+                  </div>
+
+                  {item.roomBookingsList.map((room, idx) => (
+                    <div key={idx} className="flex gap-[5px]">
+                      <div className="text-sm text-gray-700 pb-1">
+                        <span className="font-medium">{room.roomName}</span> ({room.numberOfRooms} room{room.numberOfRooms > 1 ? "s" : ""}) — ₹{room.totalPrice}
+                      </div>
+                      {item.status === "PARTIALLY_CANCELLED" && (
+
+                        <span
+                          className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
+                              ${room.status === "CONFIRMED"
+                              ? "bg-green-100 text-green-700"
+                              : room.status === "CANCELLED"
+                                ? "bg-red-100 text-red-700"
+                                : room.status === "PARTIALLY_CANCELLED"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : room.status === "COMPLETED"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-gray-100 text-gray-700"
+                            }
+                            `}
+                        >
+                          {room.status.replace("_", " ")}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col items-end text-right text-xs text-gray-500">
+                  <p>Check-in: {item.checkIn}</p>
+                  <p>Check-out: {item.checkOut}</p>
+                  <p>Total Guests: {item.numberOfGuests}</p>
+                  <p>Total Price: {item.totalPrice}</p>
+                </div>
+              </div>
+
+              {/* Show Button only for confirmed bookings */}
+              {item.status === "CONFIRMED" && (
+                <button
+                  className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                  onClick={e => {
+                    e.stopPropagation();
+                    // Calculate days difference
+                    const today = new Date();
+                    const checkInDate = new Date(item.checkIn);
+                    const diffTime = checkInDate - today;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 10) {
+                      setPendingCancelBookingId(item.bookingGroupCode);
+                      setShowNotEligibleConfirmModal(true);
+                    } else {
+                      setShowCancelModal(true);
+                      setCancelBookingId(item.bookingGroupCode);
+                      setCancelReason("");
+                      setShowCustomReason(false);
+                    }
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+              {item.status === "CANCELLED" && (
+                <button
+                  className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleRefundStatus(item.bookingGroupCode);
+                  }}
+                >
+                  See Refund Status
+                </button>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Bookings Found</h3>
+            <p className="text-gray-600 text-center max-w-md">
+              {status === "ALL" 
+                ? "You haven't made any bookings yet. Start exploring hotels and make your first reservation!"
+                : `No ${status.toLowerCase().replace("_", " ")} bookings found.`
+              }
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Explore Hotels
+            </button>
+          </div>
+        )}
 
         {/* Cancel Modal */}
         {showCancelModal && (
@@ -525,33 +621,35 @@ const MyBookings = () => {
         )}
 
         {/* Pagination */}
-        <div className="flex justify-center gap-2 pt-6">
-          <button
-            disabled={page === 0}
-            onClick={() => handlePageChange(page - 1)}
-            className={`px-3 py-1 rounded ${page === 0 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
-          >
-            Prev
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => (
+        {!loading && !error && bookings.length > 0 && (
+          <div className="flex justify-center gap-2 pt-6">
             <button
-              key={i}
-              onClick={() => handlePageChange(i)}
-              className={`px-3 py-1 rounded ${page === i ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-blue-100"}`}
+              disabled={page === 0}
+              onClick={() => handlePageChange(page - 1)}
+              className={`px-3 py-1 rounded ${page === 0 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
             >
-              {i + 1}
+              Prev
             </button>
-          ))}
 
-          <button
-            disabled={page === totalPages - 1}
-            onClick={() => handlePageChange(page + 1)}
-            className={`px-3 py-1 rounded ${page === totalPages - 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
-          >
-            Next
-          </button>
-        </div>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i)}
+                className={`px-3 py-1 rounded ${page === i ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-blue-100"}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={page === totalPages - 1}
+              onClick={() => handlePageChange(page + 1)}
+              className={`px-3 py-1 rounded ${page === totalPages - 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

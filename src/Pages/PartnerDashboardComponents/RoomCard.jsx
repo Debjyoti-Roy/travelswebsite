@@ -1,107 +1,130 @@
 
-import { useEffect, useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import { Users, DoorClosed, IndianRupee } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Users, DoorClosed, IndianRupee, ChevronDown, ChevronUp } from "lucide-react";
 import { FiEdit2 } from "react-icons/fi";
 import EditRoomModal from './EditRoomModal';
 
-const RoomCard = ({ rooms = [] }) => {
-    const [expandedRoom, setExpandedRoom] = useState(null);
+const RoomCard = ({ room }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
     const [editRoom, setEditRoom] = useState(null);
-    const CustomCarousel = ({ images = [] }) => {
-        const [currentIndex, setCurrentIndex] = useState(0);
-        const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % images.length);
-        const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    
+    if (!room) {
+        return null;
+    }
 
-        // Auto-play
-        useState(() => {
-            const interval = setInterval(nextSlide, 3000);
-            return () => clearInterval(interval);
-        }, []);
-
-       
-
-        return (
-            <div className="relative w-full h-48 overflow-hidden">
-                <div
-                    className="flex transition-transform duration-300 ease-in-out h-full"
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-full flex flex-col">
+            {/* Room Image */}
+            <div className="relative h-48 bg-gray-200 flex-shrink-0">
+                {room.imageUrls && room.imageUrls.length > 0 ? (
+                    <img
+                        src={room.imageUrls[0]}
+                        alt={room.name}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <DoorClosed className="w-12 h-12" />
+                    </div>
+                )}
+                
+                {/* Edit Button */}
+                <button
+                    onClick={() => setEditRoom(room)}
+                    className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-lg shadow-sm transition-colors"
                 >
-                    <Carousel
-                        showThumbs={false}
-                        showStatus={false}
-                        infiniteLoop
-                        autoPlay
-                        interval={3000}
-                        className="w-full"
-                    >
-                        {images.map((url, i) => (
-                            <div key={i}>
-                                <img src={url} alt={`Room ${i}`} className="w-full h-48 object-cover" />
-                            </div>
-                        ))}
-                    </Carousel>
+                    <FiEdit2 className="w-4 h-4 text-gray-600" />
+                </button>
+            </div>
+
+            {/* Room Details */}
+            <div className="p-4 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-3">
+                    <h4 className="text-lg font-semibold text-gray-800 line-clamp-2">{room.name}</h4>
+                    <div className="flex items-center gap-1 text-green-600 font-semibold flex-shrink-0 ml-2">
+                        <IndianRupee className="w-4 h-4" />
+                        <span>{room.pricePerNight}</span>
+                    </div>
                 </div>
 
-
-            </div>
-        );
-    };
-    return (
-        <div className="overflow-hidden w-[100%]">
-            <div className="flex flex-nowrap overflow-x-auto gap-4">
-                {rooms.map((room) => (
-                    <div
-                        key={room.id}
-                        className="w-full md:w-1/2 lg:w-1/3 px-2 shrink-0"
-                    >
-                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col">
-                            <CustomCarousel images={room.imageUrls || []} />
-                            <div className="p-4 flex flex-col flex-grow">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-lg font-semibold text-gray-800 mb-2">{room.name}</h2>
-                                    <button title="Edit Room" className="text-yellow-500 px-4 py-2 rounded-md cursor-pointer" onClick={() => setEditRoom(room)}><FiEdit2 /></button>
-                                </div>
-                                <div className="flex items-center text-gray-600 text-sm pb-2">
-                                    <Users className="w-5 h-5 text-blue-700 p-1 rounded-xl bg-blue-100 mr-2" />
-                                    Max: {room.maxOccupancy}
-                                </div>
-                                <div className="flex items-center text-gray-600 text-sm pb-2">
-                                    <DoorClosed className="w-5 h-5 text-blue-700 p-1 rounded-xl bg-blue-100 mr-2" />
-                                    Rooms: {room.totalRooms}
-                                </div>
-                                <div className="flex items-center text-gray-600 text-sm pb-2">
-                                    <IndianRupee className="w-5 h-5 text-blue-700 p-1 rounded-xl bg-blue-100 mr-2" />
-                                    ₹{room.pricePerNight}
-                                </div>
-                                {/* Features with Show More */}
-                                {room.features && room.features.length > 0 && (
-                                    <>
-                                        <div className={`flex flex-wrap gap-1 pt-2 transition-all duration-300 ${expandedRoom === room.id ? "" : "max-h-16 overflow-hidden"}`}>
-                                            {room.features.map((feature, idx) => (
-                                                <span key={idx} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
-                                                    {feature}
-                                                </span>
-                                            ))}
-                                        </div>
-                                        {room.features.length > 2 && (
-                                            <button
-                                                onClick={() =>
-                                                    setExpandedRoom((prev) => (prev === room.id ? null : room.id))
-                                                }
-                                                className="text-blue-600 text-xs font-medium mt-1"
-                                            >
-                                                {expandedRoom === room.id ? "Show less" : "Show more"}
-                                            </button>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        </div>
+                {/* Room Stats */}
+                <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
+                    <div className="flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        <span>Max {room.maxOccupancy}</span>
                     </div>
-                ))}
+                    <div className="flex items-center gap-1">
+                        <DoorClosed className="w-4 h-4" />
+                        <span>{room.totalRooms} rooms</span>
+                    </div>
+                </div>
+
+                {/* Features - Always show first 2, rest in expandable section */}
+                {room.features && room.features.length > 0 && (
+                    <div className="space-y-2">
+                        <h5 className="text-sm font-medium text-gray-700">Features:</h5>
+                        <div className="flex flex-wrap gap-1">
+                            {room.features.slice(0, 2).map((feature, featureIndex) => (
+                                <span
+                                    key={featureIndex}
+                                    className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                                >
+                                    {feature}
+                                </span>
+                            ))}
+                        </div>
+                        
+                        {/* Show expand/collapse if more than 2 features */}
+                        {room.features.length > 2 && (
+                            <div>
+                                {isExpanded && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {room.features.slice(2).map((feature, featureIndex) => (
+                                            <span
+                                                key={featureIndex + 2}
+                                                className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                                            >
+                                                {feature}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                                
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="flex items-center gap-1 text-blue-600 text-xs hover:text-blue-700 transition-colors mt-2"
+                                >
+                                    {isExpanded ? (
+                                        <>
+                                            <span>Show less</span>
+                                            <ChevronUp className="w-3 h-3" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Show {room.features.length - 2} more</span>
+                                            <ChevronDown className="w-3 h-3" />
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Spacer to push content to top */}
+                <div className="flex-1"></div>
             </div>
+
+            {/* Edit Room Modal */}
             {editRoom && (
-                <EditRoomModal room={editRoom} onClose={() => setEditRoom(null)} />
+                <EditRoomModal
+                    room={editRoom}
+                    onClose={() => setEditRoom(null)}
+                    onUpdate={() => {
+                        setEditRoom(null);
+                        // Add any refresh logic here
+                    }}
+                />
             )}
         </div>
     );

@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import ProtectedRoute from "../Components/ProtectedRoute";
+import ProtectedRoute, { AuthProtectedRoute } from "../Components/ProtectedRoute";
 
 const HomePage = lazy(() => import("../Pages/HomePage"));
 const Profile = lazy(() => import("../Pages/Profile"));
@@ -16,7 +16,11 @@ export const routes = [
   },
   {
     path: "/profile",
-    element: <Profile />,
+    element: (
+      <AuthProtectedRoute>
+        <Profile />
+      </AuthProtectedRoute>
+    ),
   },
   {
     path: "/partner",
@@ -40,6 +44,10 @@ export const routes = [
   },
   {
     path: "/mybookings",
-    element: <MyBookings />,
+    element: (
+      <AuthProtectedRoute>
+        <MyBookings />
+      </AuthProtectedRoute>
+    ),
   },
 ];

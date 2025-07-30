@@ -34,6 +34,7 @@ const PartnerDashboard = () => {
       // console.log(res.payload.status)
       if (res.payload.status == 200) {
         setHotelPresent(true)
+        console.log("ROOM ADDED")
         setHotelList(res.payload.data)
       } else {
         setHotelPresent(false)

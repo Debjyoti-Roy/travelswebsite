@@ -125,6 +125,7 @@ const Hotelsearch = () => {
   useEffect(() => {
     const job = async () => {
       const options = await dispatch(getLocations())
+      
       console.log(options.payload.data)
       if (options.payload.status === 200) {
         setLocationOptions(options.payload.data)

@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { addRooms } from "../../Redux/store/hotelSlice";
 import toast from "react-hot-toast";
 
-const AddRoom = ({ hotelId, setHotelPresent, setIsLoading }) => {
+const AddRoom = ({ hotelId, setHotelPresent, setIsLoading, setCounter }) => {
   // console.log(hotelId)
   const initialRoom = {
     id: uuidv4(),
@@ -148,6 +148,7 @@ const AddRoom = ({ hotelId, setHotelPresent, setIsLoading }) => {
         },
       });
       setHotelPresent(true) // This will trigger the callback to close modal
+      setCounter()
     } else {
       setSubmitting(false);
       if (setIsLoading) setIsLoading(false);

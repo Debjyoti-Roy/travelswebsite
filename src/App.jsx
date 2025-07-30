@@ -4,16 +4,24 @@ import MainPage from "./Components/MainPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./RoutesConfig/routesConfig";
 import { Suspense } from "react";
+import { AuthProvider } from "./auth/AuthContext";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 // import 'swiper/css';
 import "swiper/css";
 import "swiper/css/navigation";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { PrimeReactProvider } from "primereact/api";
+import 'primereact/resources/themes/lara-light-indigo/theme.css';  // or any theme
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
 
 function App() {
   return (
-    <>
+    <PrimeReactProvider>
+
+    <AuthProvider>
       <Toaster position="bottom-center" />
       <Router>
         <MainPage>
@@ -30,7 +38,8 @@ function App() {
           </Suspense>
         </MainPage>
       </Router>
-    </>
+    </AuthProvider>
+    </PrimeReactProvider>
   );
 }
 

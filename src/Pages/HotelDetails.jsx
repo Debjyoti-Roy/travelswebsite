@@ -1034,7 +1034,7 @@ const HotelDetails = () => {
           </div>
           <div className='pb-4 px-6'>
             <h3 className="font-semibold text-2xl text-gray-800 pt-5 pb-6">Facilities that this hotel offers</h3>
-            <div className="grid grid-cols-4 gap-2 pt-2">
+            <div className="grid md:grid-cols-4 grid-cols-2 gap-2 pt-2">
               {hotel.amenities.map((a, idx) => (
                 <span
                   key={idx}
@@ -1051,7 +1051,7 @@ const HotelDetails = () => {
             </div>
           </div>
           <div className="package-search-container">
-            <div className="flex gap-[10px] w-full md:p-4">
+            <div className="flex flex-col md:flex-row p-6 md:p-0 gap-[10px] w-full md:p-4">
               <div className="flex-[1.5] w-full">
                 <label className="block text-sm font-medium mb-1 flex pb-1">Dates</label>
                 <div className="relative">

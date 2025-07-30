@@ -67,7 +67,7 @@ const PropertyDashboard = ({ hotelList, setCounter }) => {
       <div className="grid gap-8">
         {hotelList && hotelList.length > 0 ? (
           hotelList.map((hotel, index) => (
-            <div key={index} className="w-[55%] md:w-full lg:w-full">
+            <div key={index} className="w-full lg:w-full">
               <HotelCard key={index} hotel={hotel} setCounter={setCounter} />
             </div>
           ))
