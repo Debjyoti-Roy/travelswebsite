@@ -49,6 +49,7 @@ const PropertyDashboard = ({ hotelList, setCounter }) => {
   };
 
   return (
+    // <div className="lg:w-[60%] w-full">
     <div className="p-2 lg:p-0 min-h-screen">
       {/* Header with Add Hotel Button */}
       <div className="flex justify-between items-center mb-6">
@@ -64,10 +65,10 @@ const PropertyDashboard = ({ hotelList, setCounter }) => {
         </button>
       </div>
 
-      <div className="grid gap-8">
+      <div className="grid gap-8 max-w-full flex flex-wrap">
         {hotelList && hotelList.length > 0 ? (
           hotelList.map((hotel, index) => (
-            <div key={index} className="w-full lg:w-full">
+            <div key={index} className="w-full lg:w-full max-w-full">
               <HotelCard key={index} hotel={hotel} setCounter={setCounter} />
             </div>
           ))
@@ -158,6 +159,7 @@ const PropertyDashboard = ({ hotelList, setCounter }) => {
         </div>
       )}
     </div>
+    // </div>
   );
 };
 

@@ -305,7 +305,9 @@ const roomTemplate = (room) => (
 
 const HotelCard = ({ hotel = {}, setCounter }) => {
   const [expanded, setExpanded] = useState(false);
+  const [aboutExpanded, setAboutExpanded] = useState(false);
   const [roomModal, setRoomModal] = useState(false);
+  const [showAllRooms, setShowAllRooms] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [roomCounter, setRoomCounter] = useState(false);
   const backdropRef = useRef();
@@ -351,14 +353,14 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 max-w-full">
         {/* Header Section */}
         <div className="p-6">
           {/* Media Carousel */}
           <div className="pb-4">
             <MediaCarousel images={hotel.imageUrls} videoUrl={hotel.videoUrl} />
           </div>
-          <div className="flex justify-between items-start pb-4">
+          <div className="flex justify-between items-start">
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">{hotel.name || 'Hotel Name'}</h2>
               <div className="flex items-center text-gray-600 mb-2">
@@ -387,12 +389,31 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
           </div>
 
           {/* About Section */}
-          <div className="mt-4">
-            <p className="text-gray-700 leading-relaxed">{hotel.about || 'No description available'}</p>
+          <div className="pt-2">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">About</h3>
+            <div className="space-y-2">
+              <p className="text-gray-700 leading-relaxed">
+                {hotel.about ? (
+                  aboutExpanded
+                    ? hotel.about
+                    : hotel.about.length > 150
+                      ? `${hotel.about.substring(0, 150)}...`
+                      : hotel.about
+                ) : 'No description available'}
+              </p>
+              {hotel.about && hotel.about.length > 150 && (
+                <button
+                  onClick={() => setAboutExpanded(!aboutExpanded)}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
+                >
+                  {aboutExpanded ? 'Show less' : 'Show more'}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Amenities Preview */}
-          <div className="mt-4">
+          <div className="pt-2">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Amenities</h3>
             <div className="flex flex-wrap gap-2">
               {hotel.amenities && hotel.amenities.length > 0 ? (
@@ -422,7 +443,7 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
           </div>
 
           {/* Tags Preview */}
-          <div className="mt-4">
+          <div className="pt-2">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Tags</h3>
             <div className="flex flex-wrap gap-2">
               {hotel.tags && hotel.tags.length > 0 ? (
@@ -452,7 +473,7 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
           </div>
 
           {/* Expand/Collapse Button */}
-          <div className="mt-6 flex justify-center">
+          <div className="pt-6 flex justify-center">
             <button
               onClick={() => setExpanded(!expanded)}
               className="flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 px-6 py-3 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
@@ -505,7 +526,7 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
             {/* Complete Amenities List (when expanded) */}
             {expanded && hotel.amenities && hotel.amenities.length > 4 && (
 
-              <div className="mb-6">
+              <div className="pt-2">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">All Amenities</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {hotel.amenities.slice(4).map((amenity, index) => {
@@ -523,7 +544,7 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
                 </div>
               </div>
             )}
-            <div className="border-t border-gray-100 p-6">
+            <div className="border-t border-gray-100 pt-6 max-w-full">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-800">Rooms ({rooms.length})</h3>
               </div>
@@ -538,36 +559,25 @@ const HotelCard = ({ hotel = {}, setCounter }) => {
                     <RoomCard key={room.id || index} room={room} />
                   ))}
                 </div>
+                // <div className="space-y-6">
+                //   {(showAllRooms ? rooms : rooms.slice(0, 3)).map((room, index) => (
+                //     <RoomCard key={room.id || index} room={room} />
+                //   ))}
+
+                //   {rooms.length > 3 && (
+                //     <div className="flex justify-center mt-4">
+                //       <button
+                //         onClick={() => setShowAllRooms(!showAllRooms)}
+                //         className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+                //       >
+                //         {showAllRooms ? "Show Less" : `Show All ${rooms.length} Rooms`}
+                //       </button>
+                //     </div>
+                //   )}
+                // </div>
+
               )}
-              {/* {rooms.length === 0 ? (
-  <div className="text-center py-8">
-    <p className="text-gray-500">No rooms available</p>
-  </div>
-) : (
-  <div className="py-4">
-    <Carousel
-      value={rooms}
-      itemTemplate={roomTemplate}
-      numVisible={3}
-      numScroll={1}
-      responsiveOptions={[
-        {
-          breakpoint: '1024px',
-          numVisible: 2,
-          numScroll: 1,
-        },
-        {
-          breakpoint: '640px',
-          numVisible: 1,
-          numScroll: 1,
-        },
-      ]}
-      circular
-      showIndicators={false}
-      showNavigators
-    />
-  </div>
-)} */}
+
             </div>
           </div>
         )}

@@ -4,24 +4,86 @@ import { Users, DoorClosed, IndianRupee, ChevronDown, ChevronUp } from "lucide-r
 import { FiEdit2 } from "react-icons/fi";
 import EditRoomModal from './EditRoomModal';
 
+// Icon components using SVG
+const IconSVG = ({ path, size = 16, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d={path} />
+  </svg>
+);
+
+// Icon definitions
+const icons = {
+  chevronDown: "M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z",
+  chevronUp: "M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z",
+};
+
+// Create icon components
+const FaChevronDown = (props) => <IconSVG path={icons.chevronDown} {...props} />;
+const FaChevronUp = (props) => <IconSVG path={icons.chevronUp} {...props} />;
+
 const RoomCard = ({ room }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [editRoom, setEditRoom] = useState(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     
     if (!room) {
         return null;
     }
 
+    const validImages = room.imageUrls?.filter(
+        (url) => url && url !== "null" && url !== "undefined" && url.trim() !== ""
+    ) || [];
+
+    const totalImages = validImages.length;
+    const showCarousel = totalImages > 1;
+
+    const nextImage = () => {
+        setCurrentImageIndex((prev) => (prev + 1) % totalImages);
+    };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
+    };
+
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-full flex flex-col">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden w-full h-full flex flex-col ">
             {/* Room Image */}
-            <div className="relative h-48 bg-gray-200 flex-shrink-0">
-                {room.imageUrls && room.imageUrls.length > 0 ? (
-                    <img
-                        src={room.imageUrls[0]}
-                        alt={room.name}
-                        className="w-full h-full object-cover"
-                    />
+            <div className="relative h-48 bg-gray-200 flex-shrink-0 group">
+                {validImages.length > 0 ? (
+                    <div className="relative w-full h-full">
+                        <img
+                            src={validImages[currentImageIndex]}
+                            alt={room.name}
+                            className="w-full h-full object-cover"
+                        />
+                        
+                        {showCarousel && (
+                            <>
+                                <button
+                                    onClick={prevImage}
+                                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <FaChevronUp className="rotate-[-90deg] text-gray-800" />
+                                </button>
+                                <button
+                                    onClick={nextImage}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <FaChevronUp className="rotate-90 text-gray-800" />
+                                </button>
+
+                                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                                    {validImages.map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setCurrentImageIndex(index)}
+                                            className={`w-2 h-2 rounded-full transition-colors ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <DoorClosed className="w-12 h-12" />
@@ -31,7 +93,7 @@ const RoomCard = ({ room }) => {
                 {/* Edit Button */}
                 <button
                     onClick={() => setEditRoom(room)}
-                    className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-lg shadow-sm transition-colors"
+                    className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-lg shadow-sm transition-colors z-10"
                 >
                     <FiEdit2 className="w-4 h-4 text-gray-600" />
                 </button>

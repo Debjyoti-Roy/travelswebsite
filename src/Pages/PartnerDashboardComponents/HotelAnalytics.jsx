@@ -113,7 +113,8 @@ const HotelAnalytics = ({ hotelList }) => {
   ];
 
   return (
-    <div className="flex flex-col gap-8">
+    // <div className='lg:w-[60%] w-full'>
+    <div className=" flex flex-col gap-8">
       <div className="flex justify-center gap-3 items-center w-full mx-auto relative">
         <input
           type="text"
@@ -365,6 +366,7 @@ const HotelAnalytics = ({ hotelList }) => {
         <div className="text-center text-gray-500">No hotels found.</div>
       )}
     </div>
+    // </div>
   );
 };
 

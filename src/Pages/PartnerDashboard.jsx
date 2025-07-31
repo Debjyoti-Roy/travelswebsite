@@ -104,7 +104,9 @@ const PartnerDashboard = () => {
 
       {/* Content */}
       <div className="w-full flex justify-center">
-        <div className="lg:w-[60%] w-full px-6 lg:px-0">
+        <div 
+        className="lg:w-[60%] w-full px-6 lg:px-0 mx-auto">
+        {/* className="lg:w-[60%] w-full px-6 lg:px-0 mx-auto"> */}
           {tab === "overview" && (
             <div className='w-full'>
               <HotelAnalytics hotelList={hotelList} />
