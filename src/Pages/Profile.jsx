@@ -402,7 +402,7 @@ const Profile = () => {
       <div className="min-h-screen bg-[#f5f5f5]">
 
         <div className="w-full  flex justify-center px-4 py-12">
-          <div className="md:w-[61%] w-[90%] flex flex-col gap-[20px] justify-center">
+          <div className="md:w-[70%] w-[90%] flex flex-col gap-[20px] justify-center">
             <div className="w-full bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
 
 

@@ -203,7 +203,7 @@ const Query = () => {
             perfect trip? Our travel experts are here to help.
           </p>
         </div>
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col lg:flex-row w-full lg:max-w-[60%]">
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col lg:flex-row w-full lg:max-w-[70%]">
           {/* Left side: Contact Info */}
           <div className="w-full lg:w-[50%] h-60 lg:h-auto">
             <img

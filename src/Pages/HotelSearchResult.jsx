@@ -2,9 +2,23 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchHotels } from '../Redux/store/hotelSlice';
-import { FaMapMarkerAlt, FaUsers, FaWifi, FaFire, FaThermometerHalf, FaTint, FaVideo, FaWater, FaChair, FaFirstAid, FaSuitcase, FaConciergeBell, FaUserTie, FaHamburger, FaCar, FaBolt, FaUtensils, FaFilter, FaTimes } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUsers, FaWifi, FaFire, FaThermometerHalf, FaTint, FaVideo, FaWater, FaChair, FaFirstAid, FaSuitcase, FaConciergeBell, FaUserTie, FaHamburger, FaCar, FaBolt, FaUtensils, FaFilter, FaTimes, FaCalendar, FaChevronDown } from "react-icons/fa";
 import { Carousel } from 'react-responsive-carousel';
 import Slider from '@mui/material/Slider';
+import DatePicker from 'react-datepicker';
+
+const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
+  <div
+    onClick={onClick}
+    ref={ref}
+    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <FaCalendar className="absolute left-3 text-blue-500 w-5 h-5" />
+    <span className={value ? "text-black" : "text-gray-400"}>
+      {value || placeholder}
+    </span>
+  </div>
+));
 
 function HotelDescription({ description }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -20,7 +34,7 @@ function HotelDescription({ description }) {
   const displayedText = isExpanded ? description : description.slice(0, charLimit) + (shouldTruncate ? "..." : "");
 
   return (
-    <p className="hidden md:block text-gray-500 text-sm pt-2">
+    <p className="hidden md:block text-gray-500 text-md pt-2">
       {displayedText}
       {/* {shouldTruncate && (
         <button
@@ -206,7 +220,7 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
   }, []);
 
   return (
-    <div className="bg-white md:shadow-2xl  rounded-2xl p-6 md:border md:border-gray-200">
+    <div className="bg-white  rounded-2xl p-6 md:border md:border-gray-200">
       <div className="flex justify-between items-center pb-4">
         <h2 className="text-xl font-bold text-gray-800">Filters</h2>
         <button
@@ -279,7 +293,7 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
         </div>
 
         {/* Amenities */}
-        <div>
+        <div style={{ marginTop: "10px" }}>
           <h3 className="text-md font-semibold text-gray-700 mb-3">Amenities</h3>
           <div className="flex flex-col gap-2">
             {availableAmenities.map((amenity) => (
@@ -393,178 +407,30 @@ const HotelSearchResult = () => {
     navigate("/details", { state: data })
   }
 
+  const [startDate, setStartDate] = useState(state.startDate);
+  const [endDate, setEndDate] = useState(state.endDate);
+  const [showGuestOptions, setShowGuestOptions] = useState(false);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+  const [rooms, setRooms] = useState(1);
 
+
+  const handleSearch = () => {
+    const data = {
+      location: state.location,
+      startDate: new Date(startDate).toISOString().split("T")[0],
+      endDate: new Date(endDate).toISOString().split("T")[0],
+      rooms: rooms,
+      total: adults + children,
+    };
+
+    navigate(".", { state: data });
+    window.location.reload();
+  }
 
   return (
-    <div className='w-full bg-[#f2f2f2] flex justify-center'>
-
-      <div className="flex flex-col md:flex-row lg:w-[60%] w-full  md:justify-center px-6 lg:px-2 py-6 gap-6 min-h-screen">
-
-        <div className="hidden md:block md:w-1/3 ">
-          <FilterSection
-            onFilterChange={handleFilterChange}
-            onApplyFilters={handleApplyFilters}
-            initialFilters={filters}
-          />
-        </div>
-
-
-
-        <div className="w-full flex flex-col h-full md:min-h-screen pt-10 md:pt-0">
-          <div className="w-full flex justify-between items-center pb-4">
-            <div className="text-2xl font-bold">
-              Showing properties in {state.location}
-            </div>
-
-            <div className="flex justify-center gap-2 items-center">
-              <label
-                htmlFor="priceSort"
-                className="text-sm font-medium text-gray-700"
-              >
-                Sort by price:
-              </label>
-              <select
-                id="priceSort"
-                value={appliedFilters.priceSort}
-                onChange={(e) => handleApplyFilters({ ...appliedFilters, priceSort: e.target.value })}
-                className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 hover:border-blue-400"
-              >
-                <option value="">Select</option>
-                <option value="lowToHigh">Low to High</option>
-                <option value="highToLow">High to Low</option>
-              </select>
-            </div>
-          </div>
-
-          {loading && <div className="w-full flex-1 gap-6">Loading...</div>}
-          {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {error}</div>}
-
-          {searchResults && !loading && !error && (
-            <div className="w-full flex-1 gap-6 mb-6">
-              {[...(searchResults.content || [])]
-                .sort((a, b) => {
-                  if (appliedFilters.priceSort === 'lowToHigh') {
-                    return a.startingPrice - b.startingPrice;
-                  }
-                  if (appliedFilters.priceSort === 'highToLow') {
-                    return b.startingPrice - a.startingPrice;
-                  }
-                  return 0;
-                })
-                .map((hotel) => (
-                  <div
-                    key={hotel.id}
-                    className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-auto md:h-80 md:h-55"
-                  >
-                    {/* Image */}
-                    <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[190px] md:h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                      <div className="w-full h-full ml-2 object-cover">
-                        {hotel.photoUrls.length === 1 ? (
-                          <div className="w-full h-full overflow-hidden">
-                            <img
-                              src={hotel.photoUrls[0]}
-                              alt={hotel.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <Carousel
-                            showThumbs={false}
-                            showStatus={false}
-                            infiniteLoop
-                            autoPlay
-                            interval={3000}
-                            className="w-full h-full object-cover"
-                          >
-                            {hotel.photoUrls.map((url, idx) => (
-                              <div key={idx} className="w-full h-full overflow-hidden object-cover">
-                                <img
-                                  src={url}
-                                  alt={`${hotel.name} ${idx + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ))}
-                          </Carousel>
-                        )}
-                      </div>
-
-                    </div>
-
-                    {/* Info section */}
-                    <div className="flex flex-col justify-between py-4 md:py-0 h-[70%] md:h-[80%] px-4 flex-1 ">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-lg font-bold text-gray-800">{hotel.name}</h3>
-                        <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Available</span>
-                      </div>
-
-                      <div className="flex items-center text-gray-500 text-sm pt-2">
-                        <FaMapMarkerAlt className="mr-1 text-blue-600" />
-                        {hotel.city}, {hotel.district} - {hotel.pinCode}
-                      </div>
-
-                      <div className="flex items-center flex-wrap gap-2 pt-1">
-                        {hotel.tags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-blue-100 text-blue-700 rounded-full px-2 py-1 text-xs font-medium"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        <div className="flex items-center text-yellow-500 text-sm">
-                          ★★★★☆
-                        </div>
-                        <span className="text-gray-500 text-sm">Very Good</span>
-                      </div>
-
-                      <HotelDescription description={hotel.description} />
-
-                      <div className="flex items-center justify-between pt-4">
-                        <div className="text-xl font-bold text-blue-700">
-                          ₹{hotel.startingPrice}
-                          <span className="text-gray-500 text-sm font-normal"> /night</span>
-                        </div>
-                        <button onClick={() => hotelDetails(hotel.id, hotel.startingPrice)} className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">
-                          Book Now
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          )}
-
-          {/* Pagination Section - Now positioned at bottom */}
-          <div className="mt-auto pt-6">
-            <div className="text-gray-600 mb-2 text-center">
-              Total Elements: {searchResults.totalElements} | Total Pages: {searchResults.totalPages}
-            </div>
-            <div className="flex items-center justify-center gap-4">
-              <button
-                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                disabled={page === 0}
-                className={`px-4 py-2 rounded ${page === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
-                  }`}
-              >
-                Prev
-              </button>
-              <span>Page {page + 1}</span>
-              <button
-                onClick={() => !searchResults.last && setPage((prev) => prev + 1)}
-                disabled={searchResults.last}
-                className={`px-4 py-2 rounded ${searchResults.last ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
-                  }`}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Filter Bottom Bar - Only visible on mobile */}
-      <div className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+    <>
+      <div className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 z-40">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <FaFilter className="text-blue-600" />
@@ -581,41 +447,316 @@ const HotelSearchResult = () => {
             onClick={() => setIsMobileFilterOpen(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
           >
-            Apply
+            <FaChevronDown />
           </button>
         </div>
       </div>
+      {/* Search Container */}
+      <div className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10'>
+        {/* Banner */}
+        <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
 
-      {/* Mobile Filter Overlay */}
-      {isMobileFilterOpen && (
-        <div className="md:hidden fixed inset-0  bg-opacity-50 z-50 flex items-end">
-          <div className="bg-white w-full h-[85vh] rounded-t-3xl overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h2 className="text-xl font-bold text-gray-800">Filters</h2>
-              <button
-                onClick={() => setIsMobileFilterOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition"
-              >
-                <FaTimes className="text-gray-600" />
-              </button>
-            </div>
+        </div>
 
-            <div className="h-full overflow-y-auto">
-              <div className="p-4">
-                <FilterSection
-                  onFilterChange={handleFilterChange}
-                  onApplyFilters={(newFilters) => {
-                    handleApplyFilters(newFilters);
-                    setIsMobileFilterOpen(false);
-                  }}
-                  initialFilters={filters}
-                />
+        <div className="flex flex-col md:flex-row lg:w-[70%] w-full md:justify-center px-6 lg:px-0 pt-20 md:pt-4 gap-6 absolute top-[-5vh] md:top-[0vh] z-10">
+          <div className="package-search-container w-full pt-10 md:pt-0">
+            <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative overflow-hidden">
+              {/* Decorative background elements */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-transparent rounded-full opacity-20 -translate-y-12 translate-x-12"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-200 to-transparent rounded-full opacity-20 translate-y-10 -translate-x-10"></div>
+
+              <div className="flex flex-col md:flex-row pr-0 gap-[10px] w-full md:px-2 relative z-10">
+                <div className="flex-[1.5] w-full">
+                  <label className="block text-sm font-medium mb-1 flex pb-1 text-gray-700 flex items-center gap-2">
+                    {/* <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div> */}
+                    Dates
+                  </label>
+                  <div className="relative">
+                    <DatePicker
+                      selectsRange
+                      startDate={startDate}
+                      endDate={endDate}
+                      onChange={(update) => {
+                        setStartDate(update[0]);
+                        setEndDate(update[1]);
+                      }}
+                      isClearable
+                      placeholderText="Check-in - Check-out"
+                      customInput={<CustomDateInput />}
+                      popperPlacement="bottom-start"
+                      popperClassName="custom-datepicker"
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+
+                <div className="relative flex-1 w-full">
+                  <label className="block text-sm font-medium mb-1 flex pb-1 text-gray-700 flex items-center gap-2">
+                    {/* <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-pulse"></div> */}
+                    Guests & Rooms
+                  </label>
+                  <div
+                    onClick={() => setShowGuestOptions(!showGuestOptions)}
+                    className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <FaUsers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
+                    {`${adults} Adults${children > 0 ? ` · ${children} Children` : ""} · ${rooms} Rooms`}
+                  </div>
+
+                  {showGuestOptions && (
+                    <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg p-4 z-10">
+                      <div className="flex justify-between items-center mb-2">
+                        <span>People</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setAdults(Math.max(1, adults - 1))}
+                            className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <span>{adults}</span>
+                          <button
+                            onClick={() => setAdults(adults + 1)}
+                            className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span>Rooms</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setRooms(Math.max(1, rooms - 1))}
+                            className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <span>{rooms}</span>
+                          <button
+                            onClick={() => setRooms(rooms + 1)}
+                            className="w-8 h-8 rounded-full bg-gray-200 text-lg flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
+                  <button
+                    onClick={handleSearch}
+                    className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
+      text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+                  >
+                    Search
+                  </button>
+                </div>
+
               </div>
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+
+
+      <div className='w-full bg-[#f2f2f2] flex justify-center pt-50 md:pt-10'>
+        <div className="flex flex-col md:flex-row lg:w-[70%] w-full  md:justify-center px-6 lg:px-2 py-0 md:py-6 gap-6 min-h-screen">
+          <div className="hidden md:block md:w-1/3 ">
+            <FilterSection
+              onFilterChange={handleFilterChange}
+              onApplyFilters={handleApplyFilters}
+              initialFilters={filters}
+            />
+          </div>
+          <div className="w-full flex flex-col h-full md:min-h-screen pt-5 md:pt-0">
+            <div className="w-full flex justify-between items-center pb-4">
+              <div className="text-2xl font-bold">
+                Showing properties in {state.location}
+              </div>
+
+              <div className="flex justify-center gap-2 items-center">
+                <label
+                  htmlFor="priceSort"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Sort by price:
+                </label>
+                <select
+                  id="priceSort"
+                  value={appliedFilters.priceSort}
+                  onChange={(e) => handleApplyFilters({ ...appliedFilters, priceSort: e.target.value })}
+                  className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 hover:border-blue-400"
+                >
+                  <option value="">Select</option>
+                  <option value="lowToHigh">Low to High</option>
+                  <option value="highToLow">High to Low</option>
+                </select>
+              </div>
+            </div>
+
+            {loading && <div className="w-full flex-1 gap-6">Loading...</div>}
+            {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {error}</div>}
+
+            {searchResults && !loading && !error && (
+              <div  className="w-full flex-1 gap-6 mb-6">
+                {[...(searchResults.content || [])]
+                  .sort((a, b) => {
+                    if (appliedFilters.priceSort === 'lowToHigh') {
+                      return a.startingPrice - b.startingPrice;
+                    }
+                    if (appliedFilters.priceSort === 'highToLow') {
+                      return b.startingPrice - a.startingPrice;
+                    }
+                    return 0;
+                  })
+                  .map((hotel) => (
+                    <div
+                      key={hotel.id}
+                      style={{ marginBottom: "10px" }}
+                      className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-auto  md:h-70"
+                    >
+                      {/* Image */}
+                      <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[190px] md:h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="w-full h-full ml-2 object-cover">
+                          {hotel.photoUrls.length === 1 ? (
+                            <div className="w-full h-full overflow-hidden">
+                              <img
+                                src={hotel.photoUrls[0]}
+                                alt={hotel.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <Carousel
+                              showThumbs={false}
+                              showStatus={false}
+                              infiniteLoop
+                              autoPlay
+                              interval={3000}
+                              className="w-full h-full object-cover"
+                            >
+                              {hotel.photoUrls.map((url, idx) => (
+                                <div key={idx} className="w-full h-full overflow-hidden object-cover">
+                                  <img
+                                    src={url}
+                                    alt={`${hotel.name} ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ))}
+                            </Carousel>
+                          )}
+                        </div>
+
+                      </div>
+
+                      {/* Info section */}
+                      <div className="flex flex-col justify-between py-4 md:py-0 h-[70%] md:h-[80%] px-4 flex-1 ">
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-2xl font-bold text-gray-800">{hotel.name}</h3>
+                          <span className="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">Available</span>
+                        </div>
+
+                        <div className="flex items-center text-gray-500 text-lg pt-2">
+                          <FaMapMarkerAlt className="mr-1 text-red-600" />
+                          {hotel.city}, {hotel.district} - {hotel.pinCode}
+                        </div>
+
+                        <div className="flex items-center flex-wrap gap-2 pt-1">
+                          {hotel.tags.map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="bg-blue-100 text-blue-700 rounded-full px-2 py-1 text-sm font-medium"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          <div className="flex items-center text-yellow-500 text-sm">
+                            ★★★★☆
+                          </div>
+                          <span className="text-gray-500 text-lg">Very Good</span>
+                        </div>
+
+                        <HotelDescription description={hotel.description} />
+
+                        <div className="flex items-center justify-between pt-4">
+                          <div className="text-xl font-bold text-blue-700">
+                            ₹{hotel.startingPrice}
+                            <span className="text-gray-500 text-sm font-normal"> /night</span>
+                          </div>
+                          <button onClick={() => hotelDetails(hotel.id, hotel.startingPrice)} className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">
+                            Book Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+
+            {/* Pagination Section - Now positioned at bottom */}
+            <div className="mt-auto pt-6">
+              <div className="text-gray-600 mb-2 text-center">
+                Total Elements: {searchResults.totalElements} | Total Pages: {searchResults.totalPages}
+              </div>
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  disabled={page === 0}
+                  className={`px-4 py-2 rounded ${page === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
+                    }`}
+                >
+                  Prev
+                </button>
+                <span>Page {page + 1}</span>
+                <button
+                  onClick={() => !searchResults.last && setPage((prev) => prev + 1)}
+                  disabled={searchResults.last}
+                  className={`px-4 py-2 rounded ${searchResults.last ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
+                    }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Filter Overlay */}
+        {isMobileFilterOpen && (
+          <div className="md:hidden fixed inset-0  bg-opacity-50 z-50 flex items-end">
+            <div className="bg-white w-full h-[85vh] rounded-t-3xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition"
+                >
+                  <FaTimes className="text-gray-600" />
+                </button>
+              </div>
+
+              <div className="h-full overflow-y-auto">
+                <div className="p-4">
+                  <FilterSection
+                    onFilterChange={handleFilterChange}
+                    onApplyFilters={(newFilters) => {
+                      handleApplyFilters(newFilters);
+                      setIsMobileFilterOpen(false);
+                    }}
+                    initialFilters={filters}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

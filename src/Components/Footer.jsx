@@ -13,7 +13,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#020a20] text-white pt-10 flex flex-col justify-center">
       <div className="lg:w-full flex justify-center">
-        <div className="w-full lg:w-[60%] mx-auto px-6">
+        <div className="w-full lg:w-[70%] mx-auto px-6">
           <div className="flex flex-col lg:flex-row flex-wrap justify-between gap-10">
             <div className="flex-1">
               <h2 className="text-xl font-bold mb-3">INO Travels</h2>
@@ -111,7 +111,7 @@ const Footer = () => {
       {/* Divider Line */}
       <div className="lg:w-full flex justify-center lg:mt-5">
         <div
-          className="mt-10 w-[60%] h-px mx-auto"
+          className="mt-10 w-[70%] h-px mx-auto"
           style={{
             background:
               "linear-gradient(to right, transparent, #1d4ed8, transparent)",
@@ -120,7 +120,7 @@ const Footer = () => {
       </div>
 
       <div className="lg:w-full flex justify-center">
-        <div className="lg:w-[60%] mx-auto px-6 py-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div className="lg:w-[70%] mx-auto px-6 py-6 flex flex-col lg:flex-row items-center justify-between gap-4">
           <p className="text-gray-300">Download our mobile app</p>
 
           <div className="flex flex-wrap gap-4">

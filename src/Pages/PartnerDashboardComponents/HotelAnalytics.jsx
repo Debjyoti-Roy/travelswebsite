@@ -113,7 +113,7 @@ const HotelAnalytics = ({ hotelList }) => {
   ];
 
   return (
-    // <div className='lg:w-[60%] w-full'>
+    // <div className='lg:w-[70%] w-full'>
     <div className=" flex flex-col gap-8">
       <div className="flex justify-center gap-3 items-center w-full mx-auto relative">
         <input

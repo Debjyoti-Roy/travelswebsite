@@ -162,7 +162,7 @@ const MyBookings = () => {
 
   return (
     <div className="flex justify-center pt-10 pb-20">
-      <div className="w-full md:w-[60%] px-4">
+      <div className="w-full md:w-[70%] px-4">
         
         <h2 className="text-2xl font-bold text-gray-800 pb-6 text-center">My Bookings</h2>
 

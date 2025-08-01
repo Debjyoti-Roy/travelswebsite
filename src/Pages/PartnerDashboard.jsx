@@ -63,7 +63,7 @@ const PartnerDashboard = () => {
       <div className="flex justify-center w-full">
         <div
           className="
-        bg-gray-100 rounded-md w-[90%] lg:w-[60%] p-2 flex flex-row md:flex-row gap-2 shadow-lg 
+        bg-gray-100 rounded-md w-[90%] lg:w-[70%] p-2 flex flex-row md:flex-row gap-2 shadow-lg 
         -translate-y-1/2
       "
         >
@@ -105,8 +105,8 @@ const PartnerDashboard = () => {
       {/* Content */}
       <div className="w-full flex justify-center">
         <div 
-        className="lg:w-[60%] w-full px-6 lg:px-0 mx-auto">
-        {/* className="lg:w-[60%] w-full px-6 lg:px-0 mx-auto"> */}
+        className="lg:w-[70%] w-full px-6 lg:px-0 mx-auto">
+        {/* className="lg:w-[70%] w-full px-6 lg:px-0 mx-auto"> */}
           {tab === "overview" && (
             <div className='w-full'>
               <HotelAnalytics hotelList={hotelList} />

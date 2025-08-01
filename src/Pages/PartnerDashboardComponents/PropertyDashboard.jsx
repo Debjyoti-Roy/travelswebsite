@@ -49,7 +49,7 @@ const PropertyDashboard = ({ hotelList, setCounter }) => {
   };
 
   return (
-    // <div className="lg:w-[60%] w-full">
+    // <div className="lg:w-[70%] w-full">
     <div className="p-2 lg:p-0 min-h-screen">
       {/* Header with Add Hotel Button */}
       <div className="flex justify-between items-center mb-6">

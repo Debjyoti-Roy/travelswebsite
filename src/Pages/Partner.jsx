@@ -241,7 +241,7 @@ const Partner = () => {
             {/* Why Section */}
             <div className="min-h-[50vh]">
                 <div className="w-full flex justify-center px-4 py-12">
-                    <div className="lg:w-[60%] w-[90%] flex flex-col gap-8 justify-center">
+                    <div className="lg:w-[70%] w-[90%] flex flex-col gap-8 justify-center">
 
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
                             Why register your property with us?
@@ -314,7 +314,7 @@ const Partner = () => {
                         ) : (
                             status === 404 || status === 401 && (
                                 <div className="w-full flex justify-center px-4 py-12">
-                                    <div className="lg:w-[60%] w-[90%] bg-gray-50 rounded-xl shadow-xl p-8 flex flex-col gap-6">
+                                    <div className="lg:w-[70%] w-[90%] bg-gray-50 rounded-xl shadow-xl p-8 flex flex-col gap-6">
                                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
                                             Register Your Property
                                         </h2>
@@ -381,7 +381,7 @@ const Partner = () => {
                     </>
                 ) : (
                     <div className="w-full h-full flex justify-center items-center px-4 py-20">
-                        <div className="bg-white w-[60%] rounded-xl flex flex-col gap-4 text-center">
+                        <div className="bg-white w-[70%] rounded-xl flex flex-col gap-4 text-center">
                             <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
                                 Please log in to get started
                             </h2>

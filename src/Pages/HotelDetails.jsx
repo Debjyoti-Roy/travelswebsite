@@ -723,7 +723,7 @@ const HotelDetails = () => {
     } else {
       // console.log(0); // user not logged in
       setShowModal(true);
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -882,13 +882,13 @@ const HotelDetails = () => {
       {/* About Section */}
       <div className="flex justify-center">
 
-        <div className="lg:w-[60%] w-full flex justify-center flex-col">
+        <div className="lg:w-[70%] w-full flex justify-center flex-col">
 
 
 
           {/* Rooms Section */}
 
-          <div className="max-w-6xl mx-auto px-6 pb-3 pt-8">
+          <div className="max-w-full mx-auto px-6 pb-3 pt-8">
             <h2 className="text-2xl font-semibold pb-6 text-gray-800">
               Recommended Rooms allocated for {totalPeople} {totalPeople > 1 ? "people" : "person"}
             </h2>
