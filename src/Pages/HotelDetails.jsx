@@ -25,6 +25,7 @@ import { confirmPayment } from '../Redux/store/paymentSlice';
 import PaymentSuccessfullModal from './ModalComponent/PaymentSuccessfullModal';
 import PaymentFailedModal from './ModalComponent/PaymentFailModal';
 import ShareButton from '../Components/ShareButton';
+import ImageGallery from './HotelDetailsComponents/ImageGallery';
 
 const iconMap = {
   MONUMENT: MdLocationCity,
@@ -61,7 +62,7 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
   <div
     onClick={onClick}
     ref={ref}
-    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-lg cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
   >
     <FaCalendar className="absolute left-3 text-blue-500 w-5 h-5" />
     <span className={value ? "text-black" : "text-gray-400"}>
@@ -157,142 +158,271 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
 
 
   return (
+    // <div className="p-4 w-full md:w-full mx-auto">
+    //   <h2 className="text-3xl font-bold mb-6 text-gray-800">Select Rooms to Book</h2>
+    //   <table className="min-w-full text-sm border-separate border-spacing-y-6">
+    //     <tbody>
+    //       {hotelRooms.map((room) => {
+    //         const selectedCount = selectedRooms[room.id] || 0;
+    //         const currentIndex = imageIndexes[room.id] || 0;
+    //         const totalImages = room.imageUrls.length;
+
+    //         return (
+    //           <tr
+    //             key={room.id}
+    //             className="relative bg-white rounded-xl overflow-hidden border-l-4 border-blue-500"
+    //           >
+    //             <td className="p-4 align-top">
+    //               <div className="flex flex-col md:flex-row gap-4">
+    //                 <div className="relative w-full md:w-82 min-h-58 max-h-58 rounded overflow-hidden group">
+    //                   {totalImages > 1 ? (
+    //                     <>
+    //                       <img
+    //                         src={room.imageUrls[currentIndex]}
+    //                         alt={room.name}
+    //                         className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
+    //                       />
+    //                       <button
+    //                         onClick={() => handlePrevImage(room.id, totalImages)}
+    //                         className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
+    //                       >
+    //                         <FaChevronLeft size={20} />
+    //                       </button>
+    //                       <button
+    //                         onClick={() => handleNextImage(room.id, totalImages)}
+    //                         className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
+    //                       >
+    //                         <FaChevronRight size={20} />
+    //                       </button>
+    //                     </>
+    //                   ) : (
+    //                     <img
+    //                       src={room.imageUrls[0]}
+    //                       alt={room.name}
+    //                       className="w-full min-h-58 max-h-58 object-cover rounded transition-transform duration-300 group-hover:scale-105"
+    //                     />
+    //                   )}
+    //                 </div>
+
+    //                 <div className="flex flex-col justify-between text-gray-700 w-full">
+    //                   <div>
+
+    //                     <h3 className="inline-block bg-gradient-to-r text-center md:text-left from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-lg font-semibold mb-2 self-start">
+    //                       {room.name}
+    //                     </h3>
+    //                     <ul className="pt-2 list-disc list-outside text-gray-600 text-lg pl-5">
+    //                       {room.features.map((feature, i) => (
+    //                         <li key={i}>{feature}</li>
+    //                       ))}
+    //                     </ul>
+
+    //                   </div>
+    //                   <div className="text-lg mt-2 bg-gray-100 p-2 rounded">
+    //                     <span className="block">
+    //                       <strong>Max Occupancy:</strong> {room.maxOccupancy}
+    //                     </span>
+    //                     <span className="block">
+    //                       <strong>Available:</strong> {room.totalRooms}
+    //                     </span>
+    //                     <span className="block">
+    //                       <strong>Price/Night:</strong> ₹{room.pricePerNight}
+    //                     </span>
+    //                   </div>
+    //                 </div>
+    //               </div>
+    //             </td>
+    //             <td className="p-4 text-center md:align-top align-middle">
+    //               <div className="flex items-center justify-center gap-2">
+    //                 <button
+    //                   onClick={() => handleRoomChange(room.id, selectedCount - 1, room.totalRooms)}
+    //                   disabled={selectedCount <= 0}
+    //                   className={`px-2 py-1 border rounded ${selectedCount <= 0
+    //                     ? "text-gray-400 border-gray-300 cursor-not-allowed"
+    //                     : "text-gray-700 border-gray-400 hover:bg-gray-100"
+    //                     }`}
+    //                 >
+    //                   –
+    //                 </button>
+    //                 <span className="min-w-[20px] text-center font-medium">{selectedCount}</span>
+    //                 <button
+    //                   onClick={() => handleRoomChange(room.id, selectedCount + 1, room.totalRooms)}
+    //                   disabled={selectedCount >= room.totalRooms}
+    //                   className={`px-2 py-1 border rounded ${selectedCount >= room.totalRooms
+    //                     ? "text-gray-400 border-gray-300 cursor-not-allowed"
+    //                     : "text-gray-700 border-gray-400 hover:bg-gray-100"
+    //                     }`}
+    //                 >
+    //                   +
+    //                 </button>
+    //               </div>
+    //             </td>
+
+    //           </tr>
+    //         );
+    //       })}
+    //     </tbody>
+    //   </table>
+
+    //   <div className="mt-8 p-4 bg-gray-50 rounded flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
+    //     <div>
+    //       <p className="text-base font-medium">
+    //         Total People Covered:{" "}
+    //         <span className="font-bold">{summary.totalCapacity}</span>
+    //       </p>
+    //       <p className="text-base font-medium">
+    //         Booking for:{" "}
+    //         <span className="font-bold">{totalPeople}</span>
+    //       </p>
+    //       <p className="text-base font-medium">
+    //         Number of Days: <span className="font-bold">{numberofDays}</span>
+    //       </p>
+    //     </div>
+    //     <div className='flex flex-col gap-[5px]'>
+    //       <p className="text-xl font-bold text-green-600">
+    //         Grand Total: ₹{summary.totalCost}
+    //       </p>
+    //       <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
+    //         <button
+    //           onClick={handleBookNow2}
+    //           className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
+    //   text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+    //         >
+    //           Book Now
+    //         </button>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
     <div className="p-4 w-full md:w-full mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Select Rooms to Book</h2>
-      <table className="min-w-full text-sm border-separate border-spacing-y-6">
-        <thead>
-          <tr>
-            <th className="text-left px-2">Room Details</th>
-            <th className="text-center px-2"># Rooms</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hotelRooms.map((room) => {
-            const selectedCount = selectedRooms[room.id] || 0;
-            const currentIndex = imageIndexes[room.id] || 0;
-            const totalImages = room.imageUrls.length;
+  <h2 style={{marginBottom:'10px'}} className="text-3xl font-bold mb-6 text-gray-800">Select Rooms to Book</h2>
 
-            return (
-              <tr
-                key={room.id}
-                className="relative bg-white rounded-xl overflow-hidden border-l-4 border-blue-500"
-              >
-                <td className="p-4 align-top">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative w-full md:w-48 h-32 rounded overflow-hidden group">
-                      {totalImages > 1 ? (
-                        <>
-                          <img
-                            src={room.imageUrls[currentIndex]}
-                            alt={room.name}
-                            className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
-                          />
-                          <button
-                            onClick={() => handlePrevImage(room.id, totalImages)}
-                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
-                          >
-                            <FaChevronLeft size={20} />
-                          </button>
-                          <button
-                            onClick={() => handleNextImage(room.id, totalImages)}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
-                          >
-                            <FaChevronRight size={20} />
-                          </button>
-                        </>
-                      ) : (
-                        <img
-                          src={room.imageUrls[0]}
-                          alt={room.name}
-                          className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
-                        />
-                      )}
-                    </div>
-                    <div className="flex flex-col justify-between text-gray-700 w-full">
-                      <h3 className="inline-block bg-gradient-to-r from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold mb-2 self-start">
-                        {room.name}
-                      </h3>
-                      <ul className="list-disc list-inside text-gray-600 text-xs">
-                        {room.features.map((feature, i) => (
-                          <li key={i}>{feature}</li>
-                        ))}
-                      </ul>
-                      <div className="text-xs mt-2 bg-gray-100 p-2 rounded">
-                        <span className="block">
-                          <strong>Max Occupancy:</strong> {room.maxOccupancy}
-                        </span>
-                        <span className="block">
-                          <strong>Available:</strong> {room.totalRooms}
-                        </span>
-                        <span className="block">
-                          <strong>Price/Night:</strong> ₹{room.pricePerNight}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="p-4 text-center align-top">
-                  <div className="flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => handleRoomChange(room.id, selectedCount - 1, room.totalRooms)}
-                      disabled={selectedCount <= 0}
-                      className={`px-2 py-1 border rounded ${selectedCount <= 0
-                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                        : "text-gray-700 border-gray-400 hover:bg-gray-100"
-                        }`}
-                    >
-                      –
-                    </button>
-                    <span className="min-w-[20px] text-center font-medium">{selectedCount}</span>
-                    <button
-                      onClick={() => handleRoomChange(room.id, selectedCount + 1, room.totalRooms)}
-                      disabled={selectedCount >= room.totalRooms}
-                      className={`px-2 py-1 border rounded ${selectedCount >= room.totalRooms
-                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                        : "text-gray-700 border-gray-400 hover:bg-gray-100"
-                        }`}
-                    >
-                      +
-                    </button>
-                  </div>
-                </td>
+  <div  className="space-y-6">
+    {hotelRooms.map((room) => {
+      const selectedCount = selectedRooms[room.id] || 0;
+      const currentIndex = imageIndexes[room.id] || 0;
+      const totalImages = room.imageUrls.length;
 
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      return (
+        <div
+          key={room.id}
+          style={{marginBottom:'10px'}}
+          className="relative bg-white rounded-xl overflow-hidden border-l-4 border-blue-500 p-4 flex flex-col md:flex-row gap-4"
+        >
+          {/* Left Section */}
+          <div className="flex flex-col md:flex-row gap-4 w-full">
+            <div className="relative w-full md:w-82 min-h-58 max-h-58 rounded overflow-hidden group">
+              {totalImages > 1 ? (
+                <>
+                  <img
+                    src={room.imageUrls[currentIndex]}
+                    alt={room.name}
+                    className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <button
+                    onClick={() => handlePrevImage(room.id, totalImages)}
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
+                  >
+                    <FaChevronLeft size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleNextImage(room.id, totalImages)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
+                  >
+                    <FaChevronRight size={20} />
+                  </button>
+                </>
+              ) : (
+                <img
+                  src={room.imageUrls[0]}
+                  alt={room.name}
+                  className="w-full min-h-58 max-h-58 object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
+            </div>
 
-      <div className="mt-8 p-4 bg-gray-50 rounded flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
-        <div>
-          <p className="text-base font-medium">
-            Total People Covered:{" "}
-            <span className="font-bold">{summary.totalCapacity}</span>
-          </p>
-          <p className="text-base font-medium">
-            Booking for:{" "}
-            <span className="font-bold">{totalPeople}</span>
-          </p>
-          <p className="text-base font-medium">
-            Number of Days: <span className="font-bold">{numberofDays}</span>
-          </p>
-        </div>
-        <div className='flex flex-col gap-[5px]'>
-          <p className="text-xl font-bold text-green-600">
-            Grand Total: ₹{summary.totalCost}
-          </p>
-          <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
+            <div className="flex flex-col justify-between text-gray-700 w-full">
+              <div>
+                <h3 className="inline-block bg-gradient-to-r text-center md:text-left from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-lg font-semibold mb-2 self-start">
+                  {room.name}
+                </h3>
+                <ul className="pt-2 list-disc list-outside text-gray-600 text-lg pl-5">
+                  {room.features.map((feature, i) => (
+                    <li key={i}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="text-lg mt-2 bg-gray-100 p-2 rounded">
+                <span className="block">
+                  <strong>Max Occupancy:</strong> {room.maxOccupancy}
+                </span>
+                <span className="block">
+                  <strong>Available:</strong> {room.totalRooms}
+                </span>
+                <span className="block">
+                  <strong>Price/Night:</strong> ₹{room.pricePerNight}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section (Buttons) */}
+          <div className="flex items-center md:justify-center justify-start  gap-2 md:flex-row md:justify-start md:items-start">
             <button
-              onClick={handleBookNow2}
-              className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
-      text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+              onClick={() => handleRoomChange(room.id, selectedCount - 1, room.totalRooms)}
+              disabled={selectedCount <= 0}
+              className={`px-3 py-1 border rounded ${selectedCount <= 0
+                ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                : "text-gray-700 border-gray-400 hover:bg-gray-100"
+                }`}
             >
-              Book Now
+              –
+            </button>
+            <span className="min-w-[20px] text-center font-medium">{selectedCount}</span>
+            <button
+              onClick={() => handleRoomChange(room.id, selectedCount + 1, room.totalRooms)}
+              disabled={selectedCount >= room.totalRooms}
+              className={`px-3 py-1 border rounded ${selectedCount >= room.totalRooms
+                ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                : "text-gray-700 border-gray-400 hover:bg-gray-100"
+                }`}
+            >
+              +
             </button>
           </div>
         </div>
+      );
+    })}
+  </div>
+
+  {/* Summary Section */}
+  <div className="mt-8 p-4 bg-gray-50 rounded flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
+    <div>
+      <p className="text-base font-medium">
+        Total People Covered: <span className="font-bold">{summary.totalCapacity}</span>
+      </p>
+      <p className="text-base font-medium">
+        Booking for: <span className="font-bold">{totalPeople}</span>
+      </p>
+      <p className="text-base font-medium">
+        Number of Days: <span className="font-bold">{numberofDays}</span>
+      </p>
+    </div>
+    <div className="flex flex-col gap-[5px] mt-4 md:mt-0">
+      <p className="text-xl font-bold text-green-600">
+        Grand Total: ₹{summary.totalCost}
+      </p>
+      <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
+        <button
+          onClick={handleBookNow2}
+          className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+        >
+          Book Now
+        </button>
       </div>
     </div>
+  </div>
+</div>
+
   );
 };
 
@@ -348,6 +478,7 @@ const HotelDetails = () => {
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [hotelRooms, setHotelRooms] = useState([])
+  const [imageUrls, setImageUrls] = useState([])
 
   const [bookingData, setBookingData] = useState(null);
   const [bookingData2, setBookingData2] = useState(null);
@@ -603,7 +734,8 @@ const HotelDetails = () => {
           const htl = await dispatch(fetchHotel({ checkIn: currentState.checkIn, checkOut: currentState.checkOut, id: currentState.id }));
           // console.log(htl);
           if (htl.payload && htl.payload.status == 200) {
-            // console.log(htl.payload.data?.nearbyAttractions);
+            console.log(htl.payload.data?.imageUrls);
+            setImageUrls(htl.payload.data?.imageUrls)
             setNearbyAttractions(htl.payload.data?.nearbyAttractions)
             setHotelRooms(htl.payload.data?.rooms)
             setAmenititeslist(htl.payload.data?.amenities)
@@ -767,7 +899,7 @@ const HotelDetails = () => {
       modal: {
         ondismiss: () => {
           // Called when user closes the Razorpay popup
-          toast.error("Booking not confirmed. Payment was cancelled.",{
+          toast.error("Booking not confirmed. Payment was cancelled.", {
             style: {
               borderRadius: "10px",
               background: "#333",
@@ -889,7 +1021,7 @@ const HotelDetails = () => {
           {/* Rooms Section */}
 
           <div className="max-w-full mx-auto px-6 pb-3 pt-8">
-            <h2 className="text-2xl font-semibold pb-6 text-gray-800">
+            <h2 className="text-3xl font-semibold pb-6 text-gray-800">
               Recommended Rooms allocated for {totalPeople} {totalPeople > 1 ? "people" : "person"}
             </h2>
 
@@ -911,12 +1043,12 @@ const HotelDetails = () => {
                         className="border border-gray-200 p-4 shadow-sm hover:shadow transition bg-white flex flex-col md:flex-row md:justify-between"
                       >
                         <div className="flex-1">
-                          <h3 className="text-lg font-bold text-gray-800">
+                          <h3 className="text-xl font-bold text-gray-800">
                             {count} × {room.name}
                           </h3>
-                          <p className="text-gray-600 text-sm mt-1">Max Occupancy: {room.maxOccupancy}</p>
+                          <p className="text-gray-600 text-md mt-1">Max Occupancy: {room.maxOccupancy}</p>
                           {/* <p className="text-gray-600 text-sm">Beds: {room.bedsDescription ?? "—"}</p> */}
-                          <ul className="list-disc list-inside text-gray-500 text-sm mt-2 space-y-1">
+                          <ul className="list-disc list-inside text-gray-500 text-md mt-2 space-y-1">
                             {room.features.map((feat, idx) => (
                               <li key={idx}>{feat}</li>
                             ))}
@@ -924,8 +1056,8 @@ const HotelDetails = () => {
                         </div>
 
                         <div className="mt-4 md:mt-0 md:ml-6 text-right">
-                          <p className="text-gray-600 text-sm">Price per night</p>
-                          <p className="text-blue-600 font-semibold text-lg">₹{room.pricePerNight}</p>
+                          <p className="text-gray-600 text-md">Price per night</p>
+                          <p className="text-blue-600 font-semibold text-xl">₹{room.pricePerNight}</p>
                           <p className="mt-1 text-gray-800 font-bold">Total: ₹{totalPrice}/Night</p>
                         </div>
                       </div>
@@ -933,7 +1065,7 @@ const HotelDetails = () => {
 
                   })}
                   <div className="mt-6 border-t border-gray-200 pt-4 flex flex-col md:flex-row md:justify-between items-center">
-                    <div className="text-xl flex items-center gap-[2px] font-bold text-gray-800">
+                    <div className="text-2xl flex items-center gap-[2px] font-bold text-gray-800">
                       <div>
 
                         Total Amount: ₹{grandTotal * numberofDays}
@@ -1005,19 +1137,23 @@ const HotelDetails = () => {
               )}
             </div>
           </div>
-          <div className="max-w-6xl mx-auto px-6 pt-10 pb-5">
-            <h2 className="text-2xl font-semibold pb-6 text-gray-800">About the Hotel</h2>
+          {/* Image Grid */}
+          {/* <div></div> */}
+          <ImageGallery imageUrls={imageUrls} />
+          {/* About the Hotel */}
+          <div className="w-full mx-auto px-6 pt-10 pb-5">
+            <h2 className="text-3xl font-semibold pb-6 text-gray-800">About the Hotel</h2>
             <div className="flex flex-wrap gap-2">
               {hotel.tags?.map((tag, i) => (
                 <span
                   key={i}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-md font-medium"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            <div className="pt-2">
+            <div className="pt-2 text-lg">
               <p className="text-gray-600 leading-relaxed">
                 {displayedText}
                 {isLong && !showFull && "..."}
@@ -1033,17 +1169,17 @@ const HotelDetails = () => {
             </div>
           </div>
           <div className='pb-4 px-6'>
-            <h3 className="font-semibold text-2xl text-gray-800 pt-5 pb-6">Facilities that this hotel offers</h3>
+            <h3 className="font-semibold text-3xl text-gray-800 pt-5 pb-6">Facilities that this hotel offers</h3>
             <div className="grid md:grid-cols-4 grid-cols-2 gap-2 pt-2">
               {hotel.amenities.map((a, idx) => (
                 <span
                   key={idx}
                   className="flex items-center gap-1 px-2 py-2 rounded-full text-xs font-medium border border-gray-200"
                 >
-                  <div className="text-xl text-blue-700 p-1 rounded-lg bg-blue-100 flex-shrink-0">
+                  <div className="text-2xl text-blue-700 p-1 rounded-lg bg-blue-100 flex-shrink-0">
                     {getAmenityIcon(a.name)}
                   </div>
-                  <div className="truncate">
+                  <div className="truncate text-xl">
                     {a.name}
                   </div>
                 </span>
@@ -1053,7 +1189,7 @@ const HotelDetails = () => {
           <div className="package-search-container">
             <div className="flex flex-col md:flex-row p-6 md:p-0 gap-[10px] w-full md:p-4">
               <div className="flex-[1.5] w-full">
-                <label className="block text-sm font-medium mb-1 flex pb-1">Dates</label>
+                <label className="block text-lg font-medium mb-1 flex pb-1">Dates</label>
                 <div className="relative">
                   <DatePicker
                     selectsRange
@@ -1074,10 +1210,10 @@ const HotelDetails = () => {
               </div>
 
               <div className="relative flex-1 w-full">
-                <label className="block text-sm font-medium mb-1 flex pb-1">Guests & Rooms</label>
+                <label className="block text-lg font-medium mb-1 flex pb-1">Guests & Rooms</label>
                 <div
                   onClick={() => setShowGuestOptions(!showGuestOptions)}
-                  className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-lg cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <FaUsers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
                   {`${adults} Adults${children > 0 ? ` · ${children} Children` : ""} · ${rooms} Rooms`}
@@ -1130,7 +1266,7 @@ const HotelDetails = () => {
                 <button
                   onClick={handleSearch}
                   className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
-      text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+      text-white rounded-xl px-6 py-3 text-lg font-medium hover:bg-blue-700 transition"
                 >
                   Search
                 </button>
@@ -1147,13 +1283,13 @@ const HotelDetails = () => {
           />
 
           <div className="bg-gray-50 p-8 rounded-xl mx-auto">
-            <h2 className="text-2xl font-bold pb-6 text-gray-800">Our Premium Guest-First Cancellation Policy</h2>
+            <h2 className="text-3xl font-bold pb-6 text-gray-800">Our Premium Guest-First Cancellation Policy</h2>
 
             <div className="flex items-start gap-3 pb-6">
               <MdOutlineCancel size={26} className="text-blue-500 flex-shrink-0" />
               <div>
-                <h3 className="text-lg font-semibold">Flexible & Hassle-Free Cancellations</h3>
-                <p className="text-gray-700 text-sm pt-2">
+                <h3 className="text-xl font-semibold">Flexible & Hassle-Free Cancellations</h3>
+                <p className="text-gray-700 text-lg pt-2">
                   At <strong>{hotel?.name}</strong>, we strive to offer clarity and fairness in all bookings.
 
                   We provide a <strong>100% refund for cancellations made 10 days or more before your scheduled arrival</strong>. This gives you the flexibility to change your plans with peace of mind.
@@ -1171,8 +1307,8 @@ const HotelDetails = () => {
             <div className="flex items-start gap-3 pb-6">
               <MdAutorenew size={26} className="text-blue-500 flex-shrink-0" />
               <div>
-                <h3 className="text-lg font-semibold">Easy & Transparent Refunds</h3>
-                <p className="text-gray-700 text-sm pt-2">
+                <h3 className="text-xl font-semibold">Easy & Transparent Refunds</h3>
+                <p className="text-gray-700 text-lg pt-2">
                   We believe that the refund process should be as smooth and seamless as your stay with us. Eligible refunds will be
                   processed to your original payment method within <strong>5–7 business days</strong>, ensuring no unnecessary delays.
                   You will receive timely email updates at each step, so you’re never left wondering about the status. Our commitment
@@ -1184,8 +1320,8 @@ const HotelDetails = () => {
             <div className="flex items-start gap-3 pb-2">
               <MdSupportAgent size={26} className="text-blue-500 flex-shrink-0" />
               <div>
-                <h3 className="text-lg font-semibold">24/7 Dedicated Guest Support</h3>
-                <p className="text-gray-700 text-sm pt-2">
+                <h3 className="text-xl font-semibold">24/7 Dedicated Guest Support</h3>
+                <p className="text-gray-700 text-lg pt-2">
                   We know that questions or last-minute changes don’t always fit within business hours. That’s why our guest support
                   team is available around the clock to assist with any modifications, special requests, or travel emergencies.
                   From helping you secure a last-minute upgrade to arranging a late check-out, we are here to make sure your experience
@@ -1197,19 +1333,19 @@ const HotelDetails = () => {
 
 
           <div className="bg-gray-50 p-8 w-full rounded-xl mx-auto pt-8">
-            <h2 className="text-2xl font-bold pb-4 text-gray-800">Nearby Attractions</h2>
+            <h2 className="text-3xl font-bold pb-4 text-gray-800">Nearby Attractions</h2>
             <div className="space-y-4">
               {nearbyAttractions?.length === 0 ? (
-                <p className="text-gray-500 text-sm">No nearby attractions available.</p>
+                <p className="text-gray-500 text-lg">No nearby attractions available.</p>
               ) : (
                 nearbyAttractions.map((attraction, index) => {
                   const Icon = iconMap[attraction.type] || MdPlace;
                   return (
                     <div key={index} className="flex items-center gap-3 bg-white p-3 rounded-md">
-                      <Icon size={24} className="text-blue-500 flex-shrink-0" />
+                      <Icon size={30} className="text-blue-500 flex-shrink-0" />
                       <div>
-                        <h3 className="text-base font-medium text-gray-700">{attraction.name}</h3>
-                        <p className="text-gray-500 text-sm">{attraction.distance} away</p>
+                        <h3 className="text-base text-lg font-medium text-gray-700">{attraction.name}</h3>
+                        <p className="text-gray-500 text-md text-sm">{attraction.distance} away</p>
                       </div>
                     </div>
                   );

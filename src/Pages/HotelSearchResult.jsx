@@ -6,6 +6,7 @@ import { FaMapMarkerAlt, FaUsers, FaWifi, FaFire, FaThermometerHalf, FaTint, FaV
 import { Carousel } from 'react-responsive-carousel';
 import Slider from '@mui/material/Slider';
 import DatePicker from 'react-datepicker';
+import { Skeleton } from '@mui/material';
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
   <div
@@ -327,6 +328,7 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
   );
 });
 
+
 const HotelSearchResult = () => {
   const location = useLocation();
   const { state } = location;
@@ -413,6 +415,18 @@ const HotelSearchResult = () => {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [loadedImages, setLoadedImages] = useState({});
+
+  const handleImageLoad = (id) => {
+    setLoadedImages((prev) => ({ ...prev, [id]: true }));
+  };
+
+
+  //Skeleton
+  
+
+
+
 
 
   const handleSearch = () => {
@@ -452,7 +466,7 @@ const HotelSearchResult = () => {
         </div>
       </div>
       {/* Search Container */}
-      <div className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10'>
+      <div className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>
         {/* Banner */}
         <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
 
@@ -598,11 +612,43 @@ const HotelSearchResult = () => {
               </div>
             </div>
 
-            {loading && <div className="w-full flex-1 gap-6">Loading...</div>}
+            {/* {loading && <div className="w-full flex-1 gap-6">Loading...</div>} */}
+            {loading && (
+              <div className="w-full flex flex-col gap-6 mb-6">
+                {[...Array(3)].map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4"
+                  >
+                    {/* Image Skeleton */}
+                    <Skeleton
+                      variant="rectangular"
+                      animation="wave"
+                      width="30%"
+                      height={190}
+                      className="rounded-lg"
+                    />
+
+                    {/* Info Skeleton */}
+                    <div className="flex-1 flex flex-col gap-2">
+                      <Skeleton animation="wave" variant="text" width="60%" height={32} />
+                      <Skeleton animation="wave" variant="text" width="40%" height={24} />
+                      <Skeleton animation="wave" variant="text" width="80%" height={24} />
+                      <Skeleton animation="wave" variant="text" width="90%" height={60} />
+                      <div className="flex justify-between items-center pt-4">
+                        <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                        <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {error}</div>}
 
             {searchResults && !loading && !error && (
-              <div  className="w-full flex-1 gap-6 mb-6">
+              <div className="w-full flex-1 gap-6 mb-6">
                 {[...(searchResults.content || [])]
                   .sort((a, b) => {
                     if (appliedFilters.priceSort === 'lowToHigh') {
@@ -623,33 +669,66 @@ const HotelSearchResult = () => {
                       <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[190px] md:h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <div className="w-full h-full ml-2 object-cover">
                           {hotel.photoUrls.length === 1 ? (
-                            <div className="w-full h-full overflow-hidden">
+                            <div className="relative w-full h-full overflow-hidden">
+                              {!loadedImages[hotel.id] && (
+                                <div className="absolute top-0 left-0 w-full h-full z-10">
+                                  <Skeleton
+                                    variant="rectangular"
+                                    animation="wave"
+                                    width="100%"
+                                    height="100%"
+                                    className="h-full w-full"
+                                  />
+                                </div>
+                              )}
                               <img
                                 src={hotel.photoUrls[0]}
                                 alt={hotel.name}
-                                className="w-full h-full object-cover"
+                                onLoad={() => handleImageLoad(hotel.id)}
+                                className={`w-full h-full object-cover transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'
+                                  }`}
                               />
                             </div>
                           ) : (
-                            <Carousel
-                              showThumbs={false}
-                              showStatus={false}
-                              infiniteLoop
-                              autoPlay
-                              interval={3000}
-                              className="w-full h-full object-cover"
-                            >
-                              {hotel.photoUrls.map((url, idx) => (
-                                <div key={idx} className="w-full h-full overflow-hidden object-cover">
-                                  <img
-                                    src={url}
-                                    alt={`${hotel.name} ${idx + 1}`}
-                                    className="w-full h-full object-cover"
+                            <div className="relative w-full h-full overflow-hidden">
+                              {!loadedImages[hotel.id] && (
+                                <div className="absolute top-0 left-0 w-full h-full z-10">
+                                  <Skeleton
+                                    variant="rectangular"
+                                    animation="wave"
+                                    width="100%"
+                                    height="100%"
+                                    className="h-full w-full"
                                   />
                                 </div>
-                              ))}
-                            </Carousel>
+                              )}
+                              <Carousel
+                                showThumbs={false}
+                                showStatus={false}
+                                infiniteLoop
+                                autoPlay
+                                interval={3000}
+                                className={`w-full h-full object-cover transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'
+                                  }`}
+                              >
+                                {hotel.photoUrls.map((url, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="w-full h-full overflow-hidden object-cover relative"
+                                  >
+                                    <img
+                                      src={url}
+                                      alt={`${hotel.name} ${idx + 1}`}
+                                      onLoad={() => handleImageLoad(hotel.id)}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                ))}
+                              </Carousel>
+                            </div>
                           )}
+
+
                         </div>
 
                       </div>
