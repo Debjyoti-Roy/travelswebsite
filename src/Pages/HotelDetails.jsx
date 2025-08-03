@@ -26,6 +26,7 @@ import PaymentSuccessfullModal from './ModalComponent/PaymentSuccessfullModal';
 import PaymentFailedModal from './ModalComponent/PaymentFailModal';
 import ShareButton from '../Components/ShareButton';
 import ImageGallery from './HotelDetailsComponents/ImageGallery';
+import { Skeleton } from '@mui/material';
 
 const iconMap = {
   MONUMENT: MdLocationCity,
@@ -775,11 +776,43 @@ const HotelDetails = () => {
     return <div className="min-h-screen flex items-center justify-center">Invalid request: Missing required parameters. Please ensure you have a valid hotel ID, check-in, and check-out dates.</div>;
   }
 
+  // if (!hotel || Object.keys(hotel).length === 0) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">Loading hotel details...</div>
+  //   );
+  // }
   if (!hotel || Object.keys(hotel).length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">Loading hotel details...</div>
+      <div className="min-h-screen w-full bg-gray-50">
+        {/* Hero Skeleton */}
+        <div className="relative h-[450px] w-full">
+          <Skeleton variant="rectangular" width="100%" height="100%" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <Skeleton variant="text" width="60%" height={40} />
+            <Skeleton variant="text" width="40%" height={25} />
+          </div>
+        </div>
+  
+        {/* About Section */}
+        <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
+          <Skeleton variant="text" width="40%" height={35} className="mb-4" />
+          <Skeleton variant="rectangular" height={120} className="rounded-lg" />
+  
+          {/* Rooms Placeholder */}
+          <div className="pt-10 space-y-4">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="bg-white p-4 rounded-xl shadow-sm">
+                <Skeleton variant="text" width="50%" height={30} />
+                <Skeleton variant="text" width="30%" height={20} className="mt-2" />
+                <Skeleton variant="text" width="70%" height={20} className="mt-2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     );
   }
+  
 
   const grandTotal = allocatedRooms.reduce(
     (acc, roomObj) => acc + roomObj.room.pricePerNight * roomObj.count,

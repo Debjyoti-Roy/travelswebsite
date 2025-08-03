@@ -423,7 +423,13 @@ const HotelSearchResult = () => {
 
 
   //Skeleton
-  
+
+
+
+
+
+
+
 
 
 
@@ -613,23 +619,21 @@ const HotelSearchResult = () => {
             </div>
 
             {/* {loading && <div className="w-full flex-1 gap-6">Loading...</div>} */}
-            {loading && (
+            {(loading) && (
               <div className="w-full flex flex-col gap-6 mb-6">
                 {[...Array(3)].map((_, idx) => (
                   <div
                     key={idx}
                     className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4"
                   >
-                    {/* Image Skeleton */}
+
                     <Skeleton
                       variant="rectangular"
                       animation="wave"
                       width="30%"
-                      height={190}
+                      height="95%"
                       className="rounded-lg"
                     />
-
-                    {/* Info Skeleton */}
                     <div className="flex-1 flex flex-col gap-2">
                       <Skeleton animation="wave" variant="text" width="60%" height={32} />
                       <Skeleton animation="wave" variant="text" width="40%" height={24} />
@@ -647,7 +651,7 @@ const HotelSearchResult = () => {
 
             {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {error}</div>}
 
-            {searchResults && !loading && !error && (
+            {/* {searchResults && !error && (
               <div className="w-full flex-1 gap-6 mb-6">
                 {[...(searchResults.content || [])]
                   .sort((a, b) => {
@@ -665,7 +669,7 @@ const HotelSearchResult = () => {
                       style={{ marginBottom: "10px" }}
                       className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-auto  md:h-70"
                     >
-                      {/* Image */}
+                      
                       <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[190px] md:h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <div className="w-full h-full ml-2 object-cover">
                           {hotel.photoUrls.length === 1 ? (
@@ -733,7 +737,7 @@ const HotelSearchResult = () => {
 
                       </div>
 
-                      {/* Info section */}
+                      
                       <div className="flex flex-col justify-between py-4 md:py-0 h-[70%] md:h-[80%] px-4 flex-1 ">
                         <div className="flex justify-between items-start">
                           <h3 className="text-2xl font-bold text-gray-800">{hotel.name}</h3>
@@ -775,33 +779,168 @@ const HotelSearchResult = () => {
                     </div>
                   ))}
               </div>
+            )} */}
+            {searchResults && !error && (
+              <>
+                {(searchResults.content || []).length > 0 ? (
+                  <div className="w-full flex-1 gap-6 mb-6">
+                    {[...searchResults.content]
+                      .sort((a, b) => {
+                        if (appliedFilters.priceSort === 'lowToHigh') {
+                          return a.startingPrice - b.startingPrice;
+                        }
+                        if (appliedFilters.priceSort === 'highToLow') {
+                          return b.startingPrice - a.startingPrice;
+                        }
+                        return 0;
+                      })
+                      .map((hotel) => (
+                        <div style={{ marginBottom: "10px" }} key={hotel.id} className="relative mb-6">
+                          {/* Actual Card */}
+                          <div className={`transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4">
+                              {/* Image */}
+                              <div className="w-[30%] h-[190px] md:h-[95%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                <div className="w-full h-full">
+                                  {hotel.photoUrls.length === 1 ? (
+                                    <img
+                                      src={hotel.photoUrls[0]}
+                                      alt={hotel.name}
+                                      onLoad={() => handleImageLoad(hotel.id)}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <Carousel
+                                      showThumbs={false}
+                                      showStatus={false}
+                                      infiniteLoop
+                                      autoPlay
+                                      interval={3000}
+                                      className="w-full h-full"
+                                    >
+                                      {hotel.photoUrls.map((url, idx) => (
+                                        <div key={idx} className="w-full h-full">
+                                          <img
+                                            src={url}
+                                            alt={`${hotel.name} ${idx + 1}`}
+                                            onLoad={() => handleImageLoad(hotel.id)}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        </div>
+                                      ))}
+                                    </Carousel>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Content */}
+                              <div className="flex-1 flex flex-col justify-between h-[70%] md:h-[80%] px-4">
+                                <div className="flex justify-between items-start">
+                                  <h3 className="text-2xl font-bold text-gray-800">{hotel.name}</h3>
+                                  <span className="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">Available</span>
+                                </div>
+
+                                <div className="flex items-center text-gray-500 text-lg pt-2">
+                                  <FaMapMarkerAlt className="mr-1 text-red-600" />
+                                  {hotel.city}, {hotel.district} - {hotel.pinCode}
+                                </div>
+
+                                <div className="flex items-center flex-wrap gap-2 pt-1">
+                                  {hotel.tags.map((tag, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="bg-blue-100 text-blue-700 rounded-full px-2 py-1 text-sm font-medium"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                  <div className="flex items-center text-yellow-500 text-sm">★★★★☆</div>
+                                  <span className="text-gray-500 text-lg">Very Good</span>
+                                </div>
+
+                                <HotelDescription description={hotel.description} />
+
+                                <div className="flex items-center justify-between pt-4">
+                                  <div className="text-xl font-bold text-blue-700">
+                                    ₹{hotel.startingPrice}
+                                    <span className="text-gray-500 text-sm font-normal"> /night</span>
+                                  </div>
+                                  <button
+                                    onClick={() => hotelDetails(hotel.id, hotel.startingPrice)}
+                                    className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition"
+                                  >
+                                    Book Now
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Skeleton Overlay */}
+                          {!loadedImages[hotel.id] && (
+                            <div className="absolute inset-0 z-10">
+                              <div className="flex items-center bg-white rounded-2xl shadow-lg w-full h-full p-4 gap-4">
+                                <Skeleton
+                                  variant="rectangular"
+                                  animation="wave"
+                                  width="30%"
+                                  height="95%"
+                                  className="rounded-lg"
+                                />
+                                <div className="flex-1 flex flex-col gap-2">
+                                  <Skeleton animation="wave" variant="text" width="60%" height={32} />
+                                  <Skeleton animation="wave" variant="text" width="40%" height={24} />
+                                  <Skeleton animation="wave" variant="text" width="80%" height={24} />
+                                  <Skeleton animation="wave" variant="text" width="90%" height={60} />
+                                  <div className="flex justify-between items-center pt-4">
+                                    <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                                    <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500 font-semibold text-lg py-10">
+                    No hotels found matching your search criteria.
+                  </div>
+                )}
+              </>
             )}
 
+
+
+
             {/* Pagination Section - Now positioned at bottom */}
-            <div className="mt-auto pt-6">
-              <div className="text-gray-600 mb-2 text-center">
-                Total Elements: {searchResults.totalElements} | Total Pages: {searchResults.totalPages}
+            {searchResults?.content?.length > 0 && (
+              <div className="mt-auto pt-6">
+                <div className="text-gray-600 mb-2 text-center">
+                  Total Elements: {searchResults.totalElements} | Total Pages: {searchResults.totalPages}
+                </div>
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                    disabled={page === 0}
+                    className={`px-4 py-2 rounded ${page === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
+                      }`}
+                  >
+                    Prev
+                  </button>
+                  <span>Page {page + 1}</span>
+                  <button
+                    onClick={() => !searchResults.last && setPage((prev) => prev + 1)}
+                    disabled={searchResults.last}
+                    className={`px-4 py-2 rounded ${searchResults.last ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
+                      }`}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                  disabled={page === 0}
-                  className={`px-4 py-2 rounded ${page === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
-                    }`}
-                >
-                  Prev
-                </button>
-                <span>Page {page + 1}</span>
-                <button
-                  onClick={() => !searchResults.last && setPage((prev) => prev + 1)}
-                  disabled={searchResults.last}
-                  className={`px-4 py-2 rounded ${searchResults.last ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 text-white"
-                    }`}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 

@@ -25,7 +25,7 @@ function App() {
       <Toaster position="bottom-center" />
       <Router>
         <MainPage>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>Suspense loading...</div>}>
             <Routes>
               {routes.map((route) => (
                 <Route
