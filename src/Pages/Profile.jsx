@@ -148,6 +148,21 @@ const Profile = () => {
 
   const [expandedCards, setExpandedCards] = useState({});
 
+  const topRef = useRef(null);
+
+useEffect(() => {
+  if (topRef.current) {
+    const navbarHeight = 80; // px height of your navbar
+    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: elementTop - navbarHeight,
+      behavior: "smooth",
+    });
+  }
+}, []);
+
+  
+
   const toggleExpand = (id) => {
     setExpandedCards((prev) => ({
       ...prev,
@@ -399,7 +414,7 @@ const Profile = () => {
     )}
     {!tokenExpired && (
 
-      <div className="min-h-screen bg-[#f5f5f5]">
+      <div ref={topRef} className="min-h-screen bg-[#f5f5f5]">
 
         <div className="w-full  flex justify-center px-4 py-12">
           <div className="md:w-[70%] w-[90%] flex flex-col gap-[20px] justify-center">

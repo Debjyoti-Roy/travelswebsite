@@ -432,6 +432,9 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
 const HotelDetails = () => {
   // console.log("HotelDetails function body running");
 
+   // ⬅️ run again when `hotel` data changes
+
+
   const location = useLocation();
   const { state } = location;
   const navigate = useNavigate();
@@ -466,6 +469,19 @@ const HotelDetails = () => {
   const [text, setText] = useState()
   const [amenities, setAmenititeslist] = useState([])
   const [nearbyAttractions, setNearbyAttractions] = useState([])
+
+  const topRef = useRef(null);
+
+useEffect(() => {
+  if (hotel && topRef.current) {
+    const navbarHeight = 80;
+    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: elementTop - navbarHeight,
+      behavior: "smooth",
+    });
+  }
+}, [hotel]);
 
 
   const [showInfo, setShowInfo] = useState(false);
@@ -839,8 +855,8 @@ const HotelDetails = () => {
     // Create new state object
     const newState = {
       ...currentState,
-      checkIn: startDate ? startDate : currentState.checkIn,
-      checkOut: endDate ? endDate : currentState.checkOut,
+      checkIn: startDate ? new Date(startDate).toISOString().split("T")[0] : currentState.checkIn,
+      checkOut: endDate ? new Date(endDate).toISOString().split("T")[0] : currentState.checkOut,
       total: totalPeople,
       room: rooms,
     };
@@ -1017,16 +1033,20 @@ const HotelDetails = () => {
   // };
 
 
+  
+
+
   return (
-    <div className="w-full bg-gray-50">
+    <div ref={topRef} className="w-full bg-gray-50">
       {/* Hero Image */}
-      <div className="relative h-[450px] w-full">
+      <div   className="relative h-[450px] w-full">
         {hotel && hotel.videoUrl ? (
-          <video autoPlay muted loop className="h-full w-full object-cover">
+          <video  autoPlay muted loop className="h-full w-full object-cover">
             <source src={hotel.videoUrl} type="video/mp4" />
           </video>
         ) : (
           <img
+          
             src={hotel?.imageUrls[0]}
             alt={hotel?.name}
             className="h-full w-full object-cover"

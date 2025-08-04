@@ -53,6 +53,14 @@ const statesData = statesJson.states.map((s) => ({ value: s.state, label: s.stat
 
 const MAX_IMAGES = 5;
 
+const allDistricts = {};
+statesJson.states.forEach((s) => {
+  allDistricts[s.state] = s.districts.map((d) => ({
+    value: d.name,
+    label: d.name,
+  }));
+});
+
 const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
   useEffect(() => {
     console.log(hotel);
@@ -71,6 +79,16 @@ const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
     latitude: hotel.latitude || "",
     longitude: hotel.longitude || "",
   });
+  const [districtsOptions, setDistrictsOptions] = useState([]);
+
+  // Populate districts on state change or when editing existing hotel
+  useEffect(() => {
+    if (basicDetails.state) {
+      setDistrictsOptions(allDistricts[basicDetails.state] || []);
+    } else {
+      setDistrictsOptions([]);
+    }
+  }, [basicDetails.state]);
   // For image preview, keep URLs only
   const [mediaImages, setMediaImages] = useState(hotel.imageUrls ? [...hotel.imageUrls] : []);
   const [mediaImagesPreview, setMediaImagesPreview] = useState(hotel.imageUrls ? [...hotel.imageUrls] : []);
@@ -330,8 +348,20 @@ const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
                 <Select options={statesData} value={statesData.find(opt => opt.value === basicDetails.state)} onChange={option => setBasicDetails({ ...basicDetails, state: option.value })} placeholder="Select state" isSearchable className="rounded-lg focus:outline-none" />
               </div>
               <div>
+                {/* <label className="block text-gray-700 font-medium mb-1">District</label>
+                <input type="text" value={basicDetails.district} onChange={e => setBasicDetails({ ...basicDetails, district: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" /> */}
                 <label className="block text-gray-700 font-medium mb-1">District</label>
-                <input type="text" value={basicDetails.district} onChange={e => setBasicDetails({ ...basicDetails, district: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+                <Select
+                  options={districtsOptions}
+                  value={districtsOptions.find((opt) => opt.value === basicDetails.district)}
+                  onChange={(option) =>
+                    setBasicDetails({ ...basicDetails, district: option.value })
+                  }
+                  placeholder="Select district"
+                  isSearchable
+                  className="rounded-lg focus:outline-none"
+                  isDisabled={!basicDetails.state}
+                />
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-1">City</label>

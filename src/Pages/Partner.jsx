@@ -163,10 +163,23 @@ const Partner = () => {
             }
         }
     }
+    const topRef = useRef(null);
+
+useEffect(() => {
+  if (topRef.current) {
+    const navbarHeight = 80; // px height of your navbar
+    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: elementTop - navbarHeight,
+      behavior: "smooth",
+    });
+  }
+}, []);
+
     return (
         <div className="min-h-screen bg-[#f5f5f5]">
 
-            
+
             {/* <div className="h-[40vh]">
                 <div className="w-full h-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center">
                     <div className="md:w-[61%] w-[90%] flex flex-col gap-4 justify-center relative">
@@ -202,41 +215,40 @@ const Partner = () => {
                     </div>
                 </div>
             </div> */}
-            <div className="h-[40vh]">
-  <div className="w-full h-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center">
-    <div className="lg:w-[61%] w-[90%] flex flex-col gap-4 justify-center relative">
-      <div className="rounded-xl px-6 py-8">
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 leading-snug">
-          List your
-          <br />
-          <span
-            className={`text-[#0036ac] inline-block transition-opacity duration-500 ease-in-out ${
-              fade ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            {options[currentIndex]}
-          </span>
-          <br />
-          on our website
-        </h1>
+            <div ref={topRef} className="h-[40vh]">
+                <div className="w-full h-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center">
+                    <div className="lg:w-[71%] w-[90%] flex flex-col gap-4 justify-center relative">
+                        <div className="rounded-xl px-6 py-8">
+                            <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 leading-snug">
+                                List your
+                                <br />
+                                <span
+                                    className={`text-[#0036ac] inline-block transition-opacity duration-500 ease-in-out ${fade ? "opacity-100" : "opacity-0"
+                                        }`}
+                                >
+                                    {options[currentIndex]}
+                                </span>
+                                <br />
+                                on our website
+                            </h1>
 
-        <p className="text-white text-sm md:text-lg pt-3 max-w-xl">
-          Join our network of premium hotels and resorts to reach millions of travelers across India.
-        </p>
-      </div>
+                            <p className="text-white text-sm md:text-lg pt-3 max-w-xl">
+                                Join our network of premium hotels and resorts to reach millions of travelers across India.
+                            </p>
+                        </div>
 
-      {/* Register Button */}
-      <div className="md:absolute md:right-4 lg:bottom-30 md:bottom-50 px-4 md:px-0 ">
-        <button
-          onClick={handleScrollToRegister}
-          className="bg-white text-[#2589f3] font-semibold mb-5 px-6 py-3 rounded-full w-full md:w-auto shadow-md transition-all duration-300 hover:bg-[#2589f3] hover:text-white hover:shadow-lg hover:scale-105"
-        >
-          {status === 200 ? "See your status" : "Register Now"}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+                        {/* Register Button */}
+                        <div className="md:absolute md:right-4 lg:bottom-30 md:bottom-50 px-4 md:px-0 ">
+                            <button
+                                onClick={handleScrollToRegister}
+                                className="bg-white text-[#2589f3] font-semibold mb-5 px-6 py-3 rounded-full w-full md:w-auto shadow-md transition-all duration-300 hover:bg-[#2589f3] hover:text-white hover:shadow-lg hover:scale-105"
+                            >
+                                {status === 200 ? "See your status" : "Register Now"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Why Section */}
             <div className="min-h-[50vh]">

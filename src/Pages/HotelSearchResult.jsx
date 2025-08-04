@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchHotels } from '../Redux/store/hotelSlice';
@@ -35,7 +35,7 @@ function HotelDescription({ description }) {
   const displayedText = isExpanded ? description : description.slice(0, charLimit) + (shouldTruncate ? "..." : "");
 
   return (
-    <p className="hidden md:block text-gray-500 text-md pt-2">
+    <p className="hidden lg:block text-gray-500 text-md pt-2">
       {displayedText}
       {/* {shouldTruncate && (
         <button
@@ -448,9 +448,23 @@ const HotelSearchResult = () => {
     window.location.reload();
   }
 
+  const topRef = useRef(null);
+
+useEffect(() => {
+  if (topRef.current) {
+    const navbarHeight = 80; // px height of your navbar
+    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: elementTop - navbarHeight,
+      behavior: "smooth",
+    });
+  }
+}, []);
+
+
   return (
     <>
-      <div className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 z-40">
+      <div ref={topRef} className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 z-40">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <FaFilter className="text-blue-600" />
@@ -472,7 +486,7 @@ const HotelSearchResult = () => {
         </div>
       </div>
       {/* Search Container */}
-      <div className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>
+      <div ref={topRef} className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>
         {/* Banner */}
         <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
 
@@ -480,7 +494,7 @@ const HotelSearchResult = () => {
 
         <div className="flex flex-col md:flex-row lg:w-[70%] w-full md:justify-center px-6 lg:px-0 pt-20 md:pt-4 gap-6 absolute top-[-5vh] md:top-[0vh] z-10">
           <div className="package-search-container w-full pt-10 md:pt-0">
-            <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative overflow-hidden">
+            <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative">
               {/* Decorative background elements */}
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-transparent rounded-full opacity-20 -translate-y-12 translate-x-12"></div>
               <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-200 to-transparent rounded-full opacity-20 translate-y-10 -translate-x-10"></div>
@@ -651,135 +665,7 @@ const HotelSearchResult = () => {
 
             {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {error}</div>}
 
-            {/* {searchResults && !error && (
-              <div className="w-full flex-1 gap-6 mb-6">
-                {[...(searchResults.content || [])]
-                  .sort((a, b) => {
-                    if (appliedFilters.priceSort === 'lowToHigh') {
-                      return a.startingPrice - b.startingPrice;
-                    }
-                    if (appliedFilters.priceSort === 'highToLow') {
-                      return b.startingPrice - a.startingPrice;
-                    }
-                    return 0;
-                  })
-                  .map((hotel) => (
-                    <div
-                      key={hotel.id}
-                      style={{ marginBottom: "10px" }}
-                      className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-xl w-full h-auto  md:h-70"
-                    >
-                      
-                      <div style={{ marginLeft: "10px" }} className="flex items-center justify-center w-[30%] h-[190px] md:h-[80%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <div className="w-full h-full ml-2 object-cover">
-                          {hotel.photoUrls.length === 1 ? (
-                            <div className="relative w-full h-full overflow-hidden">
-                              {!loadedImages[hotel.id] && (
-                                <div className="absolute top-0 left-0 w-full h-full z-10">
-                                  <Skeleton
-                                    variant="rectangular"
-                                    animation="wave"
-                                    width="100%"
-                                    height="100%"
-                                    className="h-full w-full"
-                                  />
-                                </div>
-                              )}
-                              <img
-                                src={hotel.photoUrls[0]}
-                                alt={hotel.name}
-                                onLoad={() => handleImageLoad(hotel.id)}
-                                className={`w-full h-full object-cover transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'
-                                  }`}
-                              />
-                            </div>
-                          ) : (
-                            <div className="relative w-full h-full overflow-hidden">
-                              {!loadedImages[hotel.id] && (
-                                <div className="absolute top-0 left-0 w-full h-full z-10">
-                                  <Skeleton
-                                    variant="rectangular"
-                                    animation="wave"
-                                    width="100%"
-                                    height="100%"
-                                    className="h-full w-full"
-                                  />
-                                </div>
-                              )}
-                              <Carousel
-                                showThumbs={false}
-                                showStatus={false}
-                                infiniteLoop
-                                autoPlay
-                                interval={3000}
-                                className={`w-full h-full object-cover transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'
-                                  }`}
-                              >
-                                {hotel.photoUrls.map((url, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="w-full h-full overflow-hidden object-cover relative"
-                                  >
-                                    <img
-                                      src={url}
-                                      alt={`${hotel.name} ${idx + 1}`}
-                                      onLoad={() => handleImageLoad(hotel.id)}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                ))}
-                              </Carousel>
-                            </div>
-                          )}
 
-
-                        </div>
-
-                      </div>
-
-                      
-                      <div className="flex flex-col justify-between py-4 md:py-0 h-[70%] md:h-[80%] px-4 flex-1 ">
-                        <div className="flex justify-between items-start">
-                          <h3 className="text-2xl font-bold text-gray-800">{hotel.name}</h3>
-                          <span className="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">Available</span>
-                        </div>
-
-                        <div className="flex items-center text-gray-500 text-lg pt-2">
-                          <FaMapMarkerAlt className="mr-1 text-red-600" />
-                          {hotel.city}, {hotel.district} - {hotel.pinCode}
-                        </div>
-
-                        <div className="flex items-center flex-wrap gap-2 pt-1">
-                          {hotel.tags.map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className="bg-blue-100 text-blue-700 rounded-full px-2 py-1 text-sm font-medium"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          <div className="flex items-center text-yellow-500 text-sm">
-                            ★★★★☆
-                          </div>
-                          <span className="text-gray-500 text-lg">Very Good</span>
-                        </div>
-
-                        <HotelDescription description={hotel.description} />
-
-                        <div className="flex items-center justify-between pt-4">
-                          <div className="text-xl font-bold text-blue-700">
-                            ₹{hotel.startingPrice}
-                            <span className="text-gray-500 text-sm font-normal"> /night</span>
-                          </div>
-                          <button onClick={() => hotelDetails(hotel.id, hotel.startingPrice)} className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">
-                            Book Now
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            )} */}
             {searchResults && !error && (
               <>
                 {(searchResults.content || []).length > 0 ? (
@@ -796,10 +682,10 @@ const HotelSearchResult = () => {
                       })
                       .map((hotel) => (
                         <div style={{ marginBottom: "10px" }} key={hotel.id} className="relative mb-6">
-                          {/* Actual Card */}
-                          <div className={`transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'}`}>
+
+                          {/* <div className={`transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'}`}>
                             <div className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4">
-                              {/* Image */}
+                              
                               <div className="w-[30%] h-[190px] md:h-[95%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                 <div className="w-full h-full">
                                   {hotel.photoUrls.length === 1 ? (
@@ -833,7 +719,7 @@ const HotelSearchResult = () => {
                                 </div>
                               </div>
 
-                              {/* Content */}
+                              
                               <div className="flex-1 flex flex-col justify-between h-[70%] md:h-[80%] px-4">
                                 <div className="flex justify-between items-start">
                                   <h3 className="text-2xl font-bold text-gray-800">{hotel.name}</h3>
@@ -874,7 +760,93 @@ const HotelSearchResult = () => {
                                 </div>
                               </div>
                             </div>
+                          </div> */}
+                          <div
+                            className={`transition-opacity duration-300 ${loadedImages[hotel.id] ? "opacity-100" : "opacity-0"
+                              }`}
+                          >
+                            <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4">
+                              {/* Image */}
+                              <div className="w-full md:w-[30%] h-[200px] md:h-[100%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                <div className="w-full h-full">
+                                  {hotel.photoUrls.length === 1 ? (
+                                    <img
+                                      src={hotel.photoUrls[0]}
+                                      alt={hotel.name}
+                                      onLoad={() => handleImageLoad(hotel.id)}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <Carousel
+                                      showThumbs={false}
+                                      showStatus={false}
+                                      infiniteLoop
+                                      autoPlay
+                                      interval={3000}
+                                      className="w-full h-full"
+                                    >
+                                      {hotel.photoUrls.map((url, idx) => (
+                                        <div key={idx} className="w-full h-full">
+                                          <img
+                                            src={url}
+                                            alt={`${hotel.name} ${idx + 1}`}
+                                            onLoad={() => handleImageLoad(hotel.id)}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        </div>
+                                      ))}
+                                    </Carousel>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Content */}
+                              <div className="flex-1 flex flex-col justify-between h-[70%] md:h-[80%] px-0 md:px-4 w-full">
+                                <div className="flex flex-row justify-between md:items-start gap-2">
+                                  <h3 className="text-lg md:text-2xl font-bold text-gray-800">{hotel.name}</h3>
+                                  <span className="bg-green-100 text-green-700 text-xs md:text-sm font-semibold px-2 md:px-3 py-1 rounded-full">
+                                    Available
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center text-gray-500 text-sm md:text-lg pt-1">
+                                  <FaMapMarkerAlt className="mr-1 text-red-600" />
+                                  {hotel.city}, {hotel.district} - {hotel.pinCode}
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-2 pt-1">
+                                  {hotel.tags.map((tag, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="bg-blue-100 text-blue-700 rounded-full px-2 py-1 text-xs md:text-sm font-medium"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                  <div className="flex items-center text-yellow-500 text-xs md:text-sm">
+                                    ★★★★☆
+                                  </div>
+                                  <span className="text-gray-500 text-xs md:text-lg">Very Good</span>
+                                </div>
+
+                                <HotelDescription description={hotel.description} />
+
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4">
+                                  <div className="text-lg md:text-xl font-bold text-blue-700">
+                                    ₹{hotel.startingPrice}
+                                    <span className="text-gray-500 text-xs md:text-sm font-normal"> /night</span>
+                                  </div>
+                                  <button
+                                    onClick={() => hotelDetails(hotel.id, hotel.startingPrice)}
+                                    className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-xs md:text-sm font-semibold hover:bg-blue-700 transition"
+                                  >
+                                    Book Now
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
+
 
                           {/* Skeleton Overlay */}
                           {!loadedImages[hotel.id] && (

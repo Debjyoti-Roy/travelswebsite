@@ -678,10 +678,10 @@
 .item-4 {
   grid-column: 3 / 5;
 } */
-.masonry-grid {
+/* .masonry-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
-  grid-auto-rows: 200px; /* base row height */
+  grid-template-columns: repeat(4, 1fr); 
+  grid-auto-rows: 200px; 
   gap: 1rem;
   max-width: 100%;
   padding: 1rem;
@@ -715,7 +715,7 @@
 }
 
 .item-5 {
-  grid-column: 4; /* or wherever you want */
+  grid-column: 4; 
   grid-row: 2 / span 2;
 }
 
@@ -725,4 +725,68 @@
   height: 100%;
   object-fit: cover;
   display: block;
+} */
+/* 5-image special layout */
+.masonry-grid.grid-5 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 200px;
+  gap: 1rem;
+}
+
+.masonry-grid.grid-5 > div {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.item-1 {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.item-2 {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+.item-3 {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+.item-4 {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+.item-5 {
+  grid-column: 4;
+  grid-row: 2 / span 2;
+}
+
+/* Generic responsive grid for 2–4 images */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.responsive-grid > div {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+/* Images */
+.masonry-grid img,
+.responsive-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Mobile adjustments for 5-image layout */
+@media (max-width: 768px) {
+  .masonry-grid.grid-5 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 150px;
+  }
 }

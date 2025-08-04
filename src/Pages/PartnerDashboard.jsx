@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ManageProperties from './PartnerDashboardComponents/ManageProperties';
 import AddRoom from './PartnerDashboardComponents/AddRoom';
 import PropertyDashboard from './PartnerDashboardComponents/PropertyDashboard';
@@ -43,12 +43,25 @@ const PartnerDashboard = () => {
     }
     job()
   }, [counter])
+  const topRef = useRef(null);
+
+useEffect(() => {
+  if (topRef.current) {
+    const navbarHeight = 80; // px height of your navbar
+    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: elementTop - navbarHeight,
+      behavior: "smooth",
+    });
+  }
+}, []);
+
 
   return (
     <div className="min-h-screen">
 
       {/* Banner */}
-      <div className="h-[40vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
+      <div ref={topRef} className="h-[40vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
         <h1 className="text-3xl md:text-5xl font-bold text-white relative animate-fade-in">
           Get ready to <br />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0036ac] to-[#0036ac] animate-gradient-move">

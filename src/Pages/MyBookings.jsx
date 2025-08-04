@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import { fetchUserBookings } from "../Redux/store/profileSlice";
@@ -160,9 +160,23 @@ const MyBookings = () => {
   //     }
   // }, [refundError]);
 
+  const topRef = useRef(null);
+
+useEffect(() => {
+  if (topRef.current) {
+    const navbarHeight = 80; // px height of your navbar
+    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: elementTop - navbarHeight,
+      behavior: "smooth",
+    });
+  }
+}, []);
+
+
   return (
     <div className="flex justify-center pt-10 pb-20">
-      <div className="w-full md:w-[70%] px-4">
+      <div ref={topRef} className="w-full md:w-[70%] px-4">
         
         <h2 className="text-2xl font-bold text-gray-800 pb-6 text-center">My Bookings</h2>
 
