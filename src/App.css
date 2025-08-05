@@ -727,6 +727,9 @@
   display: block;
 } */
 /* 5-image special layout */
+
+
+
 .masonry-grid.grid-5 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -761,7 +764,7 @@
   grid-row: 2 / span 2;
 }
 
-/* Generic responsive grid for 2–4 images */
+
 .responsive-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -774,7 +777,7 @@
   border-radius: 0.5rem;
 }
 
-/* Images */
+
 .masonry-grid img,
 .responsive-grid img {
   width: 100%;
@@ -783,10 +786,134 @@
   display: block;
 }
 
-/* Mobile adjustments for 5-image layout */
-@media (max-width: 768px) {
+
+@media (min-width: 640px) and (max-width: 640px) {
   .masonry-grid.grid-5 {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 150px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Equal halves */
+    grid-auto-rows: 120px !important;
+    gap: 0.5rem;
+  }
+  
+}
+@media (max-width:768px){
+  .masonry-grid.grid-5{
+    grid-auto-rows: 120px;
   }
 }
+
+
+
+/* === 2 Images Side by Side === */
+.layout-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.layout-two > div {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* === 3 Images Layout ===
+   Left: 1 image full height
+   Right: 2 images stacked */
+/* .layout-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.layout-three > div:first-child {
+  grid-row: span 2; 
+}
+.layout-three > div {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.layout-three > div:nth-child(2),
+.layout-three > div:nth-child(3) {
+  height: calc(50% - 0.5rem);
+} */
+.layout-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr; /* Two equal rows */
+  gap: 1rem;
+  height: 500px; /* Or any fixed height you want */
+}
+
+.layout-three > div {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.layout-three > div:first-child {
+  grid-row: span 2; /* Tall left image spans both rows */
+}
+
+.layout-three > div img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* === 4 Images Layout ===
+   Left: 2 images stacked vertically (80% + 20% height)
+   Right: 2 images side by side full height */
+/* .layout-four {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.layout-four > div {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.layout-four > div:nth-child(1) {
+  grid-row: span 2;
+  height: 80%;
+}
+.layout-four > div:nth-child(2) {
+  grid-row: span 2;
+  height: 20%;
+}
+
+.layout-four > div:nth-child(3),
+.layout-four > div:nth-child(4) {
+  height: 100%;
+}
+.layout-four {
+  grid-auto-rows: minmax(100px, auto);
+} */
+.layout-four {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Left half, right half */
+  gap: 1rem;
+  height: 500px; /* total height control */
+}
+
+.layout-four > div {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.layout-four-left {
+  display: grid;
+  grid-template-rows: 80% 20%;
+  gap: 1rem;
+}
+
+.layout-four-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.layout-four img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+

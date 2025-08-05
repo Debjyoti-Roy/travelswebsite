@@ -295,134 +295,134 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
     //   </div>
     // </div>
     <div className="p-4 w-full md:w-full mx-auto">
-  <h2 style={{marginBottom:'10px'}} className="text-3xl font-bold mb-6 text-gray-800">Select Rooms to Book</h2>
+      <h2 style={{ marginBottom: '10px' }} className="text-3xl font-bold mb-6 text-gray-800">Select Rooms to Book</h2>
 
-  <div  className="space-y-6">
-    {hotelRooms.map((room) => {
-      const selectedCount = selectedRooms[room.id] || 0;
-      const currentIndex = imageIndexes[room.id] || 0;
-      const totalImages = room.imageUrls.length;
+      <div className="space-y-6">
+        {hotelRooms.map((room) => {
+          const selectedCount = selectedRooms[room.id] || 0;
+          const currentIndex = imageIndexes[room.id] || 0;
+          const totalImages = room.imageUrls.length;
 
-      return (
-        <div
-          key={room.id}
-          style={{marginBottom:'10px'}}
-          className="relative bg-white rounded-xl overflow-hidden border-l-4 border-blue-500 p-4 flex flex-col md:flex-row gap-4"
-        >
-          {/* Left Section */}
-          <div className="flex flex-col md:flex-row gap-4 w-full">
-            <div className="relative w-full md:w-82 min-h-58 max-h-58 rounded overflow-hidden group">
-              {totalImages > 1 ? (
-                <>
-                  <img
-                    src={room.imageUrls[currentIndex]}
-                    alt={room.name}
-                    className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <button
-                    onClick={() => handlePrevImage(room.id, totalImages)}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
-                  >
-                    <FaChevronLeft size={20} />
-                  </button>
-                  <button
-                    onClick={() => handleNextImage(room.id, totalImages)}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
-                  >
-                    <FaChevronRight size={20} />
-                  </button>
-                </>
-              ) : (
-                <img
-                  src={room.imageUrls[0]}
-                  alt={room.name}
-                  className="w-full min-h-58 max-h-58 object-cover rounded transition-transform duration-300 group-hover:scale-105"
-                />
-              )}
-            </div>
-
-            <div className="flex flex-col justify-between text-gray-700 w-full">
-              <div>
-                <h3 className="inline-block bg-gradient-to-r text-center md:text-left from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-lg font-semibold mb-2 self-start">
-                  {room.name}
-                </h3>
-                <ul className="pt-2 list-disc list-outside text-gray-600 text-lg pl-5">
-                  {room.features.map((feature, i) => (
-                    <li key={i}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="text-lg mt-2 bg-gray-100 p-2 rounded">
-                <span className="block">
-                  <strong>Max Occupancy:</strong> {room.maxOccupancy}
-                </span>
-                <span className="block">
-                  <strong>Available:</strong> {room.totalRooms}
-                </span>
-                <span className="block">
-                  <strong>Price/Night:</strong> ₹{room.pricePerNight}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Section (Buttons) */}
-          <div className="flex items-center md:justify-center justify-start  gap-2 md:flex-row md:justify-start md:items-start">
-            <button
-              onClick={() => handleRoomChange(room.id, selectedCount - 1, room.totalRooms)}
-              disabled={selectedCount <= 0}
-              className={`px-3 py-1 border rounded ${selectedCount <= 0
-                ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                : "text-gray-700 border-gray-400 hover:bg-gray-100"
-                }`}
+          return (
+            <div
+              key={room.id}
+              style={{ marginBottom: '10px' }}
+              className="relative bg-white rounded-xl overflow-hidden border-l-4 border-blue-500 p-4 flex flex-col md:flex-row gap-4"
             >
-              –
-            </button>
-            <span className="min-w-[20px] text-center font-medium">{selectedCount}</span>
+              {/* Left Section */}
+              <div className="flex flex-col md:flex-row gap-4 w-full">
+                <div className="relative w-full md:w-82 min-h-58 max-h-58 rounded overflow-hidden group">
+                  {totalImages > 1 ? (
+                    <>
+                      <img
+                        src={room.imageUrls[currentIndex]}
+                        alt={room.name}
+                        className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <button
+                        onClick={() => handlePrevImage(room.id, totalImages)}
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
+                      >
+                        <FaChevronLeft size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleNextImage(room.id, totalImages)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-600 rounded-full p-2 hover:bg-gray-100 border"
+                      >
+                        <FaChevronRight size={20} />
+                      </button>
+                    </>
+                  ) : (
+                    <img
+                      src={room.imageUrls[0]}
+                      alt={room.name}
+                      className="w-full min-h-58 max-h-58 object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                    />
+                  )}
+                </div>
+
+                <div className="flex flex-col justify-between text-gray-700 w-full">
+                  <div>
+                    <h3 className="inline-block bg-gradient-to-r text-center md:text-left from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-lg font-semibold mb-2 self-start">
+                      {room.name}
+                    </h3>
+                    <ul className="pt-2 list-disc list-outside text-gray-600 text-lg pl-5">
+                      {room.features.map((feature, i) => (
+                        <li key={i}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="text-lg mt-2 bg-gray-100 p-2 rounded">
+                    <span className="block">
+                      <strong>Max Occupancy:</strong> {room.maxOccupancy}
+                    </span>
+                    <span className="block">
+                      <strong>Available:</strong> {room.totalRooms}
+                    </span>
+                    <span className="block">
+                      <strong>Price/Night:</strong> ₹{room.pricePerNight}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Section (Buttons) */}
+              <div className="flex items-center md:justify-center justify-start  gap-2 md:flex-row md:justify-start md:items-start">
+                <button
+                  onClick={() => handleRoomChange(room.id, selectedCount - 1, room.totalRooms)}
+                  disabled={selectedCount <= 0}
+                  className={`px-3 py-1 border rounded ${selectedCount <= 0
+                    ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                    : "text-gray-700 border-gray-400 hover:bg-gray-100"
+                    }`}
+                >
+                  –
+                </button>
+                <span className="min-w-[20px] text-center font-medium">{selectedCount}</span>
+                <button
+                  onClick={() => handleRoomChange(room.id, selectedCount + 1, room.totalRooms)}
+                  disabled={selectedCount >= room.totalRooms}
+                  className={`px-3 py-1 border rounded ${selectedCount >= room.totalRooms
+                    ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                    : "text-gray-700 border-gray-400 hover:bg-gray-100"
+                    }`}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Summary Section */}
+      <div className="mt-8 p-4 bg-gray-50 rounded flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
+        <div>
+          <p className="text-base font-medium">
+            Total People Covered: <span className="font-bold">{summary.totalCapacity}</span>
+          </p>
+          <p className="text-base font-medium">
+            Booking for: <span className="font-bold">{totalPeople}</span>
+          </p>
+          <p className="text-base font-medium">
+            Number of Days: <span className="font-bold">{numberofDays}</span>
+          </p>
+        </div>
+        <div className="flex flex-col gap-[5px] mt-4 md:mt-0">
+          <p className="text-xl font-bold text-green-600">
+            Grand Total: ₹{summary.totalCost}
+          </p>
+          <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
             <button
-              onClick={() => handleRoomChange(room.id, selectedCount + 1, room.totalRooms)}
-              disabled={selectedCount >= room.totalRooms}
-              className={`px-3 py-1 border rounded ${selectedCount >= room.totalRooms
-                ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                : "text-gray-700 border-gray-400 hover:bg-gray-100"
-                }`}
+              onClick={handleBookNow2}
+              className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
             >
-              +
+              Book Now
             </button>
           </div>
         </div>
-      );
-    })}
-  </div>
-
-  {/* Summary Section */}
-  <div className="mt-8 p-4 bg-gray-50 rounded flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
-    <div>
-      <p className="text-base font-medium">
-        Total People Covered: <span className="font-bold">{summary.totalCapacity}</span>
-      </p>
-      <p className="text-base font-medium">
-        Booking for: <span className="font-bold">{totalPeople}</span>
-      </p>
-      <p className="text-base font-medium">
-        Number of Days: <span className="font-bold">{numberofDays}</span>
-      </p>
-    </div>
-    <div className="flex flex-col gap-[5px] mt-4 md:mt-0">
-      <p className="text-xl font-bold text-green-600">
-        Grand Total: ₹{summary.totalCost}
-      </p>
-      <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
-        <button
-          onClick={handleBookNow2}
-          className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
-        >
-          Book Now
-        </button>
       </div>
     </div>
-  </div>
-</div>
 
   );
 };
@@ -432,7 +432,7 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
 const HotelDetails = () => {
   // console.log("HotelDetails function body running");
 
-   // ⬅️ run again when `hotel` data changes
+  // ⬅️ run again when `hotel` data changes
 
 
   const location = useLocation();
@@ -472,16 +472,16 @@ const HotelDetails = () => {
 
   const topRef = useRef(null);
 
-useEffect(() => {
-  if (hotel && topRef.current) {
-    const navbarHeight = 80;
-    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: elementTop - navbarHeight,
-      behavior: "smooth",
-    });
-  }
-}, [hotel]);
+  useEffect(() => {
+    if (hotel && topRef.current) {
+      const navbarHeight = 80;
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [hotel]);
 
 
   const [showInfo, setShowInfo] = useState(false);
@@ -510,6 +510,8 @@ useEffect(() => {
   const [failModal, setFailModal] = useState(false)
   const [paidAt, setPaidAt] = useState("")
   const { paymentLoading, paymentStatus, paymentError } = useSelector((state) => state.payment);
+  // const [tooltipPosition, setTooltipPosition] = useState("right"); // default position
+
 
 
   //Login
@@ -708,22 +710,53 @@ useEffect(() => {
   //LOGIN KHOTOM
 
 
+  // useEffect(() => {
+  //   if (showInfo && iconRef.current) {
+  //     const rect = iconRef.current.getBoundingClientRect();
+  //     const spaceBelow = window.innerHeight - rect.bottom;
+  //     const spaceAbove = rect.top;
+
+  //     // Approximate height of tooltip
+  //     const tooltipHeight = 300;
+
+  //     if (spaceBelow < tooltipHeight && spaceAbove > tooltipHeight) {
+  //       setShowAbove(true);
+  //     } else {
+  //       setShowAbove(false);
+  //     }
+  //   }
+  // }, [showInfo]);
+  const [tooltipPosition, setTooltipPosition] = useState("left");
+
   useEffect(() => {
     if (showInfo && iconRef.current) {
       const rect = iconRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const spaceAbove = rect.top;
+      const spaceRight = window.innerWidth - rect.right;
+      const spaceLeft = rect.left;
 
-      // Approximate height of tooltip
       const tooltipHeight = 300;
+      const tooltipWidth = 320; // matches w-80
 
-      if (spaceBelow < tooltipHeight && spaceAbove > tooltipHeight) {
-        setShowAbove(true);
+      // Decide vertical position
+      setShowAbove(spaceBelow < tooltipHeight && spaceAbove > tooltipHeight);
+
+      // Small screen fallback — center tooltip
+      if (window.innerWidth <= tooltipWidth) {
+        setTooltipPosition("center");
+      }
+      // Normal left/right detection
+      else if (spaceRight < tooltipWidth && spaceLeft > tooltipWidth) {
+        setTooltipPosition("left");
       } else {
-        setShowAbove(false);
+        setTooltipPosition("right");
       }
     }
   }, [showInfo]);
+
+
+
 
   useEffect(() => {
     // console.log("HELLO");
@@ -760,6 +793,7 @@ useEffect(() => {
             setStartDate(currentState.checkIn)
             setEndDate(currentState.checkOut)
             setHotelData(htl.payload.data);
+            console.log(htl.payload.data.videoUrl)
             setText(htl.payload.data.about)
           } else {
             // console.log("Fetch did not return status 200:", htl.payload);
@@ -808,12 +842,12 @@ useEffect(() => {
             <Skeleton variant="text" width="40%" height={25} />
           </div>
         </div>
-  
+
         {/* About Section */}
         <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
           <Skeleton variant="text" width="40%" height={35} className="mb-4" />
           <Skeleton variant="rectangular" height={120} className="rounded-lg" />
-  
+
           {/* Rooms Placeholder */}
           <div className="pt-10 space-y-4">
             {[...Array(2)].map((_, i) => (
@@ -828,7 +862,7 @@ useEffect(() => {
       </div>
     );
   }
-  
+
 
   const grandTotal = allocatedRooms.reduce(
     (acc, roomObj) => acc + roomObj.room.pricePerNight * roomObj.count,
@@ -1033,20 +1067,20 @@ useEffect(() => {
   // };
 
 
-  
+
 
 
   return (
     <div ref={topRef} className="w-full bg-gray-50">
       {/* Hero Image */}
-      <div   className="relative h-[450px] w-full">
+      <div className="relative h-[450px] w-full">
         {hotel && hotel.videoUrl ? (
-          <video  autoPlay muted loop className="h-full w-full object-cover">
+          <video autoPlay muted loop className="h-full w-full object-cover">
             <source src={hotel.videoUrl} type="video/mp4" />
           </video>
         ) : (
           <img
-          
+
             src={hotel?.imageUrls[0]}
             alt={hotel?.name}
             className="h-full w-full object-cover"
@@ -1133,10 +1167,20 @@ useEffect(() => {
                         />
 
                         {showInfo && (
+                          // <div
+                          //   className={`absolute ${showAbove ? "bottom-8" : "top-8"} ${tooltipPosition === "right" ? "right-0" : "left-0"
+                          //     } bg-white border border-blue-100 shadow-2xl p-3 rounded-xl w-80 text-gray-700 z-50 space-y-2 transition-all`}
+                          // >
                           <div
-                            className={`absolute ${showAbove ? "bottom-8" : "top-8"
-                              } left-0 bg-white border border-blue-100 shadow-2xl p-3 rounded-xl w-80 text-gray-700 z-50 space-y-2 transition-all`}
+                            className={`absolute ${showAbove ? "bottom-8" : "top-8"} 
+    ${tooltipPosition === "right" ? "right-0" : ""} 
+    ${tooltipPosition === "left" ? "left-0" : ""} 
+    ${tooltipPosition === "center" ? "left-1/2 -translate-x-1/2 w-[90vw]" : "w-80"}
+    bg-white border border-blue-100 shadow-2xl p-3 rounded-xl text-gray-700 z-50 space-y-2 transition-all overflow-auto max-h-[90vh]`}
                           >
+
+
+
                             <h3 className="text-base font-semibold text-blue-600">Booking Summary</h3>
 
 

@@ -140,21 +140,35 @@ const ImageGallery = ({ imageUrls = [] }) => {
                 />
             ) : (
                 <>
-                    <div className={`${getGridClass(displayImages.length)}`}>
+                    <div
+                        className={
+                            images.length === 2
+                                ? "layout-two"
+                                : images.length === 3
+                                    ? "layout-three"
+                                    : images.length === 4
+                                        ? "layout-four"
+                                        : getGridClass(displayImages.length) // grid-5 or responsive
+                        }
+                    >
                         {displayImages.map((url, idx) => (
                             <div
                                 key={idx}
-                                className={`item-${idx + 1}`}
+                                className={
+                                    images.length === 5 ? `item-${idx + 1}` : "" // only for 5 images
+                                }
                                 onClick={() => openPreview(url)}
                             >
                                 <img
-                                    style={{ objectFit: "cover", width: "100%", height: "100%" }}
                                     src={url}
                                     alt={`Image ${idx + 1}`}
+                                    style={{ objectFit: "cover", width: "100%", height: "100%" }}
                                 />
                             </div>
                         ))}
                     </div>
+
+
 
                     {images.length > 5 && (
                         <div className="text-center mt-8">
