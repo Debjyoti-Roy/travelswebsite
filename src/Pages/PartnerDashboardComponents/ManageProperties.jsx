@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
 import { Country } from "country-state-city";
 import statesJson from "../../assets/ade5836fae0ac40531e6afb111d61870-4fe8c90e127060d55ad3c7d6d603d13528450e5b/india-states-and-districts.json"
@@ -58,6 +58,7 @@ const BasicDetailsForm = ({ tab, setBasicDetails, basicDetails }) => {
     const [hotelName, setHotelName] = useState("")
     const [hotelAddress, setHotelAddress] = useState("")
     const [hotelAbout, setHotelAbout] = useState("")
+    const [phoneNumber, setPhoneNumber]=useState("")
     //area list
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [filtered, setFiltered] = useState([]);
@@ -186,8 +187,23 @@ const BasicDetailsForm = ({ tab, setBasicDetails, basicDetails }) => {
         tab("media")
     }
 
+    const topRef = useRef(null);
+
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+    
+
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 bg-white p-1 rounded-2xl w-full mx-auto">
+        <form ref={topRef} onSubmit={handleSubmit} className="flex flex-col gap-5 bg-white p-1 rounded-2xl w-full mx-auto">
             {/* <form onSubmit={handleSubmit}> */}
             <div>
 
@@ -208,6 +224,17 @@ const BasicDetailsForm = ({ tab, setBasicDetails, basicDetails }) => {
                     required
                     value={basicDetails.address}
                     onChange={(e) => setBasicDetails({ ...basicDetails, address: e.target.value })}
+                    placeholder="Enter address"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                />
+            </div>
+            <div>
+                <label className="block text-gray-700 font-medium mb-1">Phone Number</label>
+                <input
+                    type="number"
+                    required
+                    value={basicDetails.phone}
+                    onChange={(e) => setBasicDetails({ ...basicDetails, phone: e.target.value })}
                     placeholder="Enter address"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 />
@@ -402,10 +429,23 @@ const MediaUpload = ({ mediaImages, setMediaImages, mediaVideo, setMediaVideo, t
         tab(e)
     }
 
+    const topRef = useRef(null);
+
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
     return (
         <div className="flex flex-col gap-6">
 
-            <div>
+            <div ref={topRef}>
                 <h3 className="text-xl font-semibold mb-2">
                     Image Upload <span className="text-red-500">*</span>
                 </h3>
@@ -594,8 +634,21 @@ const AdditionalDetails = ({ selectedTags, setSelectedTags, selectedAmenities, s
         setAttractions(updated);
     };
 
+    const topRef = useRef(null);
+
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
     return (
-        <div className="space-y-8 flex flex-col gap-4">
+        <div ref={topRef} className="space-y-8 flex flex-col gap-4">
             {/* Tags */}
             <div>
                 <h3 className="text-lg font-semibold mb-3">Tags</h3>
@@ -758,6 +811,7 @@ const ManageProperties = ({ setRoom, setHotelId, setIsLoading }) => {
         name: "",
         about: "",
         address: "",
+        phone:"",
         state: "",
         district: "",
         city: "",
@@ -865,6 +919,7 @@ const ManageProperties = ({ setRoom, setHotelId, setIsLoading }) => {
                 const finalData = {
                     name: basicDetails.name,
                     about: basicDetails.about,
+                    phoneNumber:basicDetails.phone,
                     address: basicDetails.address,
                     location: {
                         state: basicDetails.state,
@@ -1008,10 +1063,24 @@ const ManageProperties = ({ setRoom, setHotelId, setIsLoading }) => {
     };
 
 
+    const topRef = useRef(null);
+
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+
 
 
     return (
-        <div className="flex w-full min-h-screen">
+        <div ref={topRef} className="flex w-full min-h-screen">
             {/* Tabs */}
             <div className="flex overflow-hidden flex-col w-1/4 border-r border-gray-300">
                 <button

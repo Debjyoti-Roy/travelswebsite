@@ -412,9 +412,9 @@ const HotelSearchResult = () => {
   const [startDate, setStartDate] = useState(state.startDate);
   const [endDate, setEndDate] = useState(state.endDate);
   const [showGuestOptions, setShowGuestOptions] = useState(false);
-  const [adults, setAdults] = useState(2);
+  const [adults, setAdults] = useState(state.total);
   const [children, setChildren] = useState(0);
-  const [rooms, setRooms] = useState(1);
+  const [rooms, setRooms] = useState(state.rooms);
   const [loadedImages, setLoadedImages] = useState({});
 
   const handleImageLoad = (id) => {
@@ -450,21 +450,21 @@ const HotelSearchResult = () => {
 
   const topRef = useRef(null);
 
-useEffect(() => {
-  if (topRef.current) {
-    const navbarHeight = 80; // px height of your navbar
-    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: elementTop - navbarHeight,
-      behavior: "smooth",
-    });
-  }
-}, []);
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
 
   return (
-    <>
-      <div ref={topRef} className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 z-40">
+    <div className="max-w-screen overflow-x-hidden">
+      {/* <div ref={topRef} className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 z-40">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <FaFilter className="text-blue-600" />
@@ -484,7 +484,36 @@ useEffect(() => {
             <FaChevronDown />
           </button>
         </div>
-      </div>
+      </div> */}
+      <div
+  ref={topRef}
+  className="md:hidden fixed left-0 bg-white border-t border-gray-200 z-40 min-w-screen overflow-x-hidden"
+>
+  <div className="flex items-center justify-between px-4 py-3 w-full">
+    <div className="flex items-center gap-2 flex-shrink">
+      <FaFilter className="text-blue-600" />
+      <span className="text-sm font-medium text-gray-700">Filters</span>
+      {(appliedFilters.selectedTags.length > 0 ||
+        appliedFilters.selectedAmenities.length > 0 ||
+        appliedFilters.priceRange.min > 0 ||
+        appliedFilters.priceRange.max < 10000) && (
+        <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          {appliedFilters.selectedTags.length +
+            appliedFilters.selectedAmenities.length +
+            (appliedFilters.priceRange.min > 0 ? 1 : 0) +
+            (appliedFilters.priceRange.max < 10000 ? 1 : 0)}
+        </span>
+      )}
+    </div>
+    <button
+      onClick={() => setIsMobileFilterOpen(true)}
+      className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition flex-shrink-0"
+    >
+      <FaChevronDown />
+    </button>
+  </div>
+</div>
+
       {/* Search Container */}
       <div ref={topRef} className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>
         {/* Banner */}
@@ -638,27 +667,37 @@ useEffect(() => {
                 {[...Array(3)].map((_, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4"
+                    className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
                   >
+                    {/* Image skeleton */}
+                    <div className="w-full md:w-[30%] h-[200px] md:h-full bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <Skeleton
+                        variant="rectangular"
+                        animation="wave"
+                        width="100%"
+                        height="100%"
+                        className="rounded-lg"
+                      />
+                    </div>
 
-                    <Skeleton
-                      variant="rectangular"
-                      animation="wave"
-                      width="30%"
-                      height="95%"
-                      className="rounded-lg"
-                    />
-                    <div className="flex-1 flex flex-col gap-2">
-                      <Skeleton animation="wave" variant="text" width="60%" height={32} />
-                      <Skeleton animation="wave" variant="text" width="40%" height={24} />
-                      <Skeleton animation="wave" variant="text" width="80%" height={24} />
-                      <Skeleton animation="wave" variant="text" width="90%" height={60} />
-                      <div className="flex justify-between items-center pt-4">
-                        <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                    {/* Content skeleton */}
+                    <div className="flex-1 flex flex-col justify-between h-auto md:h-[80%] px-0 md:px-4 w-full gap-2">
+                      <div className="flex flex-row justify-between md:items-start gap-2">
+                        <Skeleton animation="wave" variant="text" width="60%" height={28} />
+                        <Skeleton animation="wave" variant="rectangular" width={80} height={24} className="rounded-full" />
+                      </div>
+
+                      <Skeleton animation="wave" variant="text" width="50%" height={20} />
+                      <Skeleton animation="wave" variant="text" width="80%" height={20} />
+                      <Skeleton animation="wave" variant="text" width="90%" height={48} />
+
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4">
+                        <Skeleton animation="wave" variant="text" width="30%" height={24} />
                         <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
                       </div>
                     </div>
                   </div>
+
                 ))}
               </div>
             )}
@@ -682,85 +721,6 @@ useEffect(() => {
                       })
                       .map((hotel) => (
                         <div style={{ marginBottom: "10px" }} key={hotel.id} className="relative mb-6">
-
-                          {/* <div className={`transition-opacity duration-300 ${loadedImages[hotel.id] ? 'opacity-100' : 'opacity-0'}`}>
-                            <div className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4">
-                              
-                              <div className="w-[30%] h-[190px] md:h-[95%] bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                <div className="w-full h-full">
-                                  {hotel.photoUrls.length === 1 ? (
-                                    <img
-                                      src={hotel.photoUrls[0]}
-                                      alt={hotel.name}
-                                      onLoad={() => handleImageLoad(hotel.id)}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <Carousel
-                                      showThumbs={false}
-                                      showStatus={false}
-                                      infiniteLoop
-                                      autoPlay
-                                      interval={3000}
-                                      className="w-full h-full"
-                                    >
-                                      {hotel.photoUrls.map((url, idx) => (
-                                        <div key={idx} className="w-full h-full">
-                                          <img
-                                            src={url}
-                                            alt={`${hotel.name} ${idx + 1}`}
-                                            onLoad={() => handleImageLoad(hotel.id)}
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                      ))}
-                                    </Carousel>
-                                  )}
-                                </div>
-                              </div>
-
-                              
-                              <div className="flex-1 flex flex-col justify-between h-[70%] md:h-[80%] px-4">
-                                <div className="flex justify-between items-start">
-                                  <h3 className="text-2xl font-bold text-gray-800">{hotel.name}</h3>
-                                  <span className="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full">Available</span>
-                                </div>
-
-                                <div className="flex items-center text-gray-500 text-lg pt-2">
-                                  <FaMapMarkerAlt className="mr-1 text-red-600" />
-                                  {hotel.city}, {hotel.district} - {hotel.pinCode}
-                                </div>
-
-                                <div className="flex items-center flex-wrap gap-2 pt-1">
-                                  {hotel.tags.map((tag, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="bg-blue-100 text-blue-700 rounded-full px-2 py-1 text-sm font-medium"
-                                    >
-                                      {tag}
-                                    </span>
-                                  ))}
-                                  <div className="flex items-center text-yellow-500 text-sm">★★★★☆</div>
-                                  <span className="text-gray-500 text-lg">Very Good</span>
-                                </div>
-
-                                <HotelDescription description={hotel.description} />
-
-                                <div className="flex items-center justify-between pt-4">
-                                  <div className="text-xl font-bold text-blue-700">
-                                    ₹{hotel.startingPrice}
-                                    <span className="text-gray-500 text-sm font-normal"> /night</span>
-                                  </div>
-                                  <button
-                                    onClick={() => hotelDetails(hotel.id, hotel.startingPrice)}
-                                    className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition"
-                                  >
-                                    Book Now
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div> */}
                           <div
                             className={`transition-opacity duration-300 ${loadedImages[hotel.id] ? "opacity-100" : "opacity-0"
                               }`}
@@ -850,27 +810,62 @@ useEffect(() => {
 
                           {/* Skeleton Overlay */}
                           {!loadedImages[hotel.id] && (
+                            // <div className="absolute inset-0 z-10">
+                            //   <div className="flex items-center bg-white rounded-2xl shadow-lg w-full h-full p-4 gap-4">
+                            //     <Skeleton
+                            //       variant="rectangular"
+                            //       animation="wave"
+                            //       width="30%"
+                            //       height="95%"
+                            //       className="rounded-lg"
+                            //     />
+                            //     <div className="flex-1 flex flex-col gap-2">
+                            //       <Skeleton animation="wave" variant="text" width="60%" height={32} />
+                            //       <Skeleton animation="wave" variant="text" width="40%" height={24} />
+                            //       <Skeleton animation="wave" variant="text" width="80%" height={24} />
+                            //       <Skeleton animation="wave" variant="text" width="90%" height={60} />
+                            //       <div className="flex justify-between items-center pt-4">
+                            //         <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                            //         <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                            // </div>
                             <div className="absolute inset-0 z-10">
-                              <div className="flex items-center bg-white rounded-2xl shadow-lg w-full h-full p-4 gap-4">
-                                <Skeleton
-                                  variant="rectangular"
-                                  animation="wave"
-                                  width="30%"
-                                  height="95%"
-                                  className="rounded-lg"
-                                />
-                                <div className="flex-1 flex flex-col gap-2">
-                                  <Skeleton animation="wave" variant="text" width="60%" height={32} />
-                                  <Skeleton animation="wave" variant="text" width="40%" height={24} />
-                                  <Skeleton animation="wave" variant="text" width="80%" height={24} />
-                                  <Skeleton animation="wave" variant="text" width="90%" height={60} />
-                                  <div className="flex justify-between items-center pt-4">
-                                    <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                              <div
+
+                                className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
+                              >
+                                {/* Image skeleton */}
+                                <div className="w-full md:w-[30%] h-[200px] md:h-full bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                  <Skeleton
+                                    variant="rectangular"
+                                    animation="wave"
+                                    width="100%"
+                                    height="100%"
+                                    className="rounded-lg"
+                                  />
+                                </div>
+
+                                {/* Content skeleton */}
+                                <div className="flex-1 flex flex-col justify-between h-auto md:h-[80%] px-0 md:px-4 w-full gap-2">
+                                  <div className="flex flex-row justify-between md:items-start gap-2">
+                                    <Skeleton animation="wave" variant="text" width="60%" height={28} />
+                                    <Skeleton animation="wave" variant="rectangular" width={80} height={24} className="rounded-full" />
+                                  </div>
+
+                                  <Skeleton animation="wave" variant="text" width="50%" height={20} />
+                                  <Skeleton animation="wave" variant="text" width="80%" height={20} />
+                                  <Skeleton animation="wave" variant="text" width="90%" height={48} />
+
+                                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4">
+                                    <Skeleton animation="wave" variant="text" width="30%" height={24} />
                                     <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
                                   </div>
                                 </div>
                               </div>
                             </div>
+
                           )}
                         </div>
                       ))}
@@ -946,7 +941,7 @@ useEffect(() => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

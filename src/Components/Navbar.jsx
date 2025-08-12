@@ -232,7 +232,7 @@ const Navbar = () => {
   };
 
   const handleGoogleLogin = async () => {
-    
+
     if (isLoggingIn) return;
     setIsLoggingIn(true);
     isAuthenticating.current = true;
@@ -442,13 +442,22 @@ const Navbar = () => {
             </li>
             <li
               onClick={() => {
-                navigate("/partner")
+                if (useDetails?.role === "PARTNER") {
+                  navigate("/partner-dashboard");
+                } else {
+                  navigate("/partner");
+                }
               }}
-              className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-              Be a Partner
+              className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full"
+            >
+              <span>
+                {userDetails?.role === "PARTNER" ? "Partner Dashboard" : "Be a Partner"}
+              </span>
             </li>
+
             {!user ? (
-              <button onClick={() => {setShowModal(true)
+              <button onClick={() => {
+                setShowModal(true)
                 setLogin("login");
               }} className="LoginBtn">
                 Login

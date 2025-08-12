@@ -66,9 +66,10 @@ const MyBookings = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await dispatch(fetchUserBookings({ token, page: pageNum, size, status: selectedStatus }));
-      
+
       if (res.payload && res.payload.status === 200) {
         const data = res.payload.data;
+        console.log(data.content)
         setBookings(data.content);
         setTotalPages(data.totalPages);
         setPage(data.pageNumber);
@@ -162,40 +163,40 @@ const MyBookings = () => {
 
   const topRef = useRef(null);
 
-useEffect(() => {
-  if (topRef.current) {
-    const navbarHeight = 80; // px height of your navbar
-    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: elementTop - navbarHeight,
-      behavior: "smooth",
-    });
-  }
-}, []);
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
 
   return (
     <div className="flex justify-center pt-10 pb-20">
       <div ref={topRef} className="w-full md:w-[70%] px-4">
-        
+
         <h2 className="text-2xl font-bold text-gray-800 pb-6 text-center">My Bookings</h2>
 
         {/* Filter */}
         {/* {!loading && ( */}
-          <div className="md:w-auto w-full pb-4 flex justify-end">
-            <select
-              value={status}
-              onChange={handleStatusChange}
-              className="border w-full md:w-[20%] border-gray-300 rounded px-3 py-2 text-sm"
-            >
-              {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"].map((option) => (
-                <option key={option} value={option}>
-                  {option.replace("_", " ")}
-                </option>
-              ))}
-            </select>
-          </div>
-        
+        <div className="md:w-auto w-full pb-4 flex justify-end">
+          <select
+            value={status}
+            onChange={handleStatusChange}
+            className="border w-full md:w-[20%] border-gray-300 rounded px-3 py-2 text-sm"
+          >
+            {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"].map((option) => (
+              <option key={option} value={option}>
+                {option.replace("_", " ")}
+              </option>
+            ))}
+          </select>
+        </div>
+
 
         {/* Bookings */}
         {loading ? (
@@ -203,31 +204,31 @@ useEffect(() => {
             {/* Skeleton Cards */}
             {[1, 2, 3].map((index) => (
               <div
-              key={index}
-              className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white animate-pulse"
-            >
-              <div className="flex justify-between items-start">
-                {/* Left side */}
-                <div className="flex-1 pr-4 space-y-3">
-                  <div className="h-5 bg-gray-200 rounded w-40"></div>
-                  <div className="h-4 bg-gray-200 rounded w-60"></div>
-                  <div className="h-4 bg-gray-200 rounded w-48"></div>
+                key={index}
+                className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white animate-pulse"
+              >
+                <div className="flex justify-between items-start">
+                  {/* Left side */}
+                  <div className="flex-1 pr-4 space-y-3">
+                    <div className="h-5 bg-gray-200 rounded w-40"></div>
+                    <div className="h-4 bg-gray-200 rounded w-60"></div>
+                    <div className="h-4 bg-gray-200 rounded w-48"></div>
+                  </div>
+
+                  {/* Right side */}
+                  <div className="flex flex-col justify-start gap-3 items-end text-right pl-4">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                  </div>
                 </div>
-            
-                {/* Right side */}
-                <div className="flex flex-col justify-start gap-3 items-end text-right pl-4">
-                  <div className="h-4 bg-gray-200 rounded w-24"></div>
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+
+                {/* Button */}
+                <div className="absolute bottom-4 right-4">
+                  <div className="h-8 bg-gray-200 rounded w-24"></div>
                 </div>
               </div>
-            
-              {/* Button */}
-              <div className="absolute bottom-4 right-4">
-                <div className="h-8 bg-gray-200 rounded w-24"></div>
-              </div>
-            </div>
-            
-            
+
+
             ))}
           </div>
         ) : error ? (
@@ -238,7 +239,7 @@ useEffect(() => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
-            
+
             {/* <button
               onClick={() => fetchBookings(0, status)}
               className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -263,7 +264,7 @@ useEffect(() => {
                     {item.roomBookingsList.length} Room Type{item.roomBookingsList.length > 1 ? "s" : ""}
                   </h3>
 
-                  <div className="flex gap-[5px] items-center">
+                  {/* <div className="flex gap-[5px] items-center">
                     <h4 className="text-lg font-semibold text-gray-800">{item.hotelName}</h4>
                     <span
                       className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
@@ -281,7 +282,29 @@ useEffect(() => {
                     >
                       {item.status.replace("_", " ")}
                     </span>
+                  </div> */}
+                  <div className="flex gap-[5px] items-center">
+                    <h4 className="text-lg font-semibold text-gray-800">{item.hotelName}</h4>
+                    <span
+                      className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
+      ${item.status === "CONFIRMED"
+                          ? "bg-green-100 text-green-700"
+                          : item.status === "CANCELLED"
+                            ? "bg-red-100 text-red-700"
+                            : item.status === "PARTIALLY_CANCELLED"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : item.status === "COMPLETED"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-700"
+                        }
+    `}
+                    >
+                      {item.status.replace("_", " ")}
+                    </span>
                   </div>
+
+
+
 
                   {item.roomBookingsList.map((room, idx) => (
                     <div key={idx} className="flex gap-[5px]">
@@ -309,6 +332,15 @@ useEffect(() => {
                       )}
                     </div>
                   ))}
+                  {/* Hotel address and contact */}
+                  <div className="text-sm text-gray-600 mt-1">
+                    <p className="truncate">
+                      {item.hotelAddress}
+                    </p>
+                    <p>
+                      {item.hotelContact}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex flex-col items-end text-right text-xs text-gray-500">
@@ -366,7 +398,7 @@ useEffect(() => {
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No Bookings Found</h3>
             <p className="text-gray-600 text-center max-w-md">
-              {status === "ALL" 
+              {status === "ALL"
                 ? "You haven't made any bookings yet. Start exploring hotels and make your first reservation!"
                 : `No ${status.toLowerCase().replace("_", " ")} bookings found.`
               }
@@ -404,8 +436,8 @@ useEffect(() => {
                     onClick={() => handleReasonSelect(reason)}
                   >
                     <div className={`w-4 h-4 rounded-full border-2 mr-3 flex-shrink-0 ${cancelReason === reason
-                        ? "border-blue-500 bg-blue-500"
-                        : "border-gray-300"
+                      ? "border-blue-500 bg-blue-500"
+                      : "border-gray-300"
                       }`}>
                       {cancelReason === reason && (
                         <div className="w-2 h-2 bg-white rounded-full m-auto"></div>
@@ -475,8 +507,8 @@ useEffect(() => {
                     <div className="flex items-center gap-2">
                       <Clock
                         className={`w-5 h-5 ${["INITIATED", "COMPLETED"].includes(refundStatus.refundStatus)
-                            ? "text-blue-600"
-                            : "text-red-500"
+                          ? "text-blue-600"
+                          : "text-red-500"
                           }`}
                       />
                       <span className="text-sm font-medium">INITIATED</span>
@@ -485,8 +517,8 @@ useEffect(() => {
                       <span className="text-sm font-medium">COMPLETED</span>
                       <CheckCircle
                         className={`w-5 h-5 ${refundStatus.refundStatus === "COMPLETED"
-                            ? "text-green-600"
-                            : "text-gray-400"
+                          ? "text-green-600"
+                          : "text-gray-400"
                           }`}
                       />
                     </div>
@@ -496,8 +528,8 @@ useEffect(() => {
                   <div className="relative h-2 rounded bg-gray-200 overflow-hidden">
                     <div
                       className={`absolute inset-0 transition-all duration-300 ${refundStatus.refundStatus === "FAILED"
-                          ? "bg-gradient-to-r from-red-400 to-red-600"
-                          : "bg-gradient-to-r from-blue-400 to-blue-600"
+                        ? "bg-gradient-to-r from-red-400 to-red-600"
+                        : "bg-gradient-to-r from-blue-400 to-blue-600"
                         }`}
                       style={{
                         width:
@@ -510,10 +542,10 @@ useEffect(() => {
                   <div className="mt-4 text-center">
                     <span
                       className={`inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-medium transition ${refundStatus.refundStatus === "COMPLETED"
-                          ? "bg-green-100 text-green-700"
-                          : refundStatus.refundStatus === "FAILED"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-blue-100 text-blue-700"
+                        ? "bg-green-100 text-green-700"
+                        : refundStatus.refundStatus === "FAILED"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-blue-100 text-blue-700"
                         }`}
                     >
                       {refundStatus.refundStatus === "COMPLETED" && <CheckCircle className="w-4 h-4" />}

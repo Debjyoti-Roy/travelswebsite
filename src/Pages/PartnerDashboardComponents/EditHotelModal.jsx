@@ -71,6 +71,7 @@ const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
     name: hotel.name || "",
     about: hotel.about || "",
     address: hotel.address || "",
+    phone: hotel.phoneNumber || "",
     state: hotel.location?.state || "",
     district: hotel.location?.district || "",
     city: hotel.location?.city || "",
@@ -338,6 +339,10 @@ const EditHotelModal = ({ hotel, onClose, onSuccess, setCounter }) => {
               <div>
                 <label className="block text-gray-700 font-medium mb-1">Hotel Address</label>
                 <input type="text" value={basicDetails.address} onChange={e => setBasicDetails({ ...basicDetails, address: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">Phone Number</label>
+                <input type="text" value={basicDetails.phone} onChange={e => setBasicDetails({ ...basicDetails, phone: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-1">About</label>

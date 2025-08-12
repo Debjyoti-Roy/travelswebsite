@@ -55,6 +55,7 @@ import { lazy } from "react";
 import ProtectedRoute, { AuthProtectedRoute } from "../Components/ProtectedRoute";
 import { Skeleton } from "@mui/material";
 import { FaFilter } from "react-icons/fa";
+import AdminProtectedRoute from "../Components/AdminProtectedRoute";
 
 const HomePage = lazy(() => import("../Pages/HomePage"));
 const Profile = lazy(() => import("../Pages/Profile"));
@@ -63,6 +64,7 @@ const PartnerDashboard = lazy(() => import("../Pages/PartnerDashboard"));
 const HotelSearchResult = lazy(() => import("../Pages/HotelSearchResult"));
 const HotelDetails = lazy(() => import("../Pages/HotelDetails"));
 const MyBookings = lazy(() => import("../Pages/MyBookings"));
+const Admin = lazy(() => import("../Pages/Admin"));
 
 export const routes = [
   {
@@ -94,6 +96,16 @@ export const routes = [
     fallback: <div>Loading Partner Dashboard...</div>,
   },
   {
+    path: "/admin",
+    // element:<Admin/>,
+    element: (
+      <AdminProtectedRoute>
+        <Admin />
+      </AdminProtectedRoute>
+    ),
+    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+  },
+  {
     path: "/hotelsearch",
     element: <HotelSearchResult />,
     // fallback: <div>Searching Hotels...</div>,
@@ -114,61 +126,61 @@ export const routes = [
 
       {/* Search Container */}
       <div className="w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0">
-      {/* Banner */}
-      <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative" />
+        {/* Banner */}
+        <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative" />
 
-      {/* Form container */}
-      <div className="flex flex-col md:flex-row lg:w-[70%] w-full md:justify-center px-6 lg:px-0 pt-20 md:pt-4 gap-6 absolute top-[-5vh] md:top-0 z-10">
-        <div className="package-search-container w-full pt-10 md:pt-0">
-          <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative overflow-hidden">
-            {/* Decorative background elements */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-transparent rounded-full opacity-20 -translate-y-12 translate-x-12"></div>
-            <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-200 to-transparent rounded-full opacity-20 translate-y-10 -translate-x-10"></div>
+        {/* Form container */}
+        <div className="flex flex-col md:flex-row lg:w-[70%] w-full md:justify-center px-6 lg:px-0 pt-20 md:pt-4 gap-6 absolute top-[-5vh] md:top-0 z-10">
+          <div className="package-search-container w-full pt-10 md:pt-0">
+            <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative overflow-hidden">
+              {/* Decorative background elements */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-transparent rounded-full opacity-20 -translate-y-12 translate-x-12"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-200 to-transparent rounded-full opacity-20 translate-y-10 -translate-x-10"></div>
 
-            <div className="flex flex-col md:flex-row pr-0 gap-[10px] w-full md:px-2 relative z-10">
-              {/* Date Range */}
-              <div className="flex-[1.5] w-full">
-                <Skeleton
-                  variant="text"
-                  width="30%"
-                  height={20}
-                  className="mb-1"
-                />
-                <Skeleton
-                  variant="rectangular"
-                  height={48}
-                  className="w-full rounded-lg"
-                />
-              </div>
+              <div className="flex flex-col md:flex-row pr-0 gap-[10px] w-full md:px-2 relative z-10">
+                {/* Date Range */}
+                <div className="flex-[1.5] w-full">
+                  <Skeleton
+                    variant="text"
+                    width="30%"
+                    height={20}
+                    className="mb-1"
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    height={48}
+                    className="w-full rounded-lg"
+                  />
+                </div>
 
-              {/* Guests & Rooms */}
-              <div className="flex-1 w-full">
-                <Skeleton
-                  variant="text"
-                  width="40%"
-                  height={20}
-                  className="mb-1"
-                />
-                <Skeleton
-                  variant="rectangular"
-                  height={48}
-                  className="w-full rounded-lg"
-                />
-              </div>
+                {/* Guests & Rooms */}
+                <div className="flex-1 w-full">
+                  <Skeleton
+                    variant="text"
+                    width="40%"
+                    height={20}
+                    className="mb-1"
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    height={48}
+                    className="w-full rounded-lg"
+                  />
+                </div>
 
-              {/* Search Button */}
-              <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
-                <Skeleton
-                  variant="rectangular"
-                  height={48}
-                  className="w-full md:w-32 rounded-lg"
-                />
+                {/* Search Button */}
+                <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
+                  <Skeleton
+                    variant="rectangular"
+                    height={48}
+                    className="w-full md:w-32 rounded-lg"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
 
       {/* Main Content */}
@@ -189,28 +201,61 @@ export const routes = [
             {/* Hotel Card Skeletons */}
             <div className="w-full flex flex-col gap-6 mb-6">
               {[...Array(3)].map((_, idx) => (
+                // <div
+                //   key={idx}
+                //   className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4"
+                // >
+                //   <Skeleton
+                //     variant="rectangular"
+                //     animation="wave"
+                //     width="30%"
+                //     height={180}
+                //     className="rounded-lg"
+                //   />
+                //   <div className="flex-1 flex flex-col gap-2">
+                //     <Skeleton animation="wave" variant="text" width="60%" height={32} />
+                //     <Skeleton animation="wave" variant="text" width="40%" height={24} />
+                //     <Skeleton animation="wave" variant="text" width="80%" height={24} />
+                //     <Skeleton animation="wave" variant="text" width="90%" height={60} />
+                //     <div className="flex justify-between items-center pt-4">
+                //       <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                //       <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
+                //     </div>
+                //   </div>
+                // </div>
                 <div
                   key={idx}
-                  className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4"
+                  className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
                 >
-                  <Skeleton
-                    variant="rectangular"
-                    animation="wave"
-                    width="30%"
-                    height={180}
-                    className="rounded-lg"
-                  />
-                  <div className="flex-1 flex flex-col gap-2">
-                    <Skeleton animation="wave" variant="text" width="60%" height={32} />
-                    <Skeleton animation="wave" variant="text" width="40%" height={24} />
-                    <Skeleton animation="wave" variant="text" width="80%" height={24} />
-                    <Skeleton animation="wave" variant="text" width="90%" height={60} />
-                    <div className="flex justify-between items-center pt-4">
-                      <Skeleton animation="wave" variant="text" width="30%" height={28} />
+                  {/* Image skeleton */}
+                  <div className="w-full md:w-[30%] h-[200px] md:h-full bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <Skeleton
+                      variant="rectangular"
+                      animation="wave"
+                      width="100%"
+                      height="100%"
+                      className="rounded-lg"
+                    />
+                  </div>
+
+                  {/* Content skeleton */}
+                  <div className="flex-1 flex flex-col justify-between h-auto md:h-[80%] px-0 md:px-4 w-full gap-2">
+                    <div className="flex flex-row justify-between md:items-start gap-2">
+                      <Skeleton animation="wave" variant="text" width="60%" height={28} />
+                      <Skeleton animation="wave" variant="rectangular" width={80} height={24} className="rounded-full" />
+                    </div>
+
+                    <Skeleton animation="wave" variant="text" width="50%" height={20} />
+                    <Skeleton animation="wave" variant="text" width="80%" height={20} />
+                    <Skeleton animation="wave" variant="text" width="90%" height={48} />
+
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between md:block hidden gap-3 pt-4">
+                      <Skeleton animation="wave" variant="text" width="30%" height={24} />
                       <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
                     </div>
                   </div>
                 </div>
+
               ))}
             </div>
 
