@@ -72,28 +72,62 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
   </div>
 ));
 
-const allocateRooms = (rooms, totalPeople) => {
+// const allocateRooms = (rooms, totalPeople) => {
+//   const sortedRooms = [...rooms].sort((a, b) => b.maxOccupancy - a.maxOccupancy);
+//   let assignedPeople = 0;
+//   const selectedMap = {};
+
+//   for (const room of sortedRooms) {
+//     let available = room.totalRooms;
+//     while (assignedPeople < totalPeople && available > 0) {
+//       if (!selectedMap[room.id]) {
+//         selectedMap[room.id] = { room, count: 1 };
+//       } else {
+//         selectedMap[room.id].count++;
+//       }
+//       assignedPeople += room.maxOccupancy;
+//       available--;
+//     }
+//   }
+
+//   if (assignedPeople < totalPeople) return null;
+
+//   return Object.values(selectedMap);
+// };
+const allocateRooms_func = (rooms, totalPeople) => {
+  console.log("ROOOOMMM  ISSSS",rooms)
+  if (rooms===undefined || !rooms.length) return null;
+  console.log(rooms)
+  console.log(totalPeople)
   const sortedRooms = [...rooms].sort((a, b) => b.maxOccupancy - a.maxOccupancy);
-  let assignedPeople = 0;
+  let remainingPeople = totalPeople;
   const selectedMap = {};
 
   for (const room of sortedRooms) {
     let available = room.totalRooms;
-    while (assignedPeople < totalPeople && available > 0) {
+
+    while (remainingPeople > 0 && available > 0) {
       if (!selectedMap[room.id]) {
         selectedMap[room.id] = { room, count: 1 };
       } else {
         selectedMap[room.id].count++;
       }
-      assignedPeople += room.maxOccupancy;
+      remainingPeople -= room.maxOccupancy;
       available--;
     }
+
+    if (remainingPeople <= 0) break;
   }
 
-  if (assignedPeople < totalPeople) return null;
-
-  return Object.values(selectedMap);
+  return remainingPeople <= 0 ? Object.values(selectedMap) : null;
 };
+
+
+
+//if(allocateRooms_func(filteredRooms, totalPeople)===null){
+//    return allocateRooms(hotel.rooms, totalPeople)
+//}else{  return  allocateRooms(filteredRooms, totalPeople); }
+
 
 
 const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookNow }) => {
@@ -813,13 +847,29 @@ const HotelDetails = () => {
 
   const filteredRooms = useMemo(() => {
     if (!hotel?.rooms || !currentState?.startingPrice) return hotel?.rooms || [];
-    return hotel.rooms.filter(room => room.pricePerNight === currentState.startingPrice);
+    
+    return hotel.rooms.filter(room => room.pricePerNight <= currentState.startingPrice);
   }, [hotel, currentState]);
 
+  // const allocatedRooms = useMemo(() => {
+  //   if (!filteredRooms || !totalPeople) return [];
+  //   // return allocateRooms_func(filteredRooms, totalPeople);
+  //   console.log(filteredRooms)
+  //   const allocation = allocateRooms_func(filteredRooms, totalPeople)
+
+  //   if (allocation === null) {
+  //     return allocateRooms_func(hotel.rooms, totalPeople)
+  //   } else { return allocation; }
+  // }, [filteredRooms, totalPeople]);
   const allocatedRooms = useMemo(() => {
     if (!filteredRooms || !totalPeople) return [];
-    return allocateRooms(filteredRooms, totalPeople);
+  
+    const allocation = allocateRooms_func(filteredRooms, totalPeople) 
+        ?? allocateRooms_func(hotel.rooms, totalPeople);
+  
+    return allocation || [];
   }, [filteredRooms, totalPeople]);
+  
 
   // Move early returns AFTER effects
   if (!currentState || !currentState.id || !currentState.checkIn || !currentState.checkOut) {
@@ -864,7 +914,7 @@ const HotelDetails = () => {
   }
 
 
-  const grandTotal = allocatedRooms.reduce(
+  const grandTotal = allocatedRooms?.reduce(
     (acc, roomObj) => acc + roomObj.room.pricePerNight * roomObj.count,
     0
   );

@@ -442,15 +442,11 @@ const Navbar = () => {
             </li>
             <li
               onClick={() => {
-                if (useDetails?.role === "PARTNER") {
-                  navigate("/partner-dashboard");
-                } else {
-                  navigate("/partner");
-                }
+                navigate('/partner')
               }}
               className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full"
             >
-              <span>
+              <span  >
                 {userDetails?.role === "PARTNER" ? "Partner Dashboard" : "Be a Partner"}
               </span>
             </li>
@@ -689,12 +685,15 @@ const Navbar = () => {
                 Contact us
               </li>
               <li
-                onClick={() => {
-                  navigate("/partner")
-                }}
-                className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
-                Be a Partner
-              </li>
+              onClick={() => {
+                navigate('/partner')
+              }}
+              className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full"
+            >
+              <span  >
+                {userDetails?.role === "PARTNER" ? "Partner Dashboard" : "Be a Partner"}
+              </span>
+            </li>
             </ul>
           </div>
         </div>

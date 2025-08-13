@@ -21,7 +21,7 @@ const icons = {
 const FaChevronDown = (props) => <IconSVG path={icons.chevronDown} {...props} />;
 const FaChevronUp = (props) => <IconSVG path={icons.chevronUp} {...props} />;
 
-const RoomCard = ({ room }) => {
+const RoomCard = ({ room, setCounter }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [editRoom, setEditRoom] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -186,6 +186,7 @@ const RoomCard = ({ room }) => {
                         setEditRoom(null);
                         // Add any refresh logic here
                     }}
+                    setCounter={()=> setCounter()}
                 />
             )}
         </div>

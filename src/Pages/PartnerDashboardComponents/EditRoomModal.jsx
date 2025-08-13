@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { updateRoomFeatures } from "../../Redux/store/hotelSlice";
 // import { updateRoomDetails } from "../../Redux/store/hotelSlice"; // Uncomment and implement if not present
 
-const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails }) => {
+const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails, setCounter }) => {
   const dispatch = useDispatch();
   const [name, setName] = useState(room.name || "");
   const [totalRooms, setTotalRooms] = useState(room.totalRooms || 1);
@@ -88,6 +88,7 @@ const EditRoomModal = ({ room, onClose, onSuccess, updateRoomDetails }) => {
       const res = await dispatch(updateRoomFeatures({ id: room.id, features: payload, token: token }));
       if (res && res.payload && (res.payload.status === 200 || res.payload.status === 201)) {
         // Delete images from Firebase only after success
+        setCounter()
         for (const url of toBeDeletedImages) {
           try {
             const path = decodeURIComponent(url.split("/o/")[1].split("?alt=")[0]);
