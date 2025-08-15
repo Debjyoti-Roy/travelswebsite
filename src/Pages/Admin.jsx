@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { countAwaiting } from "../Redux/store/adminSlices";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
+  const navigate=useNavigate()
   const dispatch = useDispatch();
   const { awaitingCount, loading, error } = useSelector((state) => state.admin);
 
@@ -41,6 +43,11 @@ const Admin = () => {
         {cards.map((card, idx) => (
           <div
             key={idx}
+            onClick={()=>{
+              if(card.title === "Manage Hotel Bookings"){
+                  navigate("/admin/managehotelbooking")
+              }
+            }}
             className={`bg-gradient-to-r ${card.color} p-6 rounded-2xl shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer aspect-square flex flex-col justify-center items-center text-center relative`}
           >
             {/* Notification bubble for Hotel Bookings card */}

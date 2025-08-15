@@ -95,8 +95,8 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
 //   return Object.values(selectedMap);
 // };
 const allocateRooms_func = (rooms, totalPeople) => {
-  console.log("ROOOOMMM  ISSSS",rooms)
-  if (rooms===undefined || !rooms.length) return null;
+  console.log("ROOOOMMM  ISSSS", rooms)
+  if (rooms === undefined || !rooms.length) return null;
   console.log(rooms)
   console.log(totalPeople)
   const sortedRooms = [...rooms].sort((a, b) => b.maxOccupancy - a.maxOccupancy);
@@ -451,7 +451,7 @@ const RoomSelectionTable = ({ hotelRooms, numberofDays, totalPeople, handleBookN
               onClick={handleBookNow2}
               className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
             >
-              Book Now
+              Reserve Now
             </button>
           </div>
         </div>
@@ -847,7 +847,7 @@ const HotelDetails = () => {
 
   const filteredRooms = useMemo(() => {
     if (!hotel?.rooms || !currentState?.startingPrice) return hotel?.rooms || [];
-    
+
     return hotel.rooms.filter(room => room.pricePerNight <= currentState.startingPrice);
   }, [hotel, currentState]);
 
@@ -863,13 +863,13 @@ const HotelDetails = () => {
   // }, [filteredRooms, totalPeople]);
   const allocatedRooms = useMemo(() => {
     if (!filteredRooms || !totalPeople) return [];
-  
-    const allocation = allocateRooms_func(filteredRooms, totalPeople) 
-        ?? allocateRooms_func(hotel.rooms, totalPeople);
-  
+
+    const allocation = allocateRooms_func(filteredRooms, totalPeople)
+      ?? allocateRooms_func(hotel.rooms, totalPeople);
+
     return allocation || [];
   }, [filteredRooms, totalPeople]);
-  
+
 
   // Move early returns AFTER effects
   if (!currentState || !currentState.id || !currentState.checkIn || !currentState.checkOut) {
@@ -1016,6 +1016,12 @@ const HotelDetails = () => {
   };
 
   const openRazorpay = (orderId) => {
+    const cookies = document.cookie.split("; ");
+    const userDataCookie = cookies.find((row) =>
+      row.startsWith("userData=")
+    );
+    const value = userDataCookie.split("=")[1];
+    const decoded = JSON.parse(decodeURIComponent(value));
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY, // ⭐ replace with your Razorpay Key ID
       name: "INO TRAVELS",
@@ -1053,11 +1059,11 @@ const HotelDetails = () => {
       // };
 
 
-      // prefill: {
-      //   name: "Guest Name",
-      //   email: "guest@example.com",
-      //   contact: "9999999999",
-      // },
+      prefill: {
+        name: decoded.name,
+        email: decoded.email,
+        contact: (!decoded.phoneNumber || decoded.phoneNumber === "" || decoded.phoneNumber === "NA") ? null : decoded.phoneNumber,
+      },
 
       // notes: {
       //   booking_id: "OptionalBookingId",
@@ -1081,6 +1087,7 @@ const HotelDetails = () => {
     // console.log(book)
     if (book.payload.status == 200) {
       const data = book.payload.data;
+      console.log(data)
       setBookingId(data?.bookingGroupCode)
       setRazorpayId(data?.razorpayOrderId)
       // console.log(book.payload.data)
@@ -1201,6 +1208,7 @@ const HotelDetails = () => {
                     );
 
                   })}
+                  
                   <div className="mt-6 border-t border-gray-200 pt-4 flex flex-col md:flex-row md:justify-between items-center">
                     <div className="text-2xl flex items-center gap-[2px] font-bold text-gray-800">
                       <div>
@@ -1273,10 +1281,68 @@ const HotelDetails = () => {
                         className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
       text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
                       >
-                        Book Now
+                        Reserve Now
                       </button>
                     </div>
                   </div>
+                  <div className="w-full rounded-2xl p-4 sm:p-6">
+  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
+    Booking & Advance Fee Policy
+  </h3>
+  
+  <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4">
+    To place a booking request, a small{" "}
+    <span className="font-medium text-gray-900">advance fee</span> is required.
+    We'll review availability and confirm your request within{" "}
+    <span className="font-medium text-gray-900">24 hours</span>.
+  </p>
+  
+  <ul className="space-y-3 sm:space-y-2.5 mb-4">
+    <li className="flex items-start gap-3">
+      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+        If approved, you'll receive a payment link by email/SMS.
+      </span>
+    </li>
+    
+    <li className="flex items-start gap-3">
+      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+        You'll have{" "}
+        <span className="font-semibold text-gray-900">48 hours</span> to
+        complete the full payment.
+      </span>
+    </li>
+    
+    <li className="flex items-start gap-3">
+      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+        If payment isn't completed in time, your request will be{" "}
+        <span className="font-semibold text-gray-900">automatically cancelled</span>{" "}
+        and the advance fee becomes{" "}
+        <span className="font-semibold text-gray-900">non-refundable</span>.
+      </span>
+    </li>
+    
+    <li className="flex items-start gap-3">
+      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+        You can cancel within the 48-hour window and get a{" "}
+        <span className="font-semibold text-gray-900">full refund</span>{" "}
+        of the advance fee.
+      </span>
+    </li>
+  </ul>
+  
+  <div className="rounded-xl bg-gray-50 p-4 sm:p-3">
+    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+      <span className="font-medium text-gray-700">Tip:</span> Keep an eye on your inbox/SMS for the payment link to secure your
+      booking on time. You can pay via the link or from the website from My
+      Booking section.
+    </p>
+  </div>
+</div>
+
 
                 </div>
 
@@ -1514,75 +1580,182 @@ const HotelDetails = () => {
 
           {showModal2 && bookingData && (
             <div
-              className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50"
+              className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50 p-4"
               onClick={() => setShowModal2(false)}
             >
               <div
-                className="bg-white p-6 rounded-xl w-full max-w-3xl shadow-xl overflow-y-auto max-h-[90vh]"
+                className="bg-white rounded-xl w-full max-w-4xl shadow-xl overflow-y-auto max-h-[90vh] mx-4"
                 onClick={(e) => e.stopPropagation()}
               >
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">Booking Summary</h2>
-
-                <div className="mb-6 text-gray-700">
-                  <p><strong>Check-In Date:</strong> {currentState.checkIn}</p>
-                  <p><strong>Check-Out Date:</strong> {currentState.checkOut}</p>
-                  <p><strong>Total Guests:</strong> {currentState.total}</p>
+                {/* Header */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-gray-800">Booking Summary</h2>
+                    <button
+                      onClick={() => setShowModal2(false)}
+                      className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p className="text-gray-600 text-sm mt-1">Please review your booking details</p>
                 </div>
 
-                {bookingData.map((item, index) => {
-                  const nights = numberofDays || 1;
-                  const subtotal = item.room.pricePerNight * item.count * nights;
+                {/* Booking Info Cards */}
+                <div className="px-6 py-4 bg-blue-50 border-b border-gray-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="text-center sm:text-left">
+                      <p className="text-sm font-medium text-gray-600">Check-in</p>
+                      <p className="text-lg font-semibold text-gray-900">{currentState.checkIn}</p>
+                    </div>
+                    <div className="text-center sm:text-left">
+                      <p className="text-sm font-medium text-gray-600">Check-out</p>
+                      <p className="text-lg font-semibold text-gray-900">{currentState.checkOut}</p>
+                    </div>
+                    <div className="text-center sm:text-left">
+                      <p className="text-sm font-medium text-gray-600">Guests</p>
+                      <p className="text-lg font-semibold text-gray-900">{currentState.total} guests</p>
+                    </div>
+                  </div>
+                </div>
 
-                  return (
-                    <div
-                      key={index}
-                      className="border border-gray-200 p-4 rounded-lg mb-6 shadow-sm bg-gray-50"
-                    >
-                      <h3 className="text-lg font-bold text-blue-600 mb-2">{item.room.name}</h3>
+                {/* Room Details */}
+                <div className="px-6 py-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Selection</h3>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
-                        {/* <p><strong>Room ID:</strong> {item.room.id}</p> */}
-                        <p><strong>Number of Rooms Booked:</strong> {item.count}</p>
-                        <p><strong>Max Occupancy per Room:</strong> {item.room.maxOccupancy}</p>
-                        <p><strong>Available Rooms:</strong> {item.room.totalRooms}</p>
-                        <p><strong>Price per Night:</strong> ₹{item.room.pricePerNight}</p>
-                        <p><strong>Total Nights:</strong> {nights}</p>
-                        <p><strong>Subtotal:</strong> ₹{subtotal}</p>
+                  {bookingData.map((item, index) => {
+                    const nights = numberofDays || 1;
+                    const subtotal = item.room.pricePerNight * item.count * nights;
+                    return (
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50"
+                      >
+                        {/* Room Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                          <h4 className="text-lg font-semibold text-blue-600 mb-2 sm:mb-0">{item.room.name}</h4>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-green-600">₹{subtotal.toLocaleString()}</p>
+                            <p className="text-sm text-gray-600">Total for {nights} night{nights > 1 ? 's' : ''}</p>
+                          </div>
+                        </div>
+
+                        {/* Room Details Grid */}
+                        <div className="grid grid-cols-3 gap-4 mb-4 w-full">
+                          <div className="flex flex-col items-start text-left">
+                            <p className="text-sm self-center text-center text-gray-600">Rooms</p>
+                            <p className="font-semibold text-gray-900 self-center">{item.count}</p>
+                          </div>
+
+                          <div className="flex flex-col items-center text-center">
+                            <p className="text-sm text-gray-600">Max Guests</p>
+                            <p className="font-semibold text-gray-900">{item.room.maxOccupancy}</p>
+                          </div>
+
+                          <div className="flex flex-col items-end ">
+                            <p className="text-sm self-center text-gray-600">Per Night</p>
+                            <p className="font-semibold text-gray-900 self-center">
+                              ₹{item.room.pricePerNight.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+
+
                       </div>
+                    );
+                  })}
+                </div>
 
-                      <div className="mt-3">
-                        <p className="font-medium text-gray-800">Features:</p>
-                        <ul className="list-disc list-inside text-gray-600 text-sm">
-                          {item.room.features.map((feature, i) => (
-                            <li key={i}>{feature}</li>
-                          ))}
-                        </ul>
+                {/* Price Breakdown */}
+                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Price Breakdown</h3>
+
+                  {/* Total */}
+                  <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span className="text-gray-700 font-medium">Total Amount</span>
+                    <span className="text-xl font-bold text-green-600">
+                      ₹{bookingData.reduce((acc, item) => acc + item.room.pricePerNight * item.count * (numberofDays || 1), 0).toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Payment Details */}
+                  <div className="space-y-3 mt-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-gray-700 font-medium">Pay Now</span>
+                        <p className="text-sm text-gray-600">To Generate a Booking Request</p>
+                      </div>
+                      <span className="text-lg font-bold text-orange-600">
+                        ₹{(() => {
+                          const total = bookingData.reduce((acc, item) => acc + item.room.pricePerNight * item.count * (numberofDays || 1), 0);
+                          return Math.max(499, total * 0.1).toLocaleString();
+                        })()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-gray-700 font-medium">Remaining Amount</span>
+                        <p className="text-sm text-gray-600">Pay after approval</p>
+                      </div>
+                      <span className="text-lg font-bold text-blue-600">
+                        ₹{(() => {
+                          const total = bookingData.reduce((acc, item) => acc + item.room.pricePerNight * item.count * (numberofDays || 1), 0);
+                          const advance = Math.max(499, total * 0.1);
+                          return (total - advance).toLocaleString();
+                        })()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Highlighted Payment */}
+                  <div style={{ marginTop: '10px' }} className="mt-4 bg-orange-100 border border-orange-200 rounded-lg p-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-center">
+                      <div className="mb-2 sm:mb-0 text-center sm:text-left">
+                        <p className="text-lg font-bold text-orange-700">
+                          Amount to Pay Now: ₹{(() => {
+                            const total = bookingData.reduce((acc, item) => acc + item.room.pricePerNight * item.count * (numberofDays || 1), 0);
+                            return Math.max(499, total * 0.1).toLocaleString();
+                          })()}
+                        </p>
+                        {/* <p className="text-sm text-orange-600">Secure your booking instantly</p> */}
                       </div>
                     </div>
-                  );
-                })}
-
-                <div className="border-t border-gray-200 pt-4 text-right">
-                  <p className="text-xl font-bold text-green-600">
-                    Grand Total: ₹
-                    {bookingData.reduce(
-                      (acc, item) => acc + item.room.pricePerNight * item.count * (numberofDays || 1),
-                      0
-                    )}
-                  </p>
+                  </div>
                 </div>
 
-                <div className="flex justify-end mt-6">
-                  <button
-                    onClick={() => {
-                      // console.log("Final booking confirmed!", bookingData);
-                      handleBook()
-                      setShowModal2(false);
-                    }}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
-                  >
-                    Confirm Booking
-                  </button>
+                {/* Footer Actions */}
+                <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-xl">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+                    <button
+                      onClick={() => setShowModal2(false)}
+                      className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleBook();
+                        setShowModal2(false);
+                      }}
+                      className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                    >
+                      Confirm Payment
+                    </button>
+                  </div>
+
+                  {/* Mobile Payment Summary */}
+                  <div className="block sm:hidden mt-3 pt-3 border-t border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Amount to pay now:</span>
+                      <span className="font-bold text-orange-600">
+                        ₹{(() => {
+                          const total = bookingData.reduce((acc, item) => acc + item.room.pricePerNight * item.count * (numberofDays || 1), 0);
+                          return Math.max(499, total * 0.1).toLocaleString();
+                        })()}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -37,7 +37,7 @@ const PaymentSuccessfullModal = ({ bookingId, checkIn, checkOut, total, paidAt, 
             <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full max-w-md">
                 <div className="bg-blue-600 text-white text-center py-4 relative">
                     <h2 className="text-lg font-semibold">Payment Successful!</h2>
-                    <p className="text-sm">Your payment has been authorized. We will confirm your booking shortly.</p>
+                    <p className="text-sm">Your booking request has been received. You’ll get a payment link within 24 hours — confirm within 48 hours to secure your booking.</p>
 
                     <button
                         onClick={onClose}
