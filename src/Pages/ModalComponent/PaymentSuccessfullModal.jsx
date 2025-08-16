@@ -37,7 +37,7 @@ const PaymentSuccessfullModal = ({ bookingId, checkIn, checkOut, total, paidAt, 
             <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full max-w-md">
                 <div className="bg-blue-600 text-white text-center py-4 relative">
                     <h2 className="text-lg font-semibold">Payment Successful!</h2>
-                    <p className="text-sm">Your booking request has been received. You’ll get a payment link within 24 hours — confirm within 48 hours to secure your booking.</p>
+                    <p className="text-sm p-3">Your booking request has been received. You’ll get a payment link within 24 hours — confirm within 48 hours to secure your booking.</p>
 
                     <button
                         onClick={onClose}
@@ -71,14 +71,18 @@ const PaymentSuccessfullModal = ({ bookingId, checkIn, checkOut, total, paidAt, 
                         <div className="w-full flex justify-center">
                             <div className="w-[90%] pt-6 pb-6">
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="p-2 flex flex-col">
-                                        <span className="text-sm text-gray-600">Check In</span>
-                                        <span className="text-md font-medium text-gray-800">{checkIn}</span>
-                                    </div>
-                                    <div className="p-2 flex flex-col">
-                                        <span className="text-sm text-gray-600">Check Out</span>
-                                        <span className="text-md font-medium text-gray-800">{checkOut}</span>
-                                    </div>
+                                    {checkIn !== "" && (
+                                        <div className="p-2 flex flex-col">
+                                            <span className="text-sm text-gray-600">Check In</span>
+                                            <span className="text-md font-medium text-gray-800">{checkIn}</span>
+                                        </div>
+                                    )}
+                                    {checkOut !== "" && (
+                                        <div className="p-2 flex flex-col">
+                                            <span className="text-sm text-gray-600">Check Out</span>
+                                            <span className="text-md font-medium text-gray-800">{checkOut}</span>
+                                        </div>
+                                    )}
                                     <div className="p-2 flex flex-col">
                                         <span className="text-sm text-gray-600">Total People</span>
                                         <span className="text-md font-medium text-gray-800">{total}</span>

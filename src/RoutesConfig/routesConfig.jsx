@@ -66,6 +66,8 @@ const HotelDetails = lazy(() => import("../Pages/HotelDetails"));
 const MyBookings = lazy(() => import("../Pages/MyBookings"));
 const Admin = lazy(() => import("../Pages/Admin"));
 const ManageHotelBooking = lazy(() => import("../Pages/AdminComponents/ManageHotelBooking"))
+const PaymentPage = lazy(() => import("../Pages/PaymentPage"));
+
 
 export const routes = [
   {
@@ -212,28 +214,6 @@ export const routes = [
             {/* Hotel Card Skeletons */}
             <div className="w-full flex flex-col gap-6 mb-6">
               {[...Array(3)].map((_, idx) => (
-                // <div
-                //   key={idx}
-                //   className="flex items-center bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-70 p-4 gap-4"
-                // >
-                //   <Skeleton
-                //     variant="rectangular"
-                //     animation="wave"
-                //     width="30%"
-                //     height={180}
-                //     className="rounded-lg"
-                //   />
-                //   <div className="flex-1 flex flex-col gap-2">
-                //     <Skeleton animation="wave" variant="text" width="60%" height={32} />
-                //     <Skeleton animation="wave" variant="text" width="40%" height={24} />
-                //     <Skeleton animation="wave" variant="text" width="80%" height={24} />
-                //     <Skeleton animation="wave" variant="text" width="90%" height={60} />
-                //     <div className="flex justify-between items-center pt-4">
-                //       <Skeleton animation="wave" variant="text" width="30%" height={28} />
-                //       <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
-                //     </div>
-                //   </div>
-                // </div>
                 <div
                   key={idx}
                   className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
@@ -323,4 +303,10 @@ export const routes = [
     ),
     fallback: <div>Loading Your Bookings...</div>,
   },
+  {
+    path: "/pay-bookings",
+    element: <PaymentPage />,
+    fallback: <div>Loading Payment Page...</div>,
+  },
+  
 ];
