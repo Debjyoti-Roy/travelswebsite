@@ -559,6 +559,9 @@ const HotelDetails = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [userData, setUserData] = useState();
 
+
+  
+
   const handleClose = () => {
     setShowModal(false);
     setLogin("login");

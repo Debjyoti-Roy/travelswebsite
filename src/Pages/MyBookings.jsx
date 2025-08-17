@@ -7,6 +7,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const statusMap = {
+  // ALL: "",
+  Upcoming: "CONFIRMED",
+  "Payment Pending": "PENDING,AWAITING_CUSTOMER_PAYMENT",
+  Past: "COMPLETED",
+  Canceled: "EXPIRED,REJECTED,CANCELLED",
+  Processing: "AWAITING_ADMIN_CONFIRMATION",
+};
+
+// Custom dropdown options for each tab
+const tabDropdownOptions = {
+  Upcoming: ["CONFIRMED"],
+  "Payment Pending": ["ALL","PENDING","PAYMENT PENDING"],
+  // "Payment Pending": ["ALL","PENDING","AWAITING_CUSTOMER_PAYMENT"],
+  Processing: ["PENDING ADMIN CONFIRMATION"],
+  Past: ["COMPLETED"],
+  Canceled: ["EXPIRED","REJECTED","CANCELLED"],
+};
+
 const MyBookings = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,7 +35,8 @@ const MyBookings = () => {
   const [page, setPage] = useState(0);
   const [size] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [status, setStatus] = useState("ALL");
+  const [status, setStatus] = useState("Upcoming");
+  const [selectedDropdownOption, setSelectedDropdownOption] = useState("All Upcoming");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -34,6 +54,18 @@ const MyBookings = () => {
   // Not eligible for refund modal state
   const [showNotEligibleModal, setShowNotEligibleModal] = useState(false);
   const [notEligibleMessage, setNotEligibleMessage] = useState("");
+
+  //Button scheduler
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    // Update every 1 minute (or 1 second if you need more accuracy)
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000 * 60);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Not eligible for refund confirm modal state
   const [showNotEligibleConfirmModal, setShowNotEligibleConfirmModal] = useState(false);
@@ -101,10 +133,25 @@ const MyBookings = () => {
     }
   };
 
-  const handleStatusChange = (e) => {
-    const selected = e.target.value;
-    setStatus(selected);
-    fetchBookings(0, selected);
+  const handleStatusChange = (option) => {
+    setStatus(option); // keep UI label as state
+    setSelectedDropdownOption(tabDropdownOptions[option][0]); // reset dropdown to first option
+    fetchBookings(0, statusMap[option]); // send mapped value to API
+  };
+
+  const handleDropdownChange = (dropdownOption) => {
+    // setSelectedDropdownOption(dropdownOption);
+    if(dropdownOption!=="PAYMENT PENDING"||dropdownOption!=="PENDING ADMIN CONFIRMATION"){
+
+      fetchBookings(0, dropdownOption);
+    }else if(dropdownOption==="PAYMENT PENDING"){
+      fetchBookings(0, "AWAITING_CUSTOMER_PAYMENT");
+    }else if(dropdownOption==="PENDING ADMIN CONFIRMATION"){
+      fetchBookings(0, "AWAITING_ADMIN_CONFIRMATION");
+    }
+    // Here you can add additional filtering logic based on dropdown selection
+    // For now, we'll just update the UI state
+    console.log(`Selected ${dropdownOption} for ${status} tab`);
   };
 
   // Cancel booking handler
@@ -177,25 +224,63 @@ const MyBookings = () => {
 
   return (
     <div className="flex justify-center pt-10 pb-20">
-      <div ref={topRef} className="w-full md:w-[70%] px-4">
+      <div ref={topRef} className="w-full lg:w-[70%] px-4">
 
         <h2 className="text-2xl font-bold text-gray-800 pb-6 text-center">My Bookings</h2>
 
-        {/* Filter */}
-        {/* {!loading && ( */}
-        <div className="md:w-auto w-full pb-4 flex justify-end">
+                 {/* Filter Tabs */}
+                 <div className="w-full pb-6">
+  {/* Wrapper flexbox */}
+  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    
+    {/* Tabs */}
+    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+      {Object.keys(statusMap).map((option) => (
+        <button
+          key={option}
+          onClick={() => handleStatusChange(option)}
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
+            status === option
+              ? "bg-blue-600 text-white shadow-md"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
+          }`}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+
+    {/* Dropdown */}
+    {status !== "ALL" && (
+      <div className="flex justify-center lg:justify-end">
+        <div className="relative">
           <select
-            value={status}
-            onChange={handleStatusChange}
-            className="border w-full md:w-[20%] border-gray-300 rounded px-3 py-2 text-sm"
+            value={selectedDropdownOption}
+            onChange={(e) => handleDropdownChange(e.target.value)}
+            className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 transition-colors"
           >
-            {["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"].map((option) => (
+            {tabDropdownOptions[status]?.map((option) => (
               <option key={option} value={option}>
-                {option.replace("_", " ")}
+                {option}
               </option>
             ))}
           </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
         </div>
+      </div>
+    )}
+  </div>
+</div>
+
 
 
         {/* Bookings */}
@@ -252,70 +337,45 @@ const MyBookings = () => {
             <div
               key={item.bookingGroupCode}
               onClick={() => toggleExpand(item.bookingGroupCode)}
-              className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
+              className="relative border border-gray-200 p-4 md:p-5 rounded-xl shadow-sm bg-white transition-all duration-300 hover:shadow-lg hover:scale-[1.01] hover:border-blue-500 hover:bg-blue-50 cursor-pointer"
             >
-              <div className="flex justify-between items-start">
-                <div className="flex-1 pr-4">
+              <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+                <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-500 pb-1">
-                    Booking ID: <span className="font-medium">{item.bookingGroupCode}</span>
+                    Booking ID: <span className="font-medium break-all">{item.bookingGroupCode}</span>
                   </p>
-                  <h3 className="text-lg font-semibold text-gray-800 pb-2">
+                  <h3 className="text-base md:text-lg font-semibold text-gray-800 pb-2">
                     {item.numberOfGuests} Guest{item.numberOfGuests > 1 ? "s" : ""} |{" "}
                     {item.roomBookingsList.length} Room Type{item.roomBookingsList.length > 1 ? "s" : ""}
                   </h3>
 
-                  {/* <div className="flex gap-[5px] items-center">
-                    <h4 className="text-lg font-semibold text-gray-800">{item.hotelName}</h4>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                    <h4 className="text-base md:text-lg font-semibold text-gray-800 break-words">{item.hotelName}</h4>
                     <span
-                      className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
-                        ${item.status === "CONFIRMED"
-                          ? "bg-green-100 text-green-700"
-                          : item.status === "CANCELLED"
-                            ? "bg-red-100 text-red-700"
-                            : item.status === "PARTIALLY_CANCELLED"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : item.status === "COMPLETED"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-700"
-                        }
-                      `}
+                      className={`inline-block px-2 py-1 text-xs rounded-full font-medium self-start sm:self-center ${item.status === "CONFIRMED"
+                        ? "bg-green-100 text-green-700"
+                        : item.status === "CANCELLED"
+                          ? "bg-red-100 text-red-700"
+                          : item.status === "PARTIALLY_CANCELLED"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : item.status === "COMPLETED"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-gray-100 text-gray-700"
+                        }`}
                     >
-                      {item.status.replace("_", " ")}
-                    </span>
-                  </div> */}
-                  <div className="flex gap-[5px] items-center">
-                    <h4 className="text-lg font-semibold text-gray-800">{item.hotelName}</h4>
-                    <span
-                      className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
-      ${item.status === "CONFIRMED"
-                          ? "bg-green-100 text-green-700"
-                          : item.status === "CANCELLED"
-                            ? "bg-red-100 text-red-700"
-                            : item.status === "PARTIALLY_CANCELLED"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : item.status === "COMPLETED"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-700"
-                        }
-    `}
-                    >
-                      {item.status.replace("_", " ")}
+                      {item.status.replace(/_/g, " ")}
                     </span>
                   </div>
 
-
-
-
-                  {item.roomBookingsList.map((room, idx) => (
-                    <div key={idx} className="flex gap-[5px]">
-                      <div className="text-sm text-gray-700 pb-1">
-                        <span className="font-medium">{room.roomName}</span> ({room.numberOfRooms} room{room.numberOfRooms > 1 ? "s" : ""}) — ₹{room.totalPrice}
-                      </div>
-                      {item.status === "PARTIALLY_CANCELLED" && (
-
-                        <span
-                          className={`inline-block px-2 py-[2px] text-xs rounded-full font-medium
-                              ${room.status === "CONFIRMED"
+                  <div className="space-y-2 mb-3">
+                    {item.roomBookingsList.map((room, idx) => (
+                      <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <div className="text-sm text-gray-700">
+                          <span className="font-medium">{room.roomName}</span> ({room.numberOfRooms} room{room.numberOfRooms > 1 ? "s" : ""}) — ₹{room.totalPrice}
+                        </div>
+                        {item.status === "PARTIALLY_CANCELLED" && (
+                          <span
+                            className={`inline-block px-2 py-1 text-xs rounded-full font-medium self-start sm:self-center ${room.status === "CONFIRMED"
                               ? "bg-green-100 text-green-700"
                               : room.status === "CANCELLED"
                                 ? "bg-red-100 text-red-700"
@@ -324,69 +384,139 @@ const MyBookings = () => {
                                   : room.status === "COMPLETED"
                                     ? "bg-blue-100 text-blue-700"
                                     : "bg-gray-100 text-gray-700"
-                            }
-                            `}
-                        >
-                          {room.status.replace("_", " ")}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                              }`}
+                          >
+                            {room.status.replace(/_/g, " ")}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
                   {/* Hotel address and contact */}
-                  <div className="text-sm text-gray-600 mt-1">
-                    <p className="truncate">
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p className="break-words">
                       {item.hotelAddress}
                     </p>
-                    <p>
+                    <p className="break-all">
                       {item.hotelContact}
                     </p>
+                    <strong className="break-all text-red-800">
+  Pay Before: {new Date(item.expiredAt).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  })}
+</strong>
+
                   </div>
                 </div>
 
-                <div className="flex flex-col items-end text-right text-xs text-gray-500">
+                <div className="flex flex-col items-start lg:items-end text-left lg:text-right text-xs text-gray-500 space-y-1 lg:space-y-0">
                   <p>Check-in: {item.checkIn}</p>
                   <p>Check-out: {item.checkOut}</p>
                   <p>Total Guests: {item.numberOfGuests}</p>
-                  <p>Total Price: {item.totalPrice}</p>
+                  <p className="font-semibold text-sm">Total Price: ₹{item.totalPrice}</p>
                 </div>
               </div>
 
-              {/* Show Button only for confirmed bookings */}
-              {item.status === "CONFIRMED" && (
-                <button
-                  className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                  onClick={e => {
-                    e.stopPropagation();
-                    // Calculate days difference
-                    const today = new Date();
-                    const checkInDate = new Date(item.checkIn);
-                    const diffTime = checkInDate - today;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    if (diffDays <= 10) {
-                      setPendingCancelBookingId(item.bookingGroupCode);
-                      setShowNotEligibleConfirmModal(true);
-                    } else {
-                      setShowCancelModal(true);
-                      setCancelBookingId(item.bookingGroupCode);
-                      setCancelReason("");
-                      setShowCustomReason(false);
-                    }
-                  }}
-                >
-                  Cancel
-                </button>
-              )}
-              {item.status === "CANCELLED" && (
-                <button
-                  className="absolute bottom-4 right-4 px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleRefundStatus(item.bookingGroupCode);
-                  }}
-                >
-                  See Refund Status
-                </button>
-              )}
+              {/* Action Buttons */}
+              <div className="mt-4 flex flex-col sm:flex-row gap-2 justify-end">
+                {item.status === "CONFIRMED" && (
+                  <button
+                    className="w-full sm:w-auto px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+                    onClick={e => {
+                      e.stopPropagation();
+                      // Calculate days difference
+                      const today = new Date();
+                      const checkInDate = new Date(item.checkIn);
+                      const diffTime = checkInDate - today;
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                      if (diffDays <= 10) {
+                        setPendingCancelBookingId(item.bookingGroupCode);
+                        setShowNotEligibleConfirmModal(true);
+                      } else {
+                        setShowCancelModal(true);
+                        setCancelBookingId(item.bookingGroupCode);
+                        setCancelReason("");
+                        setShowCustomReason(false);
+                      }
+                    }}
+                  >
+                    Cancel Booking
+                  </button>
+                )}
+
+                {item.status === "CANCELLED" && (
+                  <button
+                    className="w-full sm:w-auto px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleRefundStatus(item.bookingGroupCode);
+                    }}
+                  >
+                    See Refund Status
+                  </button>
+                )}
+                {item.status === "PENDING" && now < new Date(item.expiredAt) && (
+                  <button
+                    className="w-full sm:w-auto px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                    onClick={e => {
+                      e.stopPropagation();
+                      // Navigate to payment page
+                      const payment = item.payments;
+                      const pay = payment.filter(item => item.paymentType === "TOKEN");
+                      const razorId = pay[0]?.razorpayOrderId;
+                      navigate(`/pay-bookings?orderId=${razorId}&bookingCode=${item.bookingGroupCode}`);
+                    }}
+                  >
+                    Pay Now
+                  </button>
+                )}
+
+                {item.status === "AWAITING_CUSTOMER_PAYMENT" && now < new Date(item.expiredAt) && (
+                  <>
+                    <button
+                      className="w-full sm:w-auto px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+                      onClick={e => {
+                        e.stopPropagation();
+                        // Calculate days difference
+                        const today = new Date();
+                        const checkInDate = new Date(item.checkIn);
+                        const diffTime = checkInDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 10) {
+                          setPendingCancelBookingId(item.bookingGroupCode);
+                          setShowNotEligibleConfirmModal(true);
+                        } else {
+                          setShowCancelModal(true);
+                          setCancelBookingId(item.bookingGroupCode);
+                          setCancelReason("");
+                          setShowCustomReason(false);
+                        }
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="w-full sm:w-auto px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                      onClick={e => {
+                        e.stopPropagation();
+                        // Navigate to payment page
+                        const payment = item.payments;
+                        const pay = payment.filter(item => item.paymentType === "FINAL");
+                        const razorId = pay[0]?.razorpayOrderId;
+                        navigate(`/pay-bookings?orderId=${razorId}&bookingCode=${item.bookingGroupCode}`);
+                      }}
+                    >
+                      Pay Now
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           ))
         ) : (
@@ -397,12 +527,12 @@ const MyBookings = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No Bookings Found</h3>
-            <p className="text-gray-600 text-center max-w-md">
-              {status === "ALL"
-                ? "You haven't made any bookings yet. Start exploring hotels and make your first reservation!"
-                : `No ${status.toLowerCase().replace("_", " ")} bookings found.`
-              }
-            </p>
+                         <p className="text-gray-600 text-center max-w-md">
+               {status === "ALL"
+                 ? "You haven't made any bookings yet. Start exploring hotels and make your first reservation!"
+                 : `No ${selectedDropdownOption.toLowerCase()} ${status.toLowerCase()} bookings found.`
+               }
+             </p>
             <button
               onClick={() => navigate("/")}
               className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"

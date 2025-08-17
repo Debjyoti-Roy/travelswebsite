@@ -91,7 +91,7 @@ export const fetchUserBookings = createAsyncThunk(
       let url=`/v1/private/get-bookings?page=${page}&size=${size}`
 
       if (status !== "ALL") {
-        url += `&status=${status}`;
+        url += `&statuses=${status}`;
       }
 
       const response = await api.get(url, { headers });
