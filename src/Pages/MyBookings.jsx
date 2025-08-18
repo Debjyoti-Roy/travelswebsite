@@ -6,6 +6,7 @@ import { cancelBooking, getRefundStatus } from "../Redux/store/hotelSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PaymentDeadline from "./MyBookingsComponents/PaymentDeadline";
 
 const statusMap = {
   // ALL: "",
@@ -19,12 +20,20 @@ const statusMap = {
 // Custom dropdown options for each tab
 const tabDropdownOptions = {
   Upcoming: ["CONFIRMED"],
-  "Payment Pending": ["ALL","PENDING","PAYMENT PENDING"],
+  "Payment Pending": ["ALL", "PENDING", "PAYMENT PENDING"],
   // "Payment Pending": ["ALL","PENDING","AWAITING_CUSTOMER_PAYMENT"],
   Processing: ["PENDING ADMIN CONFIRMATION"],
   Past: ["COMPLETED"],
-  Canceled: ["EXPIRED","REJECTED","CANCELLED"],
+  Canceled: ["ALL", "EXPIRED", "REJECTED", "CANCELLED"],
 };
+// const tabDropdownOptions2 = {
+//   Upcoming: ["CONFIRMED"],
+//   // "Payment Pending": ["PENDING", "PAYMENT PENDING"],
+//   "Payment Pending": ["ALL","PENDING","AWAITING_CUSTOMER_PAYMENT"],
+//   Processing: ["AWAITING_ADMIN_CONFIRMATION"],
+//   Past: ["COMPLETED"],
+//   Canceled: ["EXPIRED", "REJECTED", "CANCELLED"],
+// };
 
 const MyBookings = () => {
   const dispatch = useDispatch();
@@ -124,7 +133,7 @@ const MyBookings = () => {
   };
 
   useEffect(() => {
-    fetchBookings(0, status);
+    fetchBookings(0, "CONFIRMED");
   }, []);
 
   const handlePageChange = (newPage) => {
@@ -132,27 +141,43 @@ const MyBookings = () => {
       fetchBookings(newPage);
     }
   };
-
-  const handleStatusChange = (option) => {
-    setStatus(option); // keep UI label as state
-    setSelectedDropdownOption(tabDropdownOptions[option][0]); // reset dropdown to first option
-    fetchBookings(0, statusMap[option]); // send mapped value to API
-  };
-
   const handleDropdownChange = (dropdownOption) => {
-    // setSelectedDropdownOption(dropdownOption);
-    if(dropdownOption!=="PAYMENT PENDING"||dropdownOption!=="PENDING ADMIN CONFIRMATION"){
+    console.log(dropdownOption)
+    setSelectedDropdownOption(dropdownOption);
+    if (status === "Payment Pending" && dropdownOption === "ALL") {
+      fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
+
+    } else if (status === "Canceled" && dropdownOption === "ALL") {
+      fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
+    } else if (dropdownOption !== "PAYMENT PENDING" && dropdownOption !== "PENDING ADMIN CONFIRMATION") {
 
       fetchBookings(0, dropdownOption);
-    }else if(dropdownOption==="PAYMENT PENDING"){
+    } else if (dropdownOption === "PAYMENT PENDING") {
       fetchBookings(0, "AWAITING_CUSTOMER_PAYMENT");
-    }else if(dropdownOption==="PENDING ADMIN CONFIRMATION"){
+    } else if (dropdownOption === "PENDING ADMIN CONFIRMATION") {
       fetchBookings(0, "AWAITING_ADMIN_CONFIRMATION");
     }
     // Here you can add additional filtering logic based on dropdown selection
     // For now, we'll just update the UI state
-    console.log(`Selected ${dropdownOption} for ${status} tab`);
+    // console.log(`Selected ${dropdownOption} for ${status} tab`);
   };
+
+  const handleStatusChange = (option) => {
+    console.log(option)
+    setStatus(option);
+    setSelectedDropdownOption(tabDropdownOptions[option][0]);
+    if (option === "Payment Pending") {
+      // fetchBookings(0, statusMap[option]);
+      fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
+    } else if (option === "Canceled") {
+      fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
+    } else {
+      console.log(statusMap[option])
+      fetchBookings(0, statusMap[option]);
+    }
+  };
+
+
 
   // Cancel booking handler
   const handleCancelBooking = async () => {
@@ -167,7 +192,7 @@ const MyBookings = () => {
     setCancelReason("");
     setShowCustomReason(false);
     // Refetch bookings
-    fetchBookings(page, status);
+    fetchBookings(page, "CONFIRMED");
   };
 
   // Handle reason selection
@@ -192,8 +217,8 @@ const MyBookings = () => {
         setShowNotEligibleModal(true);
         return;
       }
-
-      setRefundBookingId(bookingGroupCode);
+      console.log(refundStatus)
+      setRefundBookingId(bookingGroupCode); 
       setShowRefundModal(true);
     } catch (error) {
       setNotEligibleMessage("Unfortunately, this booking is not eligible for a refund. If you believe this is a mistake or have questions, please contact our support team for assistance.");
@@ -228,58 +253,57 @@ const MyBookings = () => {
 
         <h2 className="text-2xl font-bold text-gray-800 pb-6 text-center">My Bookings</h2>
 
-                 {/* Filter Tabs */}
-                 <div className="w-full pb-6">
-  {/* Wrapper flexbox */}
-  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-    
-    {/* Tabs */}
-    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-      {Object.keys(statusMap).map((option) => (
-        <button
-          key={option}
-          onClick={() => handleStatusChange(option)}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
-            status === option
-              ? "bg-blue-600 text-white shadow-md"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
-          }`}
-        >
-          {option}
-        </button>
-      ))}
-    </div>
+        {/* Filter Tabs */}
+        <div className="w-full pb-6">
+          {/* Wrapper flexbox */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-    {/* Dropdown */}
-    {status !== "ALL" && (
-      <div className="flex justify-center lg:justify-end">
-        <div className="relative">
-          <select
-            value={selectedDropdownOption}
-            onChange={(e) => handleDropdownChange(e.target.value)}
-            className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 transition-colors"
-          >
-            {tabDropdownOptions[status]?.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            {/* Tabs */}
+            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+              {Object.keys(statusMap).map((option) => (
+                <button
+                  key={option}
+                  onClick={() => handleStatusChange(option)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${status === option
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
+                    }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+
+            {/* Dropdown */}
+            {(status !== "ALL" && status !== "Upcoming" && status !== "Past" && status !== "Processing") && (
+              <div className="flex justify-center lg:justify-end">
+                <div className="relative">
+                  <select
+                    value={selectedDropdownOption}
+                    onChange={(e) => handleDropdownChange(e.target.value)}
+                    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 transition-colors"
+                  >
+                    {tabDropdownOptions[status]?.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </div>
-    )}
-  </div>
-</div>
 
 
 
@@ -401,16 +425,19 @@ const MyBookings = () => {
                     <p className="break-all">
                       {item.hotelContact}
                     </p>
-                    <strong className="break-all text-red-800">
-  Pay Before: {new Date(item.expiredAt).toLocaleString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  })}
-</strong>
+                    {(item.status === "PENDING" || item.status === "AWAITING_CUSTOMER_PAYMENT") && (
+                      // <strong className="break-all text-red-800">
+                      //   Pay Before: {new Date(item.expiredAt).toLocaleString("en-US", {
+                      //     year: "numeric",
+                      //     month: "short",
+                      //     day: "2-digit",
+                      //     hour: "2-digit",
+                      //     minute: "2-digit",
+                      //     hour12: true,
+                      //   })}
+                      // </strong>
+                      <PaymentDeadline expiredAt={item.expiredAt} />
+                    )}
 
                   </div>
                 </div>
@@ -450,7 +477,7 @@ const MyBookings = () => {
                   </button>
                 )}
 
-                {item.status === "CANCELLED" && (
+                {(item.status === "CANCELLED" || item.status === "REJECTED") && (
                   <button
                     className="w-full sm:w-auto px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
                     onClick={e => {
@@ -476,6 +503,30 @@ const MyBookings = () => {
                     Pay Now
                   </button>
                 )}
+                {item.status === "AWAITING_ADMIN_CONFIRMATION" && (
+                  <button
+                    className="w-full sm:w-auto px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+                    onClick={e => {
+                      e.stopPropagation();
+                      // Calculate days difference
+                      const today = new Date();
+                      const checkInDate = new Date(item.checkIn);
+                      const diffTime = checkInDate - today;
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                      if (diffDays <= 10) {
+                        setPendingCancelBookingId(item.bookingGroupCode);
+                        setShowNotEligibleConfirmModal(true);
+                      } else {
+                        setShowCancelModal(true);
+                        setCancelBookingId(item.bookingGroupCode);
+                        setCancelReason("");
+                        setShowCustomReason(false);
+                      }
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
 
                 {item.status === "AWAITING_CUSTOMER_PAYMENT" && now < new Date(item.expiredAt) && (
                   <>
@@ -488,15 +539,15 @@ const MyBookings = () => {
                         const checkInDate = new Date(item.checkIn);
                         const diffTime = checkInDate - today;
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        if (diffDays <= 10) {
-                          setPendingCancelBookingId(item.bookingGroupCode);
-                          setShowNotEligibleConfirmModal(true);
-                        } else {
+                        // if (diffDays <= 10) {
+                        //   setPendingCancelBookingId(item.bookingGroupCode);
+                        //   setShowNotEligibleConfirmModal(true);
+                        // } else {
                           setShowCancelModal(true);
                           setCancelBookingId(item.bookingGroupCode);
                           setCancelReason("");
                           setShowCustomReason(false);
-                        }
+                        // }
                       }}
                     >
                       Cancel
@@ -527,12 +578,12 @@ const MyBookings = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No Bookings Found</h3>
-                         <p className="text-gray-600 text-center max-w-md">
-               {status === "ALL"
-                 ? "You haven't made any bookings yet. Start exploring hotels and make your first reservation!"
-                 : `No ${selectedDropdownOption.toLowerCase()} ${status.toLowerCase()} bookings found.`
-               }
-             </p>
+            <p className="text-gray-600 text-center max-w-md">
+              {status === "ALL"
+                ? "You haven't made any bookings yet. Start exploring hotels and make your first reservation!"
+                : `No ${selectedDropdownOption.toLowerCase()} ${status.toLowerCase()} bookings found.`
+              }
+            </p>
             <button
               onClick={() => navigate("/")}
               className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -615,118 +666,199 @@ const MyBookings = () => {
 
         {/* Refund Status Modal */}
         {showRefundModal && refundStatus && (
-          <div
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center"
-            onClick={() => setShowRefundModal(false)}
-          >
-            <AnimatePresence>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-                className="bg-white p-8 rounded-2xl shadow-2xl w-[90%] md:w-full max-w-lg relative"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header */}
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Refund Status</h2>
+  <div
+    className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center"
+    onClick={() => setShowRefundModal(false)}
+  >
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.2 }}
+        className="bg-white p-8 rounded-2xl shadow-2xl w-[90%] md:w-full max-w-lg relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Refund Status</h2>
 
-                {/* Progress Bar with Icons */}
-                <div className="pb-6">
-                  <div className="flex justify-between items-center pb-3">
-                    <div className="flex items-center gap-2">
-                      <Clock
-                        className={`w-5 h-5 ${["INITIATED", "COMPLETED"].includes(refundStatus.refundStatus)
-                          ? "text-blue-600"
-                          : "text-red-500"
-                          }`}
-                      />
-                      <span className="text-sm font-medium">INITIATED</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">COMPLETED</span>
-                      <CheckCircle
-                        className={`w-5 h-5 ${refundStatus.refundStatus === "COMPLETED"
-                          ? "text-green-600"
-                          : "text-gray-400"
-                          }`}
-                      />
-                    </div>
-                  </div>
+        {/* Progress Bar with Icons */}
+        <div className="pb-6">
+          <div className="flex justify-between items-center pb-3">
+            <div className="flex items-center gap-2">
+              <Clock
+                className={`w-5 h-5 ${
+                  ["INITIATED", "PARTIALLY_COMPLETED", "PARTIALLY_FAILED", "COMPLETED"].includes(
+                    refundStatus.refundStatus
+                  )
+                    ? "text-blue-600"
+                    : "text-red-500"
+                }`}
+              />
+              <span className="text-sm font-medium">INITIATED</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">COMPLETED</span>
+              <CheckCircle
+                className={`w-5 h-5 ${
+                  refundStatus.refundStatus === "COMPLETED"
+                    ? "text-green-600"
+                    : "text-gray-400"
+                }`}
+              />
+            </div>
+          </div>
 
-                  {/* Gradient Progress Line */}
-                  <div className="relative h-2 rounded bg-gray-200 overflow-hidden">
-                    <div
-                      className={`absolute inset-0 transition-all duration-300 ${refundStatus.refundStatus === "FAILED"
-                        ? "bg-gradient-to-r from-red-400 to-red-600"
-                        : "bg-gradient-to-r from-blue-400 to-blue-600"
-                        }`}
-                      style={{
-                        width:
-                          refundStatus.refundStatus === "COMPLETED" ? "100%" : "50%",
-                      }}
-                    ></div>
-                  </div>
+          {/* Gradient Progress Line */}
+          <div className="relative h-2 rounded bg-gray-200 overflow-hidden">
+            <div
+              className={`absolute inset-0 transition-all duration-300 ${
+                ["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus)
+                  ? "bg-gradient-to-r from-red-400 to-red-600"
+                  : "bg-gradient-to-r from-blue-400 to-blue-600"
+              }`}
+              style={{
+                width:
+                  refundStatus.refundStatus === "COMPLETED"
+                    ? "100%"
+                    : refundStatus.refundStatus === "PARTIALLY_COMPLETED"
+                    ? "75%"
+                    : refundStatus.refundStatus === "INITIATED"
+                    ? "50%"
+                    : refundStatus.refundStatus === "FAILED"
+                    ? "0%"
+                    : refundStatus.refundStatus === "PARTIALLY_FAILED"
+                    ? "0%"
+                    : "0%",
+              }}
+            ></div>
+          </div>
 
-                  {/* Status Badge */}
-                  <div className="mt-4 text-center">
-                    <span
-                      className={`inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-medium transition ${refundStatus.refundStatus === "COMPLETED"
-                        ? "bg-green-100 text-green-700"
-                        : refundStatus.refundStatus === "FAILED"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-blue-100 text-blue-700"
-                        }`}
-                    >
-                      {refundStatus.refundStatus === "COMPLETED" && <CheckCircle className="w-4 h-4" />}
-                      {refundStatus.refundStatus === "FAILED" && <XCircle className="w-4 h-4" />}
-                      {refundStatus.refundStatus === "INITIATED" && <Clock className="w-4 h-4" />}
-                      {refundStatus.refundStatus}
-                    </span>
-                  </div>
-                </div>
+          {/* Status Badge */}
+          <div className="mt-4 text-center">
+            <span
+              className={`inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-medium transition ${
+                refundStatus.refundStatus === "COMPLETED"
+                  ? "bg-green-100 text-green-700"
+                  : ["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus)
+                  ? "bg-red-100 text-red-700"
+                  : "bg-blue-100 text-blue-700"
+              }`}
+            >
+              {refundStatus.refundStatus === "COMPLETED" && <CheckCircle className="w-4 h-4" />}
+              {["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus) && (
+                <XCircle className="w-4 h-4" />
+              )}
+              {["INITIATED", "PARTIALLY_COMPLETED"].includes(refundStatus.refundStatus) && (
+                <Clock className="w-4 h-4" />
+              )}
+              {refundStatus.refundStatus}
+            </span>
+          </div>
+        </div>
 
-                {/* Refund Details */}
-                <div className="space-y-4 pb-6 text-sm text-gray-700">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Refund Amount:</span>
-                    <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Cancel Reason:</span>
-                    <span className="font-medium text-gray-800">{refundStatus.cancelReason}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Cancelled On:</span>
-                    <span className="text-gray-800">
-                      {new Date(refundStatus.cancelAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
+        {/* Refund Details */}
+        <div className="space-y-4 pb-6 text-sm text-gray-700">
+          {/* Common Details */}
+          <div className="flex justify-between">
+            <span className="text-gray-500">Cancel Reason:</span>
+            <span className="font-medium text-gray-800">{refundStatus.cancelReason}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Cancelled On:</span>
+            <span className="text-gray-800">
+              {new Date(refundStatus.cancelAt).toLocaleDateString()}
+            </span>
+          </div>
 
-                {/* Info Box */}
-                {refundStatus.refundStatus === "INITIATED" && (
-                  <div className="pb-6">
+          {/* Conditional Details */}
+          {refundStatus.refundStatus === "INITIATED" && (
+            <div className="flex justify-between">
+              <span className="text-gray-500">To be Refunded:</span>
+              <span className="font-semibold text-gray-800">₹{refundStatus.refundPending}</span>
+            </div>
+          )}
 
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800 mb-4">
-                      Your refund will be processed within 5–7 business days.
-                    </div>
-                  </div>
-                )}
+          {refundStatus.refundStatus === "PARTIALLY_COMPLETED" && (
+            <>
+              <div className="flex justify-between">
+                <span className="text-gray-500">To be Refunded:</span>
+                <span className="font-semibold text-gray-800">₹{refundStatus.refundPending}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Refunded Amount:</span>
+                <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
+              </div>
+            </>
+          )}
 
-                {/* Close Button */}
-                <div className="flex justify-end">
-                  <button
-                    className="px-5 py-2 rounded-xl bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
-                    onClick={() => setShowRefundModal(false)}
-                  >
-                    Close
-                  </button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+          {refundStatus.refundStatus === "PARTIALLY_FAILED" && (
+            <>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Refunded Amount:</span>
+                <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Refund Failed Amount:</span>
+                <span className="font-semibold text-gray-800">₹{refundStatus.refundFailed}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Failure Reason:</span>
+                <span className="font-medium text-red-600">{refundStatus.failureReason}</span>
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                Please contact customer support for further assistance.
+              </div>
+            </>
+          )}
+
+          {refundStatus.refundStatus === "FAILED" && (
+            <>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Refund Failed Amount:</span>
+                <span className="font-semibold text-gray-800">₹{refundStatus.refundFailed}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Failure Reason:</span>
+                <span className="font-medium text-red-600">{refundStatus.failureReason}</span>
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                Please contact customer support for further assistance.
+              </div>
+            </>
+          )}
+
+          {refundStatus.refundStatus === "COMPLETED" && (
+            <div className="flex justify-between">
+              <span className="text-gray-500">Refunded Amount:</span>
+              <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Info Box */}
+        {refundStatus.refundStatus === "INITIATED" && (
+          <div className="pb-6">
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800 mb-4">
+              Your refund will be processed within 5–7 business days.
+            </div>
           </div>
         )}
+
+        {/* Close Button */}
+        <div className="flex justify-end">
+          <button
+            className="px-5 py-2 rounded-xl bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+            onClick={() => setShowRefundModal(false)}
+          >
+            Close
+          </button>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  </div>
+)}
+
 
         {/* Refund Status Not Eligible Modal */}
         {showNotEligibleModal && (
