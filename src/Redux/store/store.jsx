@@ -8,6 +8,7 @@ import hotelReducer from "./hotelSlice"
 import paymentReducer from './paymentSlice'
 import analyticsReducer from './analyticsSlice'
 import adminReducer from './adminSlices'
+import adminCarReducer from './adminCarSlice'
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     hotel: hotelReducer,
     payment: paymentReducer,
     analytics: analyticsReducer,
-    admin:adminReducer
+    admin: adminReducer,
+    admincar: adminCarReducer
   },
 });
