@@ -1,30 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AddCarPackage from "./AddCarPackage";
+import CarPackagesList from "./CarPackagesList";
 
 const ManageCarPackage = () => {
   const [activeTab, setActiveTab] = useState("add");
+  const [tabRef, setTabRef] = useState(0)
+
+
+  const topRef = useRef(null);
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [tabRef]);
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
+    <div ref={topRef} className="min-h-screen p-6 bg-gray-100">
       {/* Tabs Header */}
       <div className="flex border-b border-gray-300 mb-6">
         <button
           onClick={() => setActiveTab("add")}
-          className={`px-6 py-2 font-medium ${
-            activeTab === "add"
+          className={`px-6 py-2 font-medium ${activeTab === "add"
               ? "border-b-2 border-blue-600 text-blue-600"
               : "text-gray-600 hover:text-blue-600"
-          }`}
+            }`}
         >
           Add Car Package
         </button>
         <button
           onClick={() => setActiveTab("manage")}
-          className={`px-6 py-2 font-medium ${
-            activeTab === "manage"
+          className={`px-6 py-2 font-medium ${activeTab === "manage"
               ? "border-b-2 border-blue-600 text-blue-600"
               : "text-gray-600 hover:text-blue-600"
-          }`}
+            }`}
         >
           Manage Car Package
         </button>
@@ -33,19 +46,10 @@ const ManageCarPackage = () => {
       {/* Tab Content */}
       <div>
         {activeTab === "add" && (
-        //   <div>
-        //     <h2 className="text-xl font-semibold mb-4">Add Car Package</h2>
-        //     {/* Add Car Package form here */}
-        //     <p className="text-gray-600">Form for adding car package goes here...</p>
-        //   </div>
-        <AddCarPackage />
+          <AddCarPackage setTabRef={(e) => setTabRef(e)} />
         )}
         {activeTab === "manage" && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Manage Car Package</h2>
-            {/* Manage Car Package table/list here */}
-            <p className="text-gray-600">List of car packages goes here...</p>
-          </div>
+          <CarPackagesList />
         )}
       </div>
     </div>
