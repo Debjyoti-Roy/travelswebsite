@@ -25,6 +25,28 @@ export const getStates = createAsyncThunk(
         }
     }
 );
+export const getCarPackageDetails = createAsyncThunk(
+    "public/get-car-package-details",
+    async ({id}, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await api.get(`/v1/public/${id}/car-package/details`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "ngrok-skip-browser-warning": "xyz",
+                },
+            });
+            return {
+                data: response.data,
+                status: response.status,
+            };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data || "States fetch failed"
+            );
+        }
+    }
+);
 
 // ✅ Thunk for adding car package
 export const addCarPackage = createAsyncThunk(
@@ -102,15 +124,22 @@ export const getAllCarPackages = createAsyncThunk(
     }
 );
 
+
+
 const adminCarSlice = createSlice({
     name: "adminCar",
     initialState: {
         states: [],
+        statesloading: false,
+        stateserror: null,
         loading: false,
         error: null,
-        carPackageResponse: null, // ✅ store response of addCarPackage
-        carPackages: [],   // ✅ list of packages
-        pagination: {      // ✅ pagination info
+        loading2: false,
+        error2: null,
+        carPackageResponse: null, // ✅ response of addCarPackage
+        carPackages: [],          // ✅ list of packages
+        carPackageDetails: null,  // ✅ details of a single package
+        pagination: {             // ✅ pagination info
             pageNumber: 0,
             pageSize: 10,
             totalElements: 0,
@@ -123,17 +152,18 @@ const adminCarSlice = createSlice({
         builder
             // getStates
             .addCase(getStates.pending, (state) => {
-                state.loading = true;
-                state.error = null;
+                state.statesloading = true;
+                state.stateserror = null;
             })
             .addCase(getStates.fulfilled, (state, action) => {
-                state.loading = false;
-                state.states = action.payload.data; // save fetched states
+                state.statesloading = false;
+                state.states = action.payload.data;
             })
             .addCase(getStates.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
+                state.statesloading = false;
+                state.stateserror = action.payload;
             })
+
             // addCarPackage
             .addCase(addCarPackage.pending, (state) => {
                 state.loading = true;
@@ -142,12 +172,14 @@ const adminCarSlice = createSlice({
             })
             .addCase(addCarPackage.fulfilled, (state, action) => {
                 state.loading = false;
-                state.carPackageResponse = action.payload.data; // save success response
+                state.carPackageResponse = action.payload.data;
             })
             .addCase(addCarPackage.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
+
+            // getAllCarPackages
             .addCase(getAllCarPackages.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -167,13 +199,14 @@ const adminCarSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+            // changeCarPackageStatus
             .addCase(changeCarPackageStatus.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(changeCarPackageStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                // ✅ Update the carPackages list in state
                 const updatedId = action.payload.id;
                 const updatedPkgIndex = state.carPackages.findIndex(
                     (pkg) => pkg.packageId === updatedId
@@ -186,8 +219,24 @@ const adminCarSlice = createSlice({
             .addCase(changeCarPackageStatus.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+
+            // ✅ getCarPackageDetails
+            .addCase(getCarPackageDetails.pending, (state) => {
+                state.loading2 = true;
+                state.error2 = null;
+                state.carPackageDetails = null;
+            })
+            .addCase(getCarPackageDetails.fulfilled, (state, action) => {
+                state.loading2 = false;
+                state.carPackageDetails = action.payload.data; // save package details
+            })
+            .addCase(getCarPackageDetails.rejected, (state, action) => {
+                state.loading2 = false;
+                state.error2 = action.payload;
             });
     },
 });
 
 export default adminCarSlice.reducer;
+

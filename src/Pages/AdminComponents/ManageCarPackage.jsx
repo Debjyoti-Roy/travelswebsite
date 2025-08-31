@@ -3,7 +3,7 @@ import AddCarPackage from "./AddCarPackage";
 import CarPackagesList from "./CarPackagesList";
 
 const ManageCarPackage = () => {
-  const [activeTab, setActiveTab] = useState("add");
+  const [activeTab, setActiveTab] = useState("manage");
   const [tabRef, setTabRef] = useState(0)
 
 
@@ -23,23 +23,24 @@ const ManageCarPackage = () => {
     <div ref={topRef} className="min-h-screen p-6 bg-gray-100">
       {/* Tabs Header */}
       <div className="flex border-b border-gray-300 mb-6">
-        <button
-          onClick={() => setActiveTab("add")}
-          className={`px-6 py-2 font-medium ${activeTab === "add"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-600 hover:text-blue-600"
-            }`}
-        >
-          Add Car Package
-        </button>
+
         <button
           onClick={() => setActiveTab("manage")}
           className={`px-6 py-2 font-medium ${activeTab === "manage"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-600 hover:text-blue-600"
+            ? "border-b-2 border-blue-600 text-blue-600"
+            : "text-gray-600 hover:text-blue-600"
             }`}
         >
           Manage Car Package
+        </button>
+        <button
+          onClick={() => setActiveTab("add")}
+          className={`px-6 py-2 font-medium ${activeTab === "add"
+            ? "border-b-2 border-blue-600 text-blue-600"
+            : "text-gray-600 hover:text-blue-600"
+            }`}
+        >
+          Add Car Package
         </button>
       </div>
 

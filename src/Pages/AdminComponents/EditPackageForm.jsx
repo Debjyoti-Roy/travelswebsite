@@ -1,12 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { addCarPackage, getStates } from '../../Redux/store/adminCarSlice';
-import Select from "react-select";
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { getStates } from '../../Redux/store/adminCarSlice';
 import CreatableSelect from "react-select/creatable";
-import toast from 'react-hot-toast';
 
-// Helper: month options
 const MONTHS = [
     { label: 'January', value: 1 },
     { label: 'February', value: 2 },
@@ -24,18 +20,8 @@ const MONTHS = [
 
 const CAR_TYPES = ['HATCHBACK', 'SEDAN', 'SUV', 'TEMPO_TRAVELLER', 'MINI_BUS'];
 
-const AddCarPackage = ({ setTabRef }) => {
-    const dispatch = useDispatch();
-    const { states = [], statesloading, stateserror } = useSelector((state) => state.admincar);
-
-    useEffect(() => {
-        dispatch(getStates());
-    }, [dispatch]);
-
-    // ----- Tabs -----
-    const [tab, setTab] = useState(0); // 0: Basic, 1: Itineraries, 2: Car Details
-
-    // ----- Basic Details -----
+const EditPackageForm = ({ carPackageDetails }) => {
+    const [submitting, setSubmitting] = useState(false)
     const [basic, setBasic] = useState({
         title: '',
         description: '',
@@ -57,106 +43,58 @@ const AddCarPackage = ({ setTabRef }) => {
 
     // ----- Car Details -----
     const [carDetails, setCarDetails] = useState([]);
+    const dispatch = useDispatch();
+    const [tab, setTab] = useState(0);
+    const { states = [], statesloading, stateserror } = useSelector((state) => state.admincar);
 
-    // ----- Derived validations -----
-    const basicValid = useMemo(() => {
-        const {
-            title,
-            description,
-            durationDays,
-            thumbnailFile,
-            pickupLocation,
-            dropLocation,
-            destinationName,
-            destinationState,
-        } = basic;
-        if (!title?.trim()) return false;
-        if (!description?.trim()) return false;
-        const days = Number(durationDays);
-        if (!days || days <= 0) return false;
-        if (!thumbnailFile) return false;
-        if (!pickupLocation?.trim()) return false;
-        if (!dropLocation?.trim()) return false;
-        if (!destinationName?.trim()) return false;
-        if (!destinationState?.trim()) return false;
-        return true;
-    }, [basic]);
-
-    const itinerariesValid = useMemo(() => {
-        const days = Number(basic.durationDays) || 0;
-        if (!days) return false;
-        if (itineraries.length !== days) return false;
-        for (let i = 0; i < itineraries.length; i++) {
-            const it = itineraries[i];
-            if (!it.title?.trim()) return false;
-            if (!it.description?.trim()) return false;
-            if (!it.imageFile) return false;
-        }
-        return true;
-    }, [basic.durationDays, itineraries]);
-
-    const carDetailsValid = useMemo(() => {
-        if (carDetails.length === 0) return false;
-        for (let i = 0; i < carDetails.length; i++) {
-            const c = carDetails[i];
-            if (!c.carType?.trim()) return false;
-            if (!c.carName?.trim()) return false;
-            const cap = Number(c.capacity);
-            const lug = Number(c.luggageCapacity);
-            if (!cap || cap <= 0) return false;
-            if (isNaN(lug) || lug < 0) return false;
-            if (!['YES', 'NO'].includes(c.acAvailable)) return false;
-            if (!c.prices || c.prices.length === 0) return false;
-            for (let j = 0; j < c.prices.length; j++) {
-                const p = c.prices[j];
-                const sm = Number(p.startMonth);
-                const em = Number(p.endMonth);
-                const price = Number(p.price);
-                if (!sm || sm < 1 || sm > 12) return false;
-                if (!em || em < 1 || em > 12) return false;
-                if (isNaN(price) || price < 0) return false;
-            }
-        }
-        return true;
-    }, [carDetails]);
-
-    // ----- Handlers: Basic -----
-    const handleBasicChange = (field, value) => {
-        setBasic((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const handleBasicImage = (file) => {
-        if (!file) return;
-        const preview = URL.createObjectURL(file);
-        setBasic((prev) => ({ ...prev, thumbnailFile: file, thumbnailPreview: preview }));
-    };
-
-    const handleFeatureChange = (type, idx, value) => {
-        setBasic((prev) => {
-            const copy = [...prev[type]];
-            copy[idx] = value;
-            return { ...prev, [type]: copy };
-        });
-    };
-
-    const addFeature = (type) => {
-        setBasic((prev) => ({ ...prev, [type]: [...prev[type], ''] }));
-    };
-
-    const removeFeature = (type, idx) => {
-        setBasic((prev) => {
-            const copy = [...prev[type]];
-            copy.splice(idx, 1);
-            return { ...prev, [type]: copy.length ? copy : [''] };
-        });
-    };
     useEffect(() => {
-        if (itineraries.length === 0) {
-            setItineraries([{ title: '', description: '', imageFile: null, imagePreview: '' }]);
-        }
-    }, [itineraries]);
+        dispatch(getStates());
+    }, [dispatch]);
+    useEffect(() => {
+        if (carPackageDetails) {
+            setBasic({
+                title: carPackageDetails.title || "",
+                durationDays: carPackageDetails.durationDays || 0,
+                description: carPackageDetails.description || "",
+                thumbnailPreview: carPackageDetails.thumbnailUrl || null,
+                pickupLocation: carPackageDetails.pickupLocation || "",
+                dropLocation: carPackageDetails.dropLocation || "",
+                destinationName: carPackageDetails.destination?.name || "",
+                destinationState: carPackageDetails.destination?.state || "",
+                includedFeatures: carPackageDetails.includedFeatures?.map(f => f.description) || [""],
+                excludedFeatures: carPackageDetails.excludedFeatures?.map(f => f.description) || [""],
+            });
 
-    // ----- Handlers: Itineraries -----
+            setItineraries(
+                carPackageDetails.itineraries?.map(it => ({
+                    title: it.title,
+                    description: it.description,
+                    imagePreview: it.imageUrl,
+                })) || []
+            );
+
+            setCarDetails(
+                carPackageDetails.carDetails?.map(c => ({
+                    carType: c.carType,
+                    carName: c.carName,
+                    capacity: c.capacity,
+                    luggageCapacity: c.luggageCapacity,
+                    acAvailable: c.acAvailable ? "YES" : "NO",
+                    notes: c.notes || "",
+                    prices: c.carPrices?.map(p => ({
+                        startMonth: p.startMonth,
+                        endMonth: p.endMonth,
+                        price: p.price,
+                    })) || [{ startMonth: "", endMonth: "", price: "" }],
+                })) || []
+            );
+        }
+    }, [carPackageDetails]);
+    const goNext = () => {
+        if (tab === 0) setTab(1);
+        else if (tab === 1) setTab(2);
+    };
+    const goPrev = () => setTab((t) => Math.max(0, t - 1));
     const addItinerary = () => {
         const days = Number(basic.durationDays) || 0;
         if (itineraries.length >= days) return;
@@ -168,6 +106,16 @@ const AddCarPackage = ({ setTabRef }) => {
 
     const removeItinerary = (index) => {
         setItineraries((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const handleBasicChange = (field, value) => {
+        setBasic((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleBasicImage = (file) => {
+        if (!file) return;
+        const preview = URL.createObjectURL(file);
+        setBasic((prev) => ({ ...prev, thumbnailFile: file, thumbnailPreview: preview }));
     };
 
     const updateItineraryField = (index, field, value) => {
@@ -188,17 +136,7 @@ const AddCarPackage = ({ setTabRef }) => {
         });
     };
 
-    // Keep itineraries count trimmed when durationDays reduces
-    useEffect(() => {
-        const days = Number(basic.durationDays) || 0;
-        if (days === 0) {
-            setItineraries([]);
-            return;
-        }
-        setItineraries((prev) => (prev.length > days ? prev.slice(0, days) : prev));
-    }, [basic.durationDays]);
 
-    // ----- Handlers: Car Details -----
     const addCar = () => {
         setCarDetails((prev) => [
             ...prev,
@@ -217,164 +155,21 @@ const AddCarPackage = ({ setTabRef }) => {
     const removeCar = (index) => {
         setCarDetails((prev) => prev.filter((_, i) => i !== index));
     };
+    const addFeature = (type) => {
+        setBasic((prev) => ({ ...prev, [type]: [...prev[type], ''] }));
+    };
 
-    const updateCarField = (index, field, value) => {
-        setCarDetails((prev) => {
-            const copy = [...prev];
-            copy[index] = { ...copy[index], [field]: value };
-            return copy;
+    const removeFeature = (type, idx) => {
+        setBasic((prev) => {
+            const copy = [...prev[type]];
+            copy.splice(idx, 1);
+            return { ...prev, [type]: copy.length ? copy : [''] };
         });
     };
-
-    const addPrice = (carIdx) => {
-        setCarDetails((prev) => {
-            const copy = [...prev];
-            copy[carIdx] = {
-                ...copy[carIdx],
-                prices: [...copy[carIdx].prices, { startMonth: '', endMonth: '', price: '' }],
-            };
-            return copy;
-        });
-    };
-
-    const removePrice = (carIdx, priceIdx) => {
-        setCarDetails((prev) => {
-            const copy = [...prev];
-            const prices = [...copy[carIdx].prices];
-            prices.splice(priceIdx, 1);
-            copy[carIdx].prices = prices.length ? prices : [{ startMonth: '', endMonth: '', price: '' }];
-            return copy;
-        });
-    };
-
-    const updatePrice = (carIdx, priceIdx, field, value) => {
-        setCarDetails((prev) => {
-            const copy = [...prev];
-            const prices = [...copy[carIdx].prices];
-            prices[priceIdx] = { ...prices[priceIdx], [field]: value };
-            copy[carIdx].prices = prices;
-            return copy;
-        });
-    };
-
-    // ----- Tab navigation guards -----
-    const goNext = () => {
-        if (tab === 0 && basicValid) setTab(1);
-        else if (tab === 1 && itinerariesValid) setTab(2);
-    };
-    const goPrev = () => setTab((t) => Math.max(0, t - 1));
-
-
-    const storage = getStorage();
-    const uploadFileMock = async (file, title) => {
-        try {
-            // Create a storage reference
-            const fileRef = ref(storage, `car-package/${title}/${file.name}`);
-
-            // Upload the file
-            await uploadBytes(fileRef, file);
-
-            // Get the download URL
-            const url = await getDownloadURL(fileRef);
-
-            return url; // <-- return the Firebase file link
-        } catch (error) {
-            console.error("File upload failed:", error);
-            throw error;
-        }
-    };
-
-    const deleteFiles = async (paths = []) => {
-        for (let path of paths) {
-            try {
-                await deleteObject(ref(storage, path));
-            } catch (err) {
-                console.warn("Failed to delete file:", path, err);
-            }
-        }
-    };
-    const [submitting, setSubmitting] = useState(false)
-    // ----- Submit -----
-    const handleSubmit = async () => {
-        const uploadedPaths = [];
-        if (!(basicValid && itinerariesValid && carDetailsValid)) return;
-        setSubmitting(true)
-        // 1) Upload images (thumbnail + itinerary images)
-        const thumbnailUrl = basic.thumbnailFile
-            ? await uploadFileMock(basic.thumbnailFile, basic.title.trim())
-            : '';
-
-        if (thumbnailUrl) uploadedPaths.push(thumbnailUrl)
-
-        const itinerariesWithUrls = [];
-        for (let i = 0; i < itineraries.length; i++) {
-            const it = itineraries[i];
-            const imageUrl = it.imageFile ? await uploadFileMock(it.imageFile, basic.title.trim()) : '';
-            if (imageUrl) uploadedPaths.push(imageUrl)
-            itinerariesWithUrls.push({
-                dayNumber: i + 1,
-                title: it.title,
-                description: it.description,
-                imageUrl,
-            });
-        }
-
-        // 2) Shape final payload
-        const payload = {
-            title: basic.title.trim(),
-            description: basic.description.trim(),
-            durationDays: Number(basic.durationDays),
-            thumbnailUrl,
-            pickupLocation: basic.pickupLocation.trim(),
-            dropLocation: basic.dropLocation.trim(),
-            destination: {
-                name: basic.destinationName.trim(),
-                state: basic.destinationState.trim(),
-            },
-            itineraries: itinerariesWithUrls,
-            includedFeatures: (basic.includedFeatures || []).filter((x) => x && x.trim()).map((x) => x.trim()),
-            excludedFeatures: (basic.excludedFeatures || []).filter((x) => x && x.trim()).map((x) => x.trim()),
-            carDetails: carDetails.map((c) => ({
-                carType: c.carType,
-                carName: c.carName.trim(),
-                capacity: Number(c.capacity),
-                luggageCapacity: Number(c.luggageCapacity),
-                acAvailable: c.acAvailable === 'YES',
-                notes: c.notes?.trim() || '',
-                prices: (c.prices || []).map((p) => ({
-                    startMonth: Number(p.startMonth),
-                    endMonth: Number(p.endMonth),
-                    price: Number(p.price),
-                })),
-            })),
-        };
-
-        dispatch(addCarPackage(payload))
-            .unwrap()
-            .then((res) => {
-                setSubmitting(false)
-                toast.success("Car package added successfully");
-            })
-            .catch(async (err) => {
-                setSubmitting(false)
-                await deleteFiles(uploadedPaths);
-                toast.error("Failed to add car package. Uploads removed.");
-                // console.error(err);
-            });
-    };
-
-    const topRef = useRef(null);
-
-    useEffect(() => {
-        setTabRef(tab)
-
-    }, [tab]);
-
-    // ----- UI -----
     return (
-        <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ display: 'flex', gap: 16 }} className='h-full'>
             {/* Vertical Tabs */}
-            <div className="min-w-[200px] border-r border-gray-200">
+            <div className="min-w-[200px] ">
                 {/* Basic Details */}
                 <div
                     onClick={() => setTab(0)}
@@ -387,24 +182,23 @@ const AddCarPackage = ({ setTabRef }) => {
 
                 {/* Itineraries */}
                 <div
-                    onClick={() => (basicValid ? setTab(1) : null)}
+                    onClick={() => setTab(1)}
                     className={`px-4 py-3 mb-2 rounded-lg cursor-pointer transition 
       ${tab === 1 ? "bg-blue-500 font-medium text-white" : "hover:bg-blue-100"} 
-      ${basicValid ? "opacity-100" : "opacity-60 cursor-not-allowed"}
     `}
-                    title={!basicValid ? "Fill Basic Details to proceed" : ""}
+
                 >
                     2) Itineraries
                 </div>
 
                 {/* Car Details */}
                 <div
-                    onClick={() => (itinerariesValid ? setTab(2) : null)}
+                    onClick={() => setTab(2)}
                     className={`px-4 py-3 rounded-lg cursor-pointer transition 
       ${tab === 2 ? "bg-blue-500 font-medium text-white" : "hover:bg-blue-100"} 
-      ${itinerariesValid ? "opacity-100" : "opacity-60 cursor-not-allowed"}
+      
     `}
-                    title={!itinerariesValid ? "Complete Itineraries to proceed" : ""}
+
                 >
                     3) Car Details
                 </div>
@@ -412,10 +206,10 @@ const AddCarPackage = ({ setTabRef }) => {
 
 
             {/* Content */}
-            <div style={{ flex: 1, paddingBottom: 24, marginTop: "5px" }}>
+            <div style={{ flex: 1, paddingBottom: 24, marginTop: "5px" }} className='h-full'>
                 {tab === 0 && (
                     <section className="p-4">
-                        <h2 ref={topRef} className="text-xl font-semibold mb-4">Basic Details</h2>
+                        <h2 className="text-xl font-semibold mb-4">Basic Details</h2>
 
                         {/* Grid layout - responsive */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -556,15 +350,15 @@ const AddCarPackage = ({ setTabRef }) => {
                                     >
                                         Remove
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => addFeature("includedFeatures")}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                                    >
-                                        Add more
-                                    </button>
                                 </div>
                             ))}
+                            <button
+                                type="button"
+                                onClick={() => addFeature("includedFeatures")}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                Add more
+                            </button>
                         </div>
 
                         {/* Excluded Features */}
@@ -589,15 +383,15 @@ const AddCarPackage = ({ setTabRef }) => {
                                         Remove
                                     </button>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => addFeature("excludedFeatures")}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                                    >
-                                        Add more
-                                    </button>
                                 </div>
                             ))}
+                            <button
+                                type="button"
+                                onClick={() => addFeature("excludedFeatures")}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                Add more
+                            </button>
                         </div>
 
                         {/* Navigation Buttons */}
@@ -605,13 +399,9 @@ const AddCarPackage = ({ setTabRef }) => {
 
                             <button
                                 type="button"
-                                disabled={!basicValid}
+
                                 onClick={goNext}
-                                title={!basicValid ? "Fill all required fields" : ""}
-                                className={`px-4 py-2 rounded-lg text-white transition ${basicValid
-                                    ? "bg-green-500 hover:bg-green-600"
-                                    : "bg-gray-300 cursor-not-allowed"
-                                    }`}
+                                className={`px-4 py-2 rounded-lg text-white transition bg-green-500 hover:bg-green-600`}
                             >
                                 Next → Itineraries
                             </button>
@@ -621,7 +411,7 @@ const AddCarPackage = ({ setTabRef }) => {
                 )}
 
                 {tab === 1 && (
-                    <section ref={topRef} className="p-4">
+                    <section className="p-4">
                         <h2 className="text-xl font-semibold mb-2">Itineraries</h2>
                         <p className="text-gray-600 mb-4">
                             Number of days: <b>{Number(basic.durationDays) || 0}</b>
@@ -686,17 +476,6 @@ const AddCarPackage = ({ setTabRef }) => {
                                         />
                                     </label>
                                 </div>
-
-                                {/* Remove Day Button */}
-                                <div style={{ marginTop: "1vh" }} className="mt-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => removeItinerary(idx)}
-                                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                                    >
-                                        Remove Day
-                                    </button>
-                                </div>
                             </div>
                         ))}
 
@@ -730,12 +509,8 @@ const AddCarPackage = ({ setTabRef }) => {
                             <button
                                 type="button"
                                 onClick={goNext}
-                                disabled={!itinerariesValid}
-                                title={!itinerariesValid ? "Add & complete all itineraries" : ""}
-                                className={`px-4 py-2 rounded-lg text-white transition ${itinerariesValid
-                                    ? "bg-green-500 hover:bg-green-600"
-                                    : "bg-gray-300 cursor-not-allowed"
-                                    }`}
+
+                                className={`px-4 py-2 rounded-lg text-white transition bg-green-500 hover:bg-green-600`}
                             >
                                 Next → Car Details
                             </button>
@@ -744,8 +519,8 @@ const AddCarPackage = ({ setTabRef }) => {
                 )}
 
                 {tab === 2 && (
-                    <section ref={topRef} className="p-4">
-                        <h2 ref={topRef} className="text-xl font-semibold mb-4">Car Details</h2>
+                    <section className="p-4 min-h-full">
+                        <h2 className="text-xl font-semibold mb-4">Car Details</h2>
 
                         {carDetails.map((car, idx) => (
                             <div
@@ -852,12 +627,13 @@ const AddCarPackage = ({ setTabRef }) => {
                                     {car.prices.map((p, pIdx) => (
                                         <div
                                             key={pIdx}
-                                            className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end mb-3"
+                                            className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end mb-3"
                                         >
                                             <label className="flex flex-col">
                                                 <span className="font-medium mb-1">Start Month*</span>
                                                 <select
                                                     value={p.startMonth}
+                                                    disabled
                                                     onChange={(e) =>
                                                         updatePrice(idx, pIdx, "startMonth", e.target.value)
                                                     }
@@ -875,6 +651,7 @@ const AddCarPackage = ({ setTabRef }) => {
                                             <label className="flex flex-col">
                                                 <span className="font-medium mb-1">End Month*</span>
                                                 <select
+                                                disabled
                                                     value={p.endMonth}
                                                     onChange={(e) =>
                                                         updatePrice(idx, pIdx, "endMonth", e.target.value)
@@ -902,7 +679,7 @@ const AddCarPackage = ({ setTabRef }) => {
                                                 />
                                             </label>
 
-                                            <button
+                                            {/* <button
                                                 type="button"
                                                 onClick={() => removePrice(idx, pIdx)}
                                                 className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600"
@@ -917,9 +694,16 @@ const AddCarPackage = ({ setTabRef }) => {
                                                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                                             >
                                                 Add Price
-                                            </button>
+                                            </button> */}
                                         </div>
                                     ))}
+                                    <button
+                                                type="button"
+                                                style={{marginTop:"1vh"}}
+                                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                                            >
+                                                Update
+                                            </button>
                                 </div>
                             </div>
                         ))}
@@ -944,20 +728,12 @@ const AddCarPackage = ({ setTabRef }) => {
 
                             <button
                                 type="button"
-                                disabled={
-                                    submitting || !(basicValid && itinerariesValid && carDetailsValid)
-                                }
-                                onClick={handleSubmit}
-                                title={
-                                    !(basicValid && itinerariesValid && carDetailsValid)
-                                        ? "Complete required fields"
-                                        : ""
-                                }
-                                className={`px-4 py-2 rounded-lg text-white transition ${submitting
+
+                                // onClick={handleSubmit}
+
+                                className={`px-4 py-2 rounded-lg text-white transition  ${submitting
                                     ? "bg-gray-400 cursor-not-allowed"
-                                    : basicValid && itinerariesValid && carDetailsValid
-                                        ? "bg-green-500 hover:bg-green-600"
-                                        : "bg-gray-300 cursor-not-allowed"
+                                    : "bg-green-500 hover:bg-green-600"
                                     }`}
                             >
                                 {submitting ? "Submitting..." : "Submit"}
@@ -968,7 +744,7 @@ const AddCarPackage = ({ setTabRef }) => {
                 )}
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default AddCarPackage;
+export default EditPackageForm
