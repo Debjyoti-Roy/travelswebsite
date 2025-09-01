@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getStates } from '../../Redux/store/adminCarSlice';
 import CreatableSelect from "react-select/creatable";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 const MONTHS = [
     { label: 'January', value: 1 },
@@ -20,7 +21,9 @@ const MONTHS = [
 
 const CAR_TYPES = ['HATCHBACK', 'SEDAN', 'SUV', 'TEMPO_TRAVELLER', 'MINI_BUS'];
 
-const EditPackageForm = ({ carPackageDetails }) => {
+const EditPackageForm = ({ carPackageDetails, isOpen }) => {
+    const [removedAllPrices, setRemovedAllPrices] = useState(!isOpen);
+    const [removedPriceIds, setRemovedPriceIds] = useState([]);
     const [submitting, setSubmitting] = useState(false)
     const [basic, setBasic] = useState({
         title: '',
@@ -32,8 +35,8 @@ const EditPackageForm = ({ carPackageDetails }) => {
         dropLocation: '',
         destinationName: '',
         destinationState: '',
-        includedFeatures: [''],
-        excludedFeatures: [''],
+        includedFeatures: [{ id: null, desc: '' }],
+        excludedFeatures: [{ id: null, desc: '' }],
     });
 
     // ----- Itineraries -----
@@ -47,9 +50,13 @@ const EditPackageForm = ({ carPackageDetails }) => {
     const [tab, setTab] = useState(0);
     const { states = [], statesloading, stateserror } = useSelector((state) => state.admincar);
 
+    // Firebase storage
+    const storage = getStorage();
+
     useEffect(() => {
         dispatch(getStates());
     }, [dispatch]);
+
     useEffect(() => {
         if (carPackageDetails) {
             setBasic({
@@ -61,8 +68,14 @@ const EditPackageForm = ({ carPackageDetails }) => {
                 dropLocation: carPackageDetails.dropLocation || "",
                 destinationName: carPackageDetails.destination?.name || "",
                 destinationState: carPackageDetails.destination?.state || "",
-                includedFeatures: carPackageDetails.includedFeatures?.map(f => f.description) || [""],
-                excludedFeatures: carPackageDetails.excludedFeatures?.map(f => f.description) || [""],
+                includedFeatures: carPackageDetails.includedFeatures?.map(f => ({
+                    id: f.inclusionId,
+                    desc: f.description
+                })) || [{ id: null, desc: '' }],
+                excludedFeatures: carPackageDetails.excludedFeatures?.map(f => ({
+                    id: f.exclusionId,
+                    desc: f.description
+                })) || [{ id: null, desc: '' }],
             });
 
             setItineraries(
@@ -70,11 +83,13 @@ const EditPackageForm = ({ carPackageDetails }) => {
                     title: it.title,
                     description: it.description,
                     imagePreview: it.imageUrl,
+                    itineraryId: it.itineraryId,
                 })) || []
             );
 
             setCarDetails(
                 carPackageDetails.carDetails?.map(c => ({
+                    carId: c.carId,
                     carType: c.carType,
                     carName: c.carName,
                     capacity: c.capacity,
@@ -82,6 +97,7 @@ const EditPackageForm = ({ carPackageDetails }) => {
                     acAvailable: c.acAvailable ? "YES" : "NO",
                     notes: c.notes || "",
                     prices: c.carPrices?.map(p => ({
+                        seasonPriceId: p.seasonPriceId,
                         startMonth: p.startMonth,
                         endMonth: p.endMonth,
                         price: p.price,
@@ -90,11 +106,37 @@ const EditPackageForm = ({ carPackageDetails }) => {
             );
         }
     }, [carPackageDetails]);
+
+    // Firebase upload function
+    const uploadFileMock = async (file, title) => {
+        try {
+            const fileRef = ref(storage, `car-package/${title}/${file.name}`);
+            await uploadBytes(fileRef, file);
+            const url = await getDownloadURL(fileRef);
+            return url;
+        } catch (error) {
+            console.error("File upload failed:", error);
+            throw error;
+        }
+    };
+
+    const deleteFiles = async (paths = []) => {
+        for (let path of paths) {
+            try {
+                await deleteObject(ref(storage, path));
+            } catch (err) {
+                console.warn("Failed to delete file:", path, err);
+            }
+        }
+    };
+
+    // Navigation functions
     const goNext = () => {
         if (tab === 0) setTab(1);
         else if (tab === 1) setTab(2);
     };
     const goPrev = () => setTab((t) => Math.max(0, t - 1));
+
     const addItinerary = () => {
         const days = Number(basic.durationDays) || 0;
         if (itineraries.length >= days) return;
@@ -136,7 +178,6 @@ const EditPackageForm = ({ carPackageDetails }) => {
         });
     };
 
-
     const addCar = () => {
         setCarDetails((prev) => [
             ...prev,
@@ -155,17 +196,282 @@ const EditPackageForm = ({ carPackageDetails }) => {
     const removeCar = (index) => {
         setCarDetails((prev) => prev.filter((_, i) => i !== index));
     };
+
+    // Feature management functions
+    const handleFeatureChange = (type, idx, value) => {
+        setBasic((prev) => {
+            const copy = [...prev[type]];
+            copy[idx] = { ...copy[idx], desc: value };
+            return { ...prev, [type]: copy };
+        });
+    };
+
     const addFeature = (type) => {
-        setBasic((prev) => ({ ...prev, [type]: [...prev[type], ''] }));
+        setBasic((prev) => ({ ...prev, [type]: [...prev[type], { id: null, desc: '' }] }));
     };
 
     const removeFeature = (type, idx) => {
         setBasic((prev) => {
             const copy = [...prev[type]];
             copy.splice(idx, 1);
-            return { ...prev, [type]: copy.length ? copy : [''] };
+            return { ...prev, [type]: copy.length ? copy : [{ id: null, desc: '' }] };
         });
     };
+
+    // Car management functions
+    const updateCarField = (index, field, value) => {
+        setCarDetails((prev) => {
+            const copy = [...prev];
+            copy[index] = { ...copy[index], [field]: value };
+            return copy;
+        });
+    };
+
+    const updatePrice = (carIdx, priceIdx, field, value) => {
+        setCarDetails((prev) => {
+            const copy = [...prev];
+            const prices = [...copy[carIdx].prices];
+            prices[priceIdx] = { ...prices[priceIdx], [field]: value };
+            copy[carIdx].prices = prices;
+            return copy;
+        });
+    };
+
+    // Remove all prices for a car (for month changes)
+    
+    const removeAllPrices = (carIdx) => {
+        setRemovedAllPrices(true);
+        setCarDetails((prev) => {
+            const copy = [...prev];
+            copy[carIdx] = {
+                ...copy[carIdx],
+                prices: [{ startMonth: '', endMonth: '', price: '' }]
+            };
+            return copy;
+        });
+    };
+
+    // Add new price for a car
+    const addPrice = (carIdx) => {
+        setCarDetails((prev) => {
+            const copy = [...prev];
+            copy[carIdx] = {
+                ...copy[carIdx],
+                prices: [...copy[carIdx].prices, { startMonth: '', endMonth: '', price: '' }],
+            };
+            return copy;
+        });
+    };
+
+    // Remove specific price for a car
+    const removePrice = (carIdx, priceIdx) => {
+        setCarDetails((prev) => {
+            const copy = [...prev];
+            const prices = [...copy[carIdx].prices];
+            prices.splice(priceIdx, 1);
+            copy[carIdx].prices = prices.length ? prices : [{ startMonth: '', endMonth: '', price: '' }];
+            return copy;
+        });
+    };
+
+    // Submit function
+    const handleSubmit = async () => {
+        // Basic validation
+        if (!basic.title?.trim()) {
+            alert('Please enter a title');
+            return;
+        }
+        if (!basic.description?.trim()) {
+            alert('Please enter a description');
+            return;
+        }
+        if (!basic.durationDays || Number(basic.durationDays) <= 0) {
+            alert('Please enter a valid duration');
+            return;
+        }
+        if (!basic.pickupLocation?.trim()) {
+            alert('Please enter pickup location');
+            return;
+        }
+        if (!basic.dropLocation?.trim()) {
+            alert('Please enter drop location');
+            return;
+        }
+        if (!basic.destinationName?.trim()) {
+            alert('Please enter destination name');
+            return;
+        }
+        if (!basic.destinationState?.trim()) {
+            alert('Please enter destination state');
+            return;
+        }
+
+        setSubmitting(true);
+        const uploadedPaths = [];
+        const oldImagesToDelete = [];
+
+        try {
+            // 1) Handle thumbnail image
+            let thumbnailUrl = basic.thumbnailPreview;
+            if (basic.thumbnailFile) {
+                thumbnailUrl = await uploadFileMock(basic.thumbnailFile, basic.title.trim());
+                uploadedPaths.push(thumbnailUrl);
+                if (carPackageDetails.thumbnailUrl) {
+                    oldImagesToDelete.push(carPackageDetails.thumbnailUrl);
+                }
+            }
+
+            // 2) Handle itinerary images
+            const itinerariesWithUrls = [];
+            for (let i = 0; i < itineraries.length; i++) {
+                const it = itineraries[i];
+                let imageUrl = it.imagePreview;
+
+                if (it.imageFile) {
+                    imageUrl = await uploadFileMock(it.imageFile, basic.title.trim());
+                    uploadedPaths.push(imageUrl);
+                    if (carPackageDetails.itineraries?.[i]?.imageUrl) {
+                        oldImagesToDelete.push(carPackageDetails.itineraries[i].imageUrl);
+                    }
+                }
+
+                itinerariesWithUrls.push({
+                    title: it.title,
+                    description: it.description,
+                    imageUrl,
+                    itineraryId: it.itineraryId || 0,
+                });
+            }
+
+            // 3) Handle features - maintain original array structure
+            const includedFeatures = basic.includedFeatures.map(f => {
+                if (f.id) {
+                    // Existing feature
+                    if (f.desc && f.desc.trim()) {
+                        // Feature with description (updated)
+                        return { inclusionId: f.id, description: f.desc.trim() };
+                    } else {
+                        // Feature without description (removed)
+                        return { inclusionId: f.id };
+                    }
+                } else {
+                    // New feature
+                    if (f.desc && f.desc.trim()) {
+                        return { description: f.desc.trim() };
+                    } else {
+                        // Empty new feature - skip
+                        return null;
+                    }
+                }
+            }).filter(Boolean); // Remove null entries
+
+            const excludedFeatures = basic.excludedFeatures.map(f => {
+                if (f.id) {
+                    // Existing feature
+                    if (f.desc && f.desc.trim()) {
+                        // Feature with description (updated)
+                        return { exclusionId: f.id, description: f.desc.trim() };
+                    } else {
+                        // Feature without description (removed)
+                        return { exclusionId: f.id };
+                    }
+                } else {
+                    // New feature
+                    if (f.desc && f.desc.trim()) {
+                        return { description: f.desc.trim() };
+                    } else {
+                        // Empty new feature - skip
+                        return null;
+                    }
+                }
+            }).filter(Boolean); // Remove null entries
+
+            // 4) Handle car details
+            const carDetailsPayload = carDetails.map((c) => {
+                const hasNewPrices = c.prices.some(p => !p.seasonPriceId);
+
+                if (hasNewPrices) {
+                    // New price structure (with months)
+                    return {
+                        carId: c.carId,
+                        carType: c.carType,
+                        carName: c.carName.trim(),
+                        capacity: Number(c.capacity),
+                        luggageCapacity: Number(c.luggageCapacity),
+                        acAvailable: c.acAvailable === 'YES',
+                        notes: c.notes?.trim() || '',
+                        prices: c.prices
+                            .filter(p => p.startMonth && p.endMonth && p.price)
+                            .map((p) => ({
+                                startMonth: Number(p.startMonth),
+                                endMonth: Number(p.endMonth),
+                                price: Number(p.price),
+                            })),
+                    };
+                } else {
+                    // Existing price structure (only price updates)
+                    return {
+                        carId: c.carId,
+                        carType: c.carType,
+                        carName: c.carName.trim(),
+                        capacity: Number(c.capacity),
+                        luggageCapacity: Number(c.luggageCapacity),
+                        acAvailable: c.acAvailable === 'YES',
+                        notes: c.notes?.trim() || '',
+                        carPrices: c.prices.map((p) => ({
+                            seasonPriceId: p.seasonPriceId,
+                            price: Number(p.price),
+                        })),
+                    };
+                }
+            });
+
+            // 5) Final payload
+            const payload = {
+                packageId: carPackageDetails.packageId,
+                title: basic.title.trim(),
+                description: basic.description.trim(),
+                thumbnailUrl,
+                pickupLocation: basic.pickupLocation.trim(),
+                dropLocation: basic.dropLocation.trim(),
+                destination: {
+                    name: basic.destinationName.trim(),
+                    state: basic.destinationState.trim(),
+                },
+                includedFeatures: includedFeatures,
+                excludedFeatures: excludedFeatures,
+                itineraries: itinerariesWithUrls,
+                carDetails: carDetailsPayload,
+            };
+
+            if (!removedAllPrices) {
+                console.log('Edit Package Payload:', payload);
+            } else {
+                console.log(payload.carDetails);
+            }
+
+            // TODO: Call API here
+            // dispatch(updateCarPackage(payload))
+            //     .unwrap()
+            //     .then((res) => {
+            //         setSubmitting(false);
+            //         toast.success("Car package updated successfully");
+            //         // Delete old images after successful update
+            //         deleteFiles(oldImagesToDelete);
+            //     })
+            //     .catch(async (err) => {
+            //         setSubmitting(false);
+            //         await deleteFiles(uploadedPaths);
+            //         toast.error("Failed to update car package. Uploads removed.");
+            //     });
+
+        } catch (error) {
+            setSubmitting(false);
+            await deleteFiles(uploadedPaths);
+            console.error('Error updating package:', error);
+        }
+    };
+
     return (
         <div style={{ display: 'flex', gap: 16 }} className='h-full'>
             {/* Vertical Tabs */}
@@ -336,7 +642,7 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                 <div style={{ marginBottom: "1vh" }} key={`inc-${i}`} className="flex gap-2 mb-2">
                                     <input
                                         type="text"
-                                        value={f}
+                                        value={f.desc}
                                         onChange={(e) =>
                                             handleFeatureChange("includedFeatures", i, e.target.value)
                                         }
@@ -368,7 +674,7 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                 <div style={{ marginBottom: "1vh" }} key={`exc-${i}`} className="flex gap-2 mb-2">
                                     <input
                                         type="text"
-                                        value={f}
+                                        value={f.desc}
                                         onChange={(e) =>
                                             handleFeatureChange("excludedFeatures", i, e.target.value)
                                         }
@@ -627,13 +933,13 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                     {car.prices.map((p, pIdx) => (
                                         <div
                                             key={pIdx}
-                                            className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end mb-3"
+                                            className={`grid grid-cols-1  gap-3 items-end mb-3 ${removedAllPrices ? "md:grid-cols-4" : "md:grid-cols-3"}`}
                                         >
                                             <label className="flex flex-col">
                                                 <span className="font-medium mb-1">Start Month*</span>
                                                 <select
                                                     value={p.startMonth}
-                                                    disabled
+                                                    disabled={!!p.seasonPriceId}
                                                     onChange={(e) =>
                                                         updatePrice(idx, pIdx, "startMonth", e.target.value)
                                                     }
@@ -651,7 +957,7 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                             <label className="flex flex-col">
                                                 <span className="font-medium mb-1">End Month*</span>
                                                 <select
-                                                disabled
+                                                    disabled={!!p.seasonPriceId}
                                                     value={p.endMonth}
                                                     onChange={(e) =>
                                                         updatePrice(idx, pIdx, "endMonth", e.target.value)
@@ -678,6 +984,13 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                                     className="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-300"
                                                 />
                                             </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => removePrice(idx, pIdx)}
+                                                className={`bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 ${!removedAllPrices ? "hidden" : "block"}`}
+                                            >
+                                                Remove
+                                            </button>
 
                                             {/* <button
                                                 type="button"
@@ -686,7 +999,6 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                             >
                                                 Remove
                                             </button>
-
 
                                             <button
                                                 type="button"
@@ -697,13 +1009,27 @@ const EditPackageForm = ({ carPackageDetails }) => {
                                             </button> */}
                                         </div>
                                     ))}
-                                    <button
-                                                type="button"
-                                                style={{marginTop:"1vh"}}
-                                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                                            >
-                                                Update
-                                            </button>
+
+                                    {/* Remove All Prices button */}
+                                    <div className="flex gap-3 mt-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => addPrice(idx)}
+                                            className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${!removedAllPrices ? "hidden" : "block"}`}
+                                        >
+                                            Add Price
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                removeAllPrices(idx)
+                                                setRemovedPriceIds([...removedPriceIds, p.carId])
+                                            }}
+                                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                                        >
+                                            Remove All Prices
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -712,6 +1038,7 @@ const EditPackageForm = ({ carPackageDetails }) => {
                         <div className="flex flex-wrap gap-3 mt-6">
                             <button
                                 type="button"
+
                                 onClick={goPrev}
                                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
                             >
@@ -728,9 +1055,7 @@ const EditPackageForm = ({ carPackageDetails }) => {
 
                             <button
                                 type="button"
-
-                                // onClick={handleSubmit}
-
+                                onClick={handleSubmit}
                                 className={`px-4 py-2 rounded-lg text-white transition  ${submitting
                                     ? "bg-gray-400 cursor-not-allowed"
                                     : "bg-green-500 hover:bg-green-600"

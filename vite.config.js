@@ -6,12 +6,12 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ['b3304e48366d.ngrok-free.app'],
+    allowedHosts: ['e8fa90da22bc.ngrok-free.app'],
     host: true,
     port: 5173
   },
   preview: {
-    allowedHosts: ['b3304e48366d.ngrok-free.app']
+    allowedHosts: ['e8fa90da22bc.ngrok-free.app']
   }
 
 });

@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { Dialog, Transition } from "@headlessui/react";
 import { FaTimes } from "react-icons/fa";
 import EditPackageForm from "./EditPackageForm";
+import DetailsPage from "./DetailsPage";
 // import { getAllCarPackages } from "../../redux/slices/stateSlice";
 
 const CarPackagesList = () => {
@@ -51,9 +52,11 @@ const CarPackagesList = () => {
       });
   }
 
+  const [packageDetails, setPackageDetails] = useState({})
   const viewDetails = async (id) => {
 
     dispatch(getCarPackageDetails({ id: id }));
+    // setPackageDetails(carPackageDetails)
     setIsOpen(true);
 
 
@@ -66,149 +69,158 @@ const CarPackagesList = () => {
 
 
 
-  const closeModal = () => {setIsOpen(false)
+  const closeModal = () => {
+    setIsOpen(false)
     setIsEditing(false)
   };
   return (
     <>
-      <div className="p-6">
-        {/* <h2 className="text-2xl font-bold mb-4">Car Packages</h2> */}
+      {isOpen ? <DetailsPage carPackageDetails={carPackageDetails} isOpen={()=>setIsOpen(false)} /> : (
+        <>
 
-        {loading && <p className="text-gray-500">Loading...</p>}
-        {error && <p className="text-red-500">Error: {error}</p>}
 
-        {!loading && !error && carPackages.length === 0 && (
-          <p className="text-gray-600">No packages found.</p>
-        )}
+          <div className="p-6">
+            {/* <h2 className="text-2xl font-bold mb-4">Car Packages</h2> */}
 
-        {!loading && !error && carPackages.length > 0 && (
-          <div className="space-y-4">
-            {carPackages.map((pkg) => (
-              <div
-                key={pkg.packageId}
-                className="flex bg-white shadow rounded-lg overflow-hidden border border-gray-200"
-                style={{ marginBottom: "16px" }}
-              >
-                {/* Thumbnail */}
-                {pkg.thumbnailUrl && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={pkg.thumbnailUrl}
-                      alt={pkg.title}
-                      className="w-48 h-full object-cover rounded-l-lg"
-                    />
-                  </div>
-                )}
+            {loading && <p className="text-gray-500">Loading...</p>}
+            {error && <p className="text-red-500">Error: {error}</p>}
 
-                {/* Card Body */}
-                <div className="p-4 flex-1 flex flex-col justify-between">
-                  {/* Header with title + button */}
-                  <div className="flex justify-between items-start" style={{ marginBottom: "8px" }}>
-                    <h3 className="text-lg font-bold text-gray-800">
-                      {pkg.title}
-                    </h3>
-                    <div className="flex gap-1">
-                      <button
-                        className="px-3 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
-                        onClick={() => {
-                          // console.log(pkg.packageId)
-                          viewDetails(pkg.packageId)
-                        }}
-                      >
-                        View Details
-                      </button>
-                      <button
-                        className={`px-3 py-1 text-sm rounded ${pkg.isActive
-                          ? "bg-red-500 text-white hover:bg-red-600"
-                          : "bg-green-500 text-white hover:bg-green-600"
-                          }`}
-                        onClick={() => {
-                          if (pkg.isActive) {
-                            changeStatus(false, pkg.packageId)
-                          } else {
-                            changeStatus(true, pkg.packageId)
-                          }
-                        }}
-                      >
-                        {pkg.isActive ? "Deactivate" : "Activate"}
-                      </button>
-                    </div>
-                  </div>
+            {!loading && !error && carPackages.length === 0 && (
+              <p className="text-gray-600">No packages found.</p>
+            )}
 
-                  {/* Description */}
-                  <p
-                    className="text-sm text-gray-600"
-                    style={{ marginBottom: "12px" }}
+            {!loading && !error && carPackages.length > 0 && (
+              <div className="space-y-4">
+                {carPackages.map((pkg) => (
+                  <div
+                    key={pkg.packageId}
+                    className="flex bg-white shadow rounded-lg overflow-hidden border border-gray-200"
+                    style={{ marginBottom: "16px" }}
                   >
-                    {pkg.description}
-                  </p>
+                    {/* Thumbnail */}
+                    {pkg.thumbnailUrl && (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={pkg.thumbnailUrl}
+                          alt={pkg.title}
+                          className="w-48 h-full object-cover rounded-l-lg"
+                        />
+                      </div>
+                    )}
 
-                  {/* Meta Info */}
-                  <div className="grid grid-cols-2 gap-y-1 text-sm text-gray-700">
-                    <div>
-                      <strong>Duration:</strong> {pkg.durationDays} days
-                    </div>
-                    <div>
-                      <strong>Pickup:</strong> {pkg.pickupLocation}
-                    </div>
-                    <div>
-                      <strong>Drop:</strong> {pkg.dropLocation}
-                    </div>
-                    <div>
-                      <strong>Destination:</strong> {pkg.destination?.name},{" "}
-                      {pkg.destination?.state}
-                    </div>
-                    <div className="col-span-2">
-                      <strong>Status:</strong>{" "}
-                      {pkg.isActive ? (
-                        <span className="text-green-600 font-medium">Active</span>
-                      ) : (
-                        <span className="text-red-600 font-medium">Not Active</span>
-                      )}
+                    {/* Card Body */}
+                    <div className="p-4 flex-1 flex flex-col justify-between">
+                      {/* Header with title + button */}
+                      <div className="flex justify-between items-start" style={{ marginBottom: "8px" }}>
+                        <h3 className="text-lg font-bold text-gray-800">
+                          {pkg.title}
+                        </h3>
+                        <div className="flex gap-1">
+                          <button
+                            className="px-3 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+                            onClick={() => {
+                              // console.log(pkg.packageId)
+                              viewDetails(pkg.packageId)
+                              // setPackageDetails(pkg)
+                              setIsOpen(true)
+                            }}
+                          >
+                            View Details
+                          </button>
+                          <button
+                            className={`px-3 py-1 text-sm rounded ${pkg.isActive
+                              ? "bg-red-500 text-white hover:bg-red-600"
+                              : "bg-green-500 text-white hover:bg-green-600"
+                              }`}
+                            onClick={() => {
+                              if (pkg.isActive) {
+                                changeStatus(false, pkg.packageId)
+                              } else {
+                                changeStatus(true, pkg.packageId)
+                              }
+                            }}
+                          >
+                            {pkg.isActive ? "Deactivate" : "Activate"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <p
+                        className="text-sm text-gray-600"
+                        style={{ marginBottom: "12px" }}
+                      >
+                        {pkg.description}
+                      </p>
+
+                      {/* Meta Info */}
+                      <div className="grid grid-cols-2 gap-y-1 text-sm text-gray-700">
+                        <div>
+                          <strong>Duration:</strong> {pkg.durationDays} days
+                        </div>
+                        <div>
+                          <strong>Pickup:</strong> {pkg.pickupLocation}
+                        </div>
+                        <div>
+                          <strong>Drop:</strong> {pkg.dropLocation}
+                        </div>
+                        <div>
+                          <strong>Destination:</strong> {pkg.destination?.name},{" "}
+                          {pkg.destination?.state}
+                        </div>
+                        <div className="col-span-2">
+                          <strong>Status:</strong>{" "}
+                          {pkg.isActive ? (
+                            <span className="text-green-600 font-medium">Active</span>
+                          ) : (
+                            <span className="text-red-600 font-medium">Not Active</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
+
+
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-4">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={pagination.pageNumber === 0}
+                className={`px-4 py-2 rounded-lg ${pagination.pageNumber === 0
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+              >
+                Prev
+              </button>
+
+              <span className="text-sm text-gray-700">
+                Page {pagination.pageNumber + 1} of {pagination.totalPages}
+              </span>
+
+              <button
+                onClick={() =>
+                  setPage((p) => (!pagination.last ? p + 1 : p))
+                }
+                disabled={pagination.last}
+                className={`px-4 py-2 rounded-lg ${pagination.last
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
-        )}
-
-
-
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={pagination.pageNumber === 0}
-            className={`px-4 py-2 rounded-lg ${pagination.pageNumber === 0
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-              }`}
-          >
-            Prev
-          </button>
-
-          <span className="text-sm text-gray-700">
-            Page {pagination.pageNumber + 1} of {pagination.totalPages}
-          </span>
-
-          <button
-            onClick={() =>
-              setPage((p) => (!pagination.last ? p + 1 : p))
-            }
-            disabled={pagination.last}
-            className={`px-4 py-2 rounded-lg ${pagination.last
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-              }`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-      <Transition appear show={isOpen} as={Fragment}>
+        </>
+      )}
+      {/* <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeModal}>
-          {/* Background Overlay with subtle blur */}
+         
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -234,7 +246,7 @@ const CarPackagesList = () => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-5xl min-w-5xl transform overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-2xl transition-all">
-                  {/* Scrollable content wrapper */}
+                  
                   <div className="max-h-[80vh] min-h-[80vh] overflow-y-auto">
                     {!isEditing ? (
 
@@ -268,12 +280,12 @@ const CarPackagesList = () => {
                             />
                           )}
 
-                          {/* Description */}
+                          
                           <p className="text-gray-700 mb-4 leading-relaxed">
                             {carPackageDetails?.description}
                           </p>
 
-                          {/* Meta Info */}
+                          
                           <div className="grid grid-cols-2 gap-4 mb-6 text-sm border border-gray-100 rounded-lg p-4 bg-gray-50">
                             <div>
                               <strong>Duration:</strong> {carPackageDetails?.durationDays} days
@@ -291,7 +303,7 @@ const CarPackagesList = () => {
                             </div>
                           </div>
 
-                          {/* Cars */}
+                          
                           {carPackageDetails?.carDetails?.length > 0 && (
                             <div className="mb-6">
                               <h4 className="font-semibold text-lg mb-2">Available Cars</h4>
@@ -316,7 +328,7 @@ const CarPackagesList = () => {
                             </div>
                           )}
 
-                          {/* Itineraries */}
+                          
                           {carPackageDetails?.itineraries?.length > 0 && (
                             <div style={{ marginTop: "1vh" }} className="mb-6">
                               <h4 className="font-semibold text-lg mb-2"> Itinerary</h4>
@@ -345,7 +357,7 @@ const CarPackagesList = () => {
                             </div>
                           )}
 
-                          {/* Inclusions / Exclusions */}
+                          
                           <div style={{ marginTop: "1vh" }} className="grid grid-cols-2 gap-6">
                             <div>
                               <h4 className="font-semibold mb-2 text-green-700">Included</h4>
@@ -365,7 +377,7 @@ const CarPackagesList = () => {
                             </div>
                           </div>
 
-                          {/* Footer */}
+                          
                           <div className="mt-6 flex justify-end">
                             <button
                               className="px-5 py-2 cursor-pointer bg-blue-800 text-white rounded-lg hover:bg-gray-700 transition"
@@ -379,6 +391,7 @@ const CarPackagesList = () => {
                     ) : (
                       <EditPackageForm
                         carPackageDetails={carPackageDetails}
+                        isOpen={isOpen}
                       />
                     )}
                   </div>
@@ -387,7 +400,7 @@ const CarPackagesList = () => {
             </div>
           </div>
         </Dialog>
-      </Transition>
+      </Transition> */}
     </>
   );
 };
