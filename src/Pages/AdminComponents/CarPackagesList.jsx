@@ -75,7 +75,7 @@ const CarPackagesList = () => {
   };
   return (
     <>
-      {isOpen ? <DetailsPage carPackageDetails={carPackageDetails} isOpen={()=>setIsOpen(false)} /> : (
+      {isOpen ? <DetailsPage carPackageDetails={carPackageDetails} isOpen={()=>setIsOpen(false)} onEditBasic={async(id)=>await viewDetails(id)} /> : (
         <>
 
 

@@ -4,10 +4,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import { FaTimes } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import BasicDetails from './DetailsPageComponents/BasicDetails';
+import ItenaryDetails from './DetailsPageComponents/ItenaryDetails';
+import CarDetails from './DetailsPageComponents/CarDetails';
 
 const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries, onEditCarDetails }) => {
-    // console.log(packageDetails)
     const [basic, setBasic] = useState(false)
+    const [itenary, setItenary]=useState(false)
+    const [carDetails, setCarDetails]=useState(false)
     return (
         <>
             <div className="p-6">
@@ -96,7 +99,7 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                         <div className="flex justify-between items-center mb-2">
                             <h4 className="font-semibold text-lg">Available Cars</h4>
                             <button
-                                onClick={onEditCarDetails}
+                                onClick={()=>setCarDetails(true)}
                                 className="flex items-center gap-2 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors text-sm"
                             >
                                 <FaEdit className="text-xs" />
@@ -130,7 +133,7 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                         <div className="flex justify-between items-center mb-2">
                             <h4 className="font-semibold text-lg"> Itinerary</h4>
                             <button
-                                onClick={onEditItineraries}
+                                onClick={()=>setItenary(true)}
                                 className="flex items-center gap-2 bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-purple-600 transition-colors text-sm"
                             >
                                 <FaEdit className="text-xs" />
@@ -208,7 +211,128 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                                             </div>
 
                                             {/* Content */}
-                                            <BasicDetails carPackageDetails={carPackageDetails} />
+                                            <BasicDetails carPackageDetails={carPackageDetails} basicClose={()=>{
+                                                setBasic(false)
+                                                onEditBasic(carPackageDetails.packageId)
+                                            }} />
+                                        </div>
+
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
+            <Transition appear show={itenary} as={Fragment}>
+                <Dialog as="div" className="relative z-50" onClose={() => setItenary(false)}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-100/70 backdrop-blur-sm" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-6">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-5xl min-w-5xl transform overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-2xl transition-all">
+                                    <div className="max-h-[80vh] min-h-[80vh] overflow-y-auto">
+
+                                        <div>
+                                            {/* Header */}
+                                            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+                                                <Dialog.Title
+                                                    as="h3"
+                                                    className="text-2xl font-bold leading-6 text-gray-900"
+                                                >
+                                                    Itenary Details
+                                                </Dialog.Title>
+                                                <button
+                                                    onClick={() => setItenary(false)}
+                                                    className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
+                                                >
+                                                    <FaTimes className="h-5 w-5" />
+                                                </button>
+                                            </div>
+
+                                            {/* Content */}
+                                            <ItenaryDetails carPackageDetails={carPackageDetails} itenaryClose={()=>{
+                                                setItenary(false)
+                                                onEditBasic(carPackageDetails.packageId)
+                                            }} />
+                                        </div>
+
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
+            <Transition appear show={carDetails} as={Fragment}>
+                <Dialog as="div" className="relative z-50" onClose={() => setCarDetails(false)}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-100/70 backdrop-blur-sm" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-6">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-5xl min-w-5xl transform overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-2xl transition-all">
+                                    <div className="max-h-[80vh] min-h-[80vh] overflow-y-auto">
+
+                                        <div>
+                                            {/* Header */}
+                                            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+                                                <Dialog.Title
+                                                    as="h3"
+                                                    className="text-2xl font-bold leading-6 text-gray-900"
+                                                >
+                                                    Car Details
+                                                </Dialog.Title>
+                                                <button
+                                                    onClick={() => setItenary(false)}
+                                                    className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
+                                                >
+                                                    <FaTimes className="h-5 w-5" />
+                                                </button>
+                                            </div>
+
+                                            {/* Content */}
+                                            <CarDetails carPackageDetails={carPackageDetails} carDetailsClose={()=>{
+                                                setCarDetails(false)
+                                                onEditBasic(carPackageDetails.packageId)
+                                            }} />
                                         </div>
 
                                     </div>

@@ -72,6 +72,30 @@ export const addCarPackage = createAsyncThunk(
         }
     }
 );
+export const updateCarPackage = createAsyncThunk(
+    "partner/update-car-package",
+    async ({formData}, { rejectWithValue }) => {
+        try {
+            console.log(formData)
+            const token = localStorage.getItem("token");
+            const response = await api.patch(`/v1/partner/car-package/update`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "ngrok-skip-browser-warning": "xyz",
+                    "Content-Type": "application/json",
+                },
+            });
+            return {
+                data: response.data,
+                status: response.status,
+            };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data || "Car package add failed"
+            );
+        }
+    }
+);
 // ✅ Correct thunk
 export const changeCarPackageStatus = createAsyncThunk(
     "partner/change-car-package-status",
@@ -136,10 +160,13 @@ const adminCarSlice = createSlice({
         error: null,
         loading2: false,
         error2: null,
-        carPackageResponse: null, // ✅ response of addCarPackage
-        carPackages: [],          // ✅ list of packages
-        carPackageDetails: null,  // ✅ details of a single package
-        pagination: {             // ✅ pagination info
+        loading3: false,
+        error3: null,
+        carPackageResponse: null,   // ✅ response of addCarPackage
+        updateResponse: null,       // ✅ response of updateCarPackage
+        carPackages: [],            // ✅ list of packages
+        carPackageDetails: null,    // ✅ details of a single package
+        pagination: {               // ✅ pagination info
             pageNumber: 0,
             pageSize: 10,
             totalElements: 0,
@@ -150,7 +177,7 @@ const adminCarSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // getStates
+            // ✅ getStates
             .addCase(getStates.pending, (state) => {
                 state.statesloading = true;
                 state.stateserror = null;
@@ -164,7 +191,7 @@ const adminCarSlice = createSlice({
                 state.stateserror = action.payload;
             })
 
-            // addCarPackage
+            // ✅ addCarPackage
             .addCase(addCarPackage.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -179,7 +206,34 @@ const adminCarSlice = createSlice({
                 state.error = action.payload;
             })
 
-            // getAllCarPackages
+            // ✅ updateCarPackage
+            .addCase(updateCarPackage.pending, (state) => {
+                state.loading3 = true;
+                state.error3 = null;
+                state.updateResponse = null;
+            })
+            .addCase(updateCarPackage.fulfilled, (state, action) => {
+                state.loading3 = false;
+                state.updateResponse = action.payload.data;
+
+                // also update the carPackages list if present
+                const updatedPkg = action.payload.data;
+                const idx = state.carPackages.findIndex(
+                    (pkg) => pkg.packageId === updatedPkg.packageId
+                );
+                if (idx !== -1) {
+                    state.carPackages[idx] = {
+                        ...state.carPackages[idx],
+                        ...updatedPkg,
+                    };
+                }
+            })
+            .addCase(updateCarPackage.rejected, (state, action) => {
+                state.loading3 = false;
+                state.error3 = action.payload;
+            })
+
+            // ✅ getAllCarPackages
             .addCase(getAllCarPackages.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -200,7 +254,7 @@ const adminCarSlice = createSlice({
                 state.error = action.payload;
             })
 
-            // changeCarPackageStatus
+            // ✅ changeCarPackageStatus
             .addCase(changeCarPackageStatus.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -229,7 +283,7 @@ const adminCarSlice = createSlice({
             })
             .addCase(getCarPackageDetails.fulfilled, (state, action) => {
                 state.loading2 = false;
-                state.carPackageDetails = action.payload.data; // save package details
+                state.carPackageDetails = action.payload.data;
             })
             .addCase(getCarPackageDetails.rejected, (state, action) => {
                 state.loading2 = false;
@@ -239,4 +293,3 @@ const adminCarSlice = createSlice({
 });
 
 export default adminCarSlice.reducer;
-

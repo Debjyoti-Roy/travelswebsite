@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { getStates } from '../../../Redux/store/adminCarSlice';
+import { getStates, updateCarPackage } from '../../../Redux/store/adminCarSlice';
 import CreatableSelect from "react-select/creatable";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import toast from 'react-hot-toast';
 
-const BasicDetails = ({ carPackageDetails }) => {
+const BasicDetails = ({ carPackageDetails, basicClose }) => {
+    // const dispatch = useDispatch();
     const [basic, setBasic] = useState({
         title: '',
         description: '',
@@ -43,7 +45,7 @@ const BasicDetails = ({ carPackageDetails }) => {
                     desc: f.description
                 })) || [{ id: null, desc: '' }],
                 excludedFeatures: carPackageDetails.excludedFeatures?.map(f => ({
-                    id: f.exclusionId,
+                    id: f.inclusionId,
                     desc: f.description
                 })) || [{ id: null, desc: '' }],
             });
@@ -144,7 +146,7 @@ const BasicDetails = ({ carPackageDetails }) => {
                 const thumbnailUrl = await uploadFileMock(basic.thumbnailFile, basic.title.trim());
                 uploadedPaths.push(thumbnailUrl);
                 payload.thumbnailUrl = thumbnailUrl;
-                
+
                 // Mark old image for deletion
                 if (carPackageDetails.thumbnailUrl) {
                     oldImagesToDelete.push(carPackageDetails.thumbnailUrl);
@@ -154,7 +156,7 @@ const BasicDetails = ({ carPackageDetails }) => {
             // Handle features - track removed features separately
             const originalIncludedFeatures = carPackageDetails.includedFeatures || [];
             const originalExcludedFeatures = carPackageDetails.excludedFeatures || [];
-            
+
             // Get current features (only non-empty ones)
             const currentIncludedFeatures = basic.includedFeatures
                 .filter(f => f.desc && f.desc.trim())
@@ -178,16 +180,16 @@ const BasicDetails = ({ carPackageDetails }) => {
 
             // Find removed features (features that were in original but not in current)
             const removedIncludedFeatures = originalIncludedFeatures
-                .filter(original => !currentIncludedFeatures.some(current => 
+                .filter(original => !currentIncludedFeatures.some(current =>
                     current.inclusionId === original.inclusionId
                 ))
                 .map(f => ({ inclusionId: f.inclusionId }));
 
             const removedExcludedFeatures = originalExcludedFeatures
-                .filter(original => !currentExcludedFeatures.some(current => 
-                    current.exclusionId === original.exclusionId
+                .filter(original => !currentExcludedFeatures.some(current =>
+                    current.inclusionId === original.inclusionId
                 ))
-                .map(f => ({ exclusionId: f.exclusionId }));
+                .map(f => ({ inclusionId: f.inclusionId }));
 
             // Combine current and removed features
             const finalIncludedFeatures = [...currentIncludedFeatures, ...removedIncludedFeatures];
@@ -204,22 +206,27 @@ const BasicDetails = ({ carPackageDetails }) => {
                 payload.excludedFeatures = finalExcludedFeatures;
             }
 
-            console.log('Basic Details Submit Payload:', payload);
-
-            // TODO: Call API here
-            // dispatch(updateBasicDetails(payload))
-            //     .unwrap()
-            //     .then((res) => {
-            //         setSubmitting(false);
-            //         toast.success("Basic details updated successfully");
-            //         // Delete old images after successful update
-            //         deleteFiles(oldImagesToDelete);
-            //     })
-            //     .catch(async (err) => {
-            //         setSubmitting(false);
-            //         await deleteFiles(uploadedPaths);
-            //         toast.error("Failed to update basic details. Uploads removed.");
-            //     });
+            
+            dispatch(updateCarPackage({formData:payload}))
+                .unwrap()
+                .then((res) => {
+                    setSubmitting(false);
+                    toast.success("Car package updated successfully");
+                    
+                    if (oldImagesToDelete?.length) {
+                        deleteFiles(oldImagesToDelete);
+                    }
+                    basicClose()
+                })
+                .catch(async (err) => {
+                    
+                    setSubmitting(false);
+                    if (uploadedPaths?.length) {
+                        await deleteFiles(uploadedPaths);
+                    }
+                    toast.error("Failed to update car package");
+                    basicClose()
+                });
 
         } catch (error) {
             setSubmitting(false);
@@ -407,11 +414,10 @@ const BasicDetails = ({ carPackageDetails }) => {
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitting}
-                    className={`px-6 py-2 rounded-lg text-white transition ${
-                        submitting
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-green-500 hover:bg-green-600"
-                    }`}
+                    className={`px-6 py-2 rounded-lg text-white transition ${submitting
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-green-500 hover:bg-green-600"
+                        }`}
                 >
                     {submitting ? "Submitting..." : "Submit Changes"}
                 </button>
