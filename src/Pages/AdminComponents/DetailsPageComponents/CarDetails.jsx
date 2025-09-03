@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { updateCarPackage } from '../../../Redux/store/adminCarSlice';
+import { updateCarPackage, updateCarPrices } from '../../../Redux/store/adminCarSlice';
 import toast from 'react-hot-toast';
 
 const MONTHS = [
@@ -21,7 +21,8 @@ const MONTHS = [
 const CAR_TYPES = ['HATCHBACK', 'SEDAN', 'SUV', 'TEMPO_TRAVELLER', 'MINI_BUS'];
 
 const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
-    const [removedAllPrices, setRemovedAllPrices] = useState(false);
+    // const [removedAllPrices, setRemovedAllPrices] = useState(false);
+    const [removedAllPrices, setRemovedAllPrices] = useState([]);
     const [removedPriceIds, setRemovedPriceIds] = useState([]);
     const [carDetails, setCarDetails] = useState([]);
     const [submitting, setSubmitting] = useState(false);
@@ -115,7 +116,8 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
 
     // Remove all prices for a car (for month changes)
     const removeAllPrices = (carIdx) => {
-        setRemovedAllPrices(true);
+        // setRemovedAllPrices(true);
+        setRemovedAllPrices((prev) => [...prev, carIdx]);
         setCarDetails((prev) => {
             const copy = [...prev];
             copy[carIdx] = {
@@ -128,17 +130,17 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
 
     const handleSubmit = async () => {
         setSubmitting(true);
-    
+
         try {
             const originalCarDetails = carPackageDetails?.carDetails || [];
             const apiCalls = [];
             const updatedCars = [];
             const updatedPrices = []; // ✅ collect all price updates here
-    
+
             for (let i = 0; i < carDetails.length; i++) {
                 const car = carDetails[i];
                 const originalCar = originalCarDetails.find(oc => oc.carId === car.carId);
-    
+
                 if (originalCar) {
                     // ✅ Existing car
                     const hasChanges =
@@ -148,15 +150,15 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                         Number(car.luggageCapacity) !== originalCar.luggageCapacity ||
                         car.acAvailable !== (originalCar.acAvailable ? "YES" : "NO") ||
                         car.notes !== (originalCar.notes || "");
-    
+
                     const hasPriceChanges = car.prices.some((price, priceIdx) => {
                         const originalPrice = originalCar.carPrices?.[priceIdx];
                         if (!originalPrice) return true; // new price
                         return Number(price.price) !== originalPrice.price;
                     });
-    
+
                     const hasRemovedAllPrices = car.prices.every(price => !price.seasonPriceId);
-    
+
                     // 🔹 Collect car detail updates
                     if (hasChanges) {
                         updatedCars.push({
@@ -169,13 +171,13 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                             notes: car.notes,
                         });
                     }
-    
+
                     // 🔹 Collect price updates (batch instead of pushing directly)
                     if (hasPriceChanges || hasRemovedAllPrices) {
                         const newPrices = car.prices.filter(
                             p => p.startMonth && p.endMonth && p.price
                         );
-    
+
                         updatedPrices.push({
                             type: hasRemovedAllPrices ? "removeAllPrices" : "updatePrices",
                             payload: {
@@ -222,12 +224,12 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                     }
                 }
             }
-    
+
             // ✅ Handle removed cars
             const removedCars = originalCarDetails.filter(
                 originalCar => !carDetails.some(car => car.carId === originalCar.carId)
             );
-    
+
             removedCars.forEach(car => {
                 apiCalls.push({
                     type: "removeCar",
@@ -237,7 +239,7 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                     },
                 });
             });
-    
+
             // ✅ Add all detail updates in one call
             if (updatedCars.length > 0) {
                 apiCalls.push({
@@ -248,33 +250,51 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                     },
                 });
             }
-    
+
             // ✅ Add all price updates (one entry per car, collected earlier)
             if (updatedPrices.length > 0) {
                 apiCalls.push(...updatedPrices);
             }
-    
+
             // 🚀 Execute all API calls (currently mocked with console.log)
-            console.log("Final Car Details API Calls:", apiCalls);
-            for (const apiCall of apiCalls) {
-                console.log(`${apiCall.type} API Call:`, apiCall.payload);
-                // Example:
-                // if (apiCall.type === "updateCars") {
-                //     await dispatch(updateCarPackage({ formData: apiCall.payload }));
-                // }
-            }
-    
-            setSubmitting(false);
-            toast.success("Car details processed successfully");
+            // console.log("Final Car Details API Calls:", apiCalls);
+            // for (const apiCall of apiCalls) {
+            //     console.log(`${apiCall.type} API Call:`, apiCall.payload);
+            //     // Example:
+            //     if (apiCall.type === "updateCars") {
+            //         dispatch(updateCarPackage({ formData: apiCall.payload }));
+            //     } else if (apiCall.type === "removeAllPrices" || apiCall.type === "updatePrices") {
+            //         dispatch(updateCarPrices({ formData: apiCall.payload }))
+            //     }
+            // }
+
+            // setSubmitting(false);
+            // toast.success("Car details processed successfully");
             // carDetailsClose();
+            try {
+                for (const apiCall of apiCalls) {
+                    if (apiCall.type === "updateCars") {
+                        await dispatch(updateCarPackage({ formData: apiCall.payload })).unwrap();
+                    } else if (apiCall.type === "removeAllPrices" || apiCall.type === "updatePrices") {
+                        await dispatch(updateCarPrices({ formData: apiCall.payload })).unwrap();
+                    }
+                }
+                setSubmitting(false);
+                toast.success("Car details processed successfully");
+                carDetailsClose();
+            } catch (err) {
+                setSubmitting(false);
+                toast.error("Something went wrong while processing car details");
+                console.error("API error:", err);
+            }
         } catch (error) {
             setSubmitting(false);
             console.error("Error processing car details:", error);
             toast.error("Failed to process car details");
         }
     };
-    
-    
+
+
 
     return (
         <section className="p-4 min-h-full">
@@ -287,13 +307,6 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                     {/* Header Row */}
                     <div className="flex justify-between items-center mb-3">
                         <b className="text-gray-800">Car #{idx + 1}</b>
-                        <button
-                            type="button"
-                            onClick={() => removeCar(idx)}
-                            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                        >
-                            Remove Car
-                        </button>
                     </div>
 
                     {/* Car Fields */}
@@ -384,7 +397,7 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                         {car.prices.map((p, pIdx) => (
                             <div
                                 key={pIdx}
-                                className={`grid grid-cols-1 gap-3 items-end mb-3 ${removedAllPrices ? "md:grid-cols-4" : "md:grid-cols-3"}`}
+                                className={`grid grid-cols-1 gap-3 items-end mb-3 ${removedAllPrices.includes(idx) ? "md:grid-cols-4" : "md:grid-cols-3"}`}
                             >
                                 <label className="flex flex-col">
                                     <span className="font-medium mb-1">Start Month*</span>
@@ -438,7 +451,7 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                                 <button
                                     type="button"
                                     onClick={() => removePrice(idx, pIdx)}
-                                    className={`bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 ${!removedAllPrices ? "hidden" : "block"}`}
+                                    className={`bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 ${removedAllPrices.includes(idx) ? "block" : "hidden"}`}
                                 >
                                     Remove
                                 </button>
@@ -446,11 +459,11 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
                         ))}
 
                         {/* Remove All Prices button */}
-                        <div className="flex gap-3 mt-3">
+                        <div style={{ marginTop: "1vh" }} className="flex gap-3 mt-3">
                             <button
                                 type="button"
                                 onClick={() => addPrice(idx)}
-                                className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${!removedAllPrices ? "hidden" : "block"}`}
+                                className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${removedAllPrices.includes(idx) ? "block" : "hidden"}`}
                             >
                                 Add Price
                             </button>
@@ -472,15 +485,6 @@ const CarDetails = ({ carPackageDetails, carDetailsClose }) => {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 mt-6">
-
-                <button
-                    type="button"
-                    onClick={addCar}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                >
-                    Add Car
-                </button>
-
                 <button
                     type="button"
                     onClick={handleSubmit}
