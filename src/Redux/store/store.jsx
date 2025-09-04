@@ -9,6 +9,7 @@ import paymentReducer from './paymentSlice'
 import analyticsReducer from './analyticsSlice'
 import adminReducer from './adminSlices'
 import adminCarReducer from './adminCarSlice'
+import carPackageReducer from './carPackageSlice'
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     payment: paymentReducer,
     analytics: analyticsReducer,
     admin: adminReducer,
-    admincar: adminCarReducer
+    admincar: adminCarReducer,
+    carPackage:carPackageReducer
   },
 });

@@ -68,6 +68,7 @@ const Admin = lazy(() => import("../Pages/Admin"));
 const ManageHotelBooking = lazy(() => import("../Pages/AdminComponents/ManageHotelBooking"))
 const ManageCarPackage = lazy(() => import("../Pages/AdminComponents/ManageCarPackage"))
 const PaymentPage = lazy(() => import("../Pages/PaymentPage"));
+const CarPackageSearchResults = lazy(() => import("../Pages/CarPackageSearchResults"))
 
 
 
@@ -277,6 +278,12 @@ export const routes = [
     </div>
   },
   {
+    path: "/carpackagesearch",
+    element: <CarPackageSearchResults />,
+    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+  },
+
+  {
     path: "/details",
     element: <HotelDetails />,
     fallback: <div className="min-h-screen w-full bg-gray-50">
@@ -320,5 +327,5 @@ export const routes = [
     element: <PaymentPage />,
     fallback: <div>Loading Payment Page...</div>,
   },
-  
+
 ];

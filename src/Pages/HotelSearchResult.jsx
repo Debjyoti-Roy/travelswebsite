@@ -37,14 +37,6 @@ function HotelDescription({ description }) {
   return (
     <p className="hidden lg:block text-gray-500 text-md pt-2">
       {displayedText}
-      {/* {shouldTruncate && (
-        <button
-          onClick={toggleDescription}
-          className="text-blue-600 font-medium ml-1 focus:outline-none"
-        >
-          {isExpanded ? "Show less" : "Show more"}
-        </button>
-      )} */}
     </p>)
 }
 
@@ -365,7 +357,6 @@ const HotelSearchResult = () => {
       requiredRoomCount: state.rooms,
       page,
       size: 10,
-      // Add filter parameters
       minPrice: appliedFilters.priceRange.min,
       maxPrice: appliedFilters.priceRange.max,
       tags: appliedFilters.selectedTags,
@@ -464,55 +455,34 @@ const HotelSearchResult = () => {
 
   return (
     <div className="max-w-screen overflow-x-hidden">
-      {/* <div ref={topRef} className="md:hidden fixed left-0 right-0 bg-white border-t border-gray-200 z-40">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
+      <div
+        ref={topRef}
+        className="md:hidden fixed left-0 bg-white border-t border-gray-200 z-40 min-w-screen overflow-x-hidden"
+      >
+        <div className="flex items-center justify-between px-4 py-3 w-full">
+          <div className="flex items-center gap-2 flex-shrink">
             <FaFilter className="text-blue-600" />
             <span className="text-sm font-medium text-gray-700">Filters</span>
-            {(appliedFilters.selectedTags.length > 0 || appliedFilters.selectedAmenities.length > 0 ||
-              appliedFilters.priceRange.min > 0 || appliedFilters.priceRange.max < 10000) && (
+            {(appliedFilters.selectedTags.length > 0 ||
+              appliedFilters.selectedAmenities.length > 0 ||
+              appliedFilters.priceRange.min > 0 ||
+              appliedFilters.priceRange.max < 10000) && (
                 <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {(appliedFilters.selectedTags.length + appliedFilters.selectedAmenities.length +
-                    (appliedFilters.priceRange.min > 0 ? 1 : 0) + (appliedFilters.priceRange.max < 10000 ? 1 : 0))}
+                  {appliedFilters.selectedTags.length +
+                    appliedFilters.selectedAmenities.length +
+                    (appliedFilters.priceRange.min > 0 ? 1 : 0) +
+                    (appliedFilters.priceRange.max < 10000 ? 1 : 0)}
                 </span>
               )}
           </div>
           <button
             onClick={() => setIsMobileFilterOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition flex-shrink-0"
           >
             <FaChevronDown />
           </button>
         </div>
-      </div> */}
-      <div
-  ref={topRef}
-  className="md:hidden fixed left-0 bg-white border-t border-gray-200 z-40 min-w-screen overflow-x-hidden"
->
-  <div className="flex items-center justify-between px-4 py-3 w-full">
-    <div className="flex items-center gap-2 flex-shrink">
-      <FaFilter className="text-blue-600" />
-      <span className="text-sm font-medium text-gray-700">Filters</span>
-      {(appliedFilters.selectedTags.length > 0 ||
-        appliedFilters.selectedAmenities.length > 0 ||
-        appliedFilters.priceRange.min > 0 ||
-        appliedFilters.priceRange.max < 10000) && (
-        <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-          {appliedFilters.selectedTags.length +
-            appliedFilters.selectedAmenities.length +
-            (appliedFilters.priceRange.min > 0 ? 1 : 0) +
-            (appliedFilters.priceRange.max < 10000 ? 1 : 0)}
-        </span>
-      )}
-    </div>
-    <button
-      onClick={() => setIsMobileFilterOpen(true)}
-      className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition flex-shrink-0"
-    >
-      <FaChevronDown />
-    </button>
-  </div>
-</div>
+      </div>
 
       {/* Search Container */}
       <div ref={topRef} className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>

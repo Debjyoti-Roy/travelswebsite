@@ -11,6 +11,7 @@ import AddCar from './DetailsPageComponents/AddCar';
 import { useDispatch } from 'react-redux';
 import { deregisterCar } from '../../Redux/store/adminCarSlice';
 import toast from 'react-hot-toast';
+import { IoMdAddCircleOutline } from "react-icons/io";
 const MONTHS = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -59,7 +60,7 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                     <div className="flex justify-end mb-4">
                         <button
                             onClick={() => setBasic(true)}
-                            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                         >
                             <FaEdit className="text-sm" />
                             Edit Basic Details
@@ -119,19 +120,19 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                     <div style={{ marginTop: "2vh" }} className="mb-6">
                         <div style={{ marginBottom: '1vh' }} className="flex justify-between items-center mb-2">
                             <h4 className="font-semibold text-lg">Available Cars</h4>
-                            <div className='flex gap-2'>
+                            <div className='flex gap-3'>
                                 <button
                                     onClick={() => setAddCar(true)}
-                                    className="flex items-center gap-2 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors text-sm"
+                                    className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 transition-colors text-base"
                                 >
-                                    <FaAddressCard className="text-xs" />
+                                    <IoMdAddCircleOutline className="text-lg" />
                                     Add Cars
                                 </button>
                                 <button
                                     onClick={() => setCarDetails(true)}
-                                    className="flex items-center gap-2 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors text-sm"
+                                    className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 transition-colors text-base"
                                 >
-                                    <FaEdit className="text-xs" />
+                                    <FaEdit className="text-sm" />
                                     Edit Cars
                                 </button>
                             </div>
@@ -153,7 +154,6 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
              bg-red-500 text-white text-xs font-medium rounded-md 
              hover:bg-red-600 shadow-sm"
                                 >
-
                                     Deregister
                                 </button>
 
@@ -178,15 +178,16 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                 {/*ITENARIES START*/}
                 {carPackageDetails?.itineraries?.length > 0 && (
                     <div style={{ marginTop: "2vh" }} className="mb-6">
-                        <div className="flex justify-between items-center mb-2">
+                        <div style={{ marginBottom: "1vh" }} className="flex justify-between items-center mb-2">
                             <h4 className="font-semibold text-lg"> Itinerary</h4>
                             <button
                                 onClick={() => setItenary(true)}
-                                className="flex items-center gap-2 bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-purple-600 transition-colors text-sm"
+                                className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-purple-600 transition-colors text-base"
                             >
-                                <FaEdit className="text-xs" />
+                                <FaEdit className="text-sm" />
                                 Edit Itineraries
                             </button>
+
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             {carPackageDetails.itineraries.map((it) => (

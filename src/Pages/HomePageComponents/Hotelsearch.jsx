@@ -110,7 +110,6 @@ const Hotelsearch = () => {
       return
     }
     const total = adults + children
-    console.log(total)
     const myData = {
       location: location,
       startDate: formattedDate(startDate),

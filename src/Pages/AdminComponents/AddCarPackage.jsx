@@ -354,6 +354,34 @@ const AddCarPackage = ({ setTabRef }) => {
             .then((res) => {
                 setSubmitting(false)
                 toast.success("Car package added successfully");
+                setBasic({
+                    title: '',
+                    description: '',
+                    durationDays: '',
+                    thumbnailFile: null,
+                    thumbnailPreview: '',
+                    pickupLocation: '',
+                    dropLocation: '',
+                    destinationName: '',
+                    destinationState: '',
+                    includedFeatures: [''],
+                    excludedFeatures: [''],
+                })
+                setItineraries([
+                    { title: '', description: '', imageFile: null, imagePreview: '' }
+                ])
+                setCarDetails([
+                    {
+                        carType: '',
+                        carName: '',
+                        capacity: '',
+                        luggageCapacity: '',
+                        acAvailable: 'YES',
+                        notes: '',
+                        prices: [{ startMonth: '', endMonth: '', price: '' }],
+                    }
+                ])
+                setTab(0)
             })
             .catch(async (err) => {
                 setSubmitting(false)
@@ -556,15 +584,15 @@ const AddCarPackage = ({ setTabRef }) => {
                                     >
                                         Remove
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => addFeature("includedFeatures")}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                                    >
-                                        Add more
-                                    </button>
                                 </div>
                             ))}
+                            <button
+                                type="button"
+                                onClick={() => addFeature("includedFeatures")}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                Add more
+                            </button>
                         </div>
 
                         {/* Excluded Features */}
@@ -589,15 +617,15 @@ const AddCarPackage = ({ setTabRef }) => {
                                         Remove
                                     </button>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => addFeature("excludedFeatures")}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                                    >
-                                        Add more
-                                    </button>
                                 </div>
                             ))}
+                            <button
+                                type="button"
+                                onClick={() => addFeature("excludedFeatures")}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                Add more
+                            </button>
                         </div>
 
                         {/* Navigation Buttons */}
@@ -852,7 +880,7 @@ const AddCarPackage = ({ setTabRef }) => {
                                     {car.prices.map((p, pIdx) => (
                                         <div
                                             key={pIdx}
-                                            className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end mb-3"
+                                            className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end mb-3"
                                         >
                                             <label className="flex flex-col">
                                                 <span className="font-medium mb-1">Start Month*</span>
@@ -911,15 +939,25 @@ const AddCarPackage = ({ setTabRef }) => {
                                             </button>
 
 
-                                            <button
-                                                type="button"
-                                                onClick={() => addPrice(idx)}
-                                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                                            >
-                                                Add Price
-                                            </button>
                                         </div>
                                     ))}
+                                    {(() => {
+    const lastPrice = car.prices[car.prices.length - 1];
+    const endMonth = String(lastPrice?.endMonth).toLowerCase();
+    if (endMonth !== "12" && endMonth !== "december") {
+      return (
+        <button
+          type="button"
+          style={{ marginTop: "1vh" }}
+          onClick={() => addPrice(idx)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
+          Add Price
+        </button>
+      );
+    }
+    return null;
+  })()}
                                 </div>
                             </div>
                         ))}
@@ -929,7 +967,7 @@ const AddCarPackage = ({ setTabRef }) => {
                             <button
                                 type="button"
                                 onClick={goPrev}
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                                className="cursor-pointer bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
                             >
                                 ← Back
                             </button>
@@ -937,7 +975,7 @@ const AddCarPackage = ({ setTabRef }) => {
                             <button
                                 type="button"
                                 onClick={addCar}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                                className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                             >
                                 Add Car
                             </button>
@@ -953,7 +991,7 @@ const AddCarPackage = ({ setTabRef }) => {
                                         ? "Complete required fields"
                                         : ""
                                 }
-                                className={`px-4 py-2 rounded-lg text-white transition ${submitting
+                                className={`cursor-pointer px-4 py-2 rounded-lg text-white transition ${submitting
                                     ? "bg-gray-400 cursor-not-allowed"
                                     : basicValid && itinerariesValid && carDetailsValid
                                         ? "bg-green-500 hover:bg-green-600"
