@@ -178,12 +178,7 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
     onApplyFilters(currentFilters);
   }, [priceRange, selectedTags, selectedAmenities, priceSort, onApplyFilters]);
 
-  useEffect(() => {
-    console.log(activeThumb)
-  }, [activeThumb])
-  useEffect(() => {
-    console.log(activeThumb2)
-  }, [activeThumb2])
+  
 
   // Global mouse up listener to reset active thumb
   useEffect(() => {
@@ -780,30 +775,8 @@ const HotelSearchResult = () => {
 
                           {/* Skeleton Overlay */}
                           {!loadedImages[hotel.id] && (
-                            // <div className="absolute inset-0 z-10">
-                            //   <div className="flex items-center bg-white rounded-2xl shadow-lg w-full h-full p-4 gap-4">
-                            //     <Skeleton
-                            //       variant="rectangular"
-                            //       animation="wave"
-                            //       width="30%"
-                            //       height="95%"
-                            //       className="rounded-lg"
-                            //     />
-                            //     <div className="flex-1 flex flex-col gap-2">
-                            //       <Skeleton animation="wave" variant="text" width="60%" height={32} />
-                            //       <Skeleton animation="wave" variant="text" width="40%" height={24} />
-                            //       <Skeleton animation="wave" variant="text" width="80%" height={24} />
-                            //       <Skeleton animation="wave" variant="text" width="90%" height={60} />
-                            //       <div className="flex justify-between items-center pt-4">
-                            //         <Skeleton animation="wave" variant="text" width="30%" height={28} />
-                            //         <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
-                            //       </div>
-                            //     </div>
-                            //   </div>
-                            // </div>
                             <div className="absolute inset-0 z-10">
                               <div
-
                                 className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
                               >
                                 {/* Image skeleton */}

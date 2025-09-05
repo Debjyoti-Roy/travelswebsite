@@ -26,14 +26,33 @@ export const getDestinations = createAsyncThunk(
 // Async thunk - Get Packages
 export const getPackages = createAsyncThunk(
     "public/get-packages",
-    async ({ area, month }, { rejectWithValue }) => {
+    async ({ area, month, duration, catTypes }, { rejectWithValue }) => {
         try {
+            // base mandatory params
+            const params = {
+                area,
+                //   duration,
+                month,
+            };
+
+            // only add carTypes if length > 0
+            if (Array.isArray(catTypes) && catTypes.length > 0) {
+                params.carTypes = catTypes.map((type) =>
+                    type.replace(/\s+/g, "_")
+                );
+            }
+            // const d = Number(duration);
+            // if (!isNaN(d) && d >= 1) {
+            //     params.duration = d;
+            // }
+
             const response = await api.get(`/v1/public/search/car-package`, {
-                params: { area, month },
+                params,
                 headers: {
                     "ngrok-skip-browser-warning": "xyz",
                 },
             });
+
             return {
                 data: response.data,
                 status: response.status,
@@ -45,6 +64,7 @@ export const getPackages = createAsyncThunk(
         }
     }
 );
+
 
 // Slice
 const carPackageSlice = createSlice({

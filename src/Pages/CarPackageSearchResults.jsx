@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { getPackages } from '../Redux/store/carPackageSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getDestinations, getPackages } from '../Redux/store/carPackageSlice';
 import DatePicker from 'react-datepicker';
-import { FaCalendar } from 'react-icons/fa';
+import { FaBolt, FaCalendar, FaCar, FaChair, FaConciergeBell, FaFire, FaFirstAid, FaHamburger, FaMapPin, FaSuitcase, FaThermometerHalf, FaTint, FaUserTie, FaUtensils, FaVideo, FaWater, FaWifi } from 'react-icons/fa';
+import { duration, Skeleton, Slider } from '@mui/material';
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
     <div
@@ -37,141 +38,115 @@ function packageDescription({ description }) {
         </p>)
 }
 
-const FilterSection = React.memo(() => {
-    // Filter states
+const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilters }) => {
 
-
-    // Available tags
-    const availableTags = [
-        "Child Friendly",
-        "Pet Friendly",
-        "Group Friendly",
-        "Solo Traveler Friendly",
-        "Senior Citizen Friendly",
-        "Family Friendly",
-        "Couple Friendly",
-        "Backpackers"
+    // Car types
+    const carTypes = [
+        "HATCHBACK",
+        "SEDAN",
+        "SUV",
+        "TEMPO TRAVELLER",
+        "MINI BUS",
     ];
 
-    // Available amenities with icons
-    const availableAmenities = [
-        { name: "Water Purifier", icon: FaWater },
-        { name: "Seating Area", icon: FaChair },
-        { name: "Bonfire Facility", icon: FaFire },
-        { name: "Wi-Fi", icon: FaWifi },
-        { name: "Room Heater", icon: FaThermometerHalf },
-        { name: "Hot Water", icon: FaTint },
-        { name: "CCTV Surveillance", icon: FaVideo },
-        { name: "First Aid Kit", icon: FaFirstAid },
-        { name: "Luggage Storage", icon: FaSuitcase },
-        { name: "Reception", icon: FaConciergeBell },
-        { name: "Caretaker on Site", icon: FaUserTie },
-        { name: "Laundry Service", icon: FaHamburger },
-        { name: "Parking Facility", icon: FaCar },
-        { name: "Power Backup", icon: FaBolt },
-        { name: "Room Service", icon: FaUtensils },
-        { name: "On-site Restaurant / Kitchen", icon: FaUtensils }
-    ];
+    // States
+    const [selectedCarTypes, setSelectedCarTypes] = useState(initialFilters.selectedCars||[]);
+    const [duration, setDuration] = useState(initialFilters.selectedDuration||1);
 
+    
+    useEffect(() => {
+        onFilterChange({
+          selectedCarTypes,
+          duration
+        });
+      }, [selectedCarTypes, duration, onFilterChange]);
+      
+      // Handlers (only update local state)
+      const handleCarTypeToggle = useCallback((type) => {
+        setSelectedCarTypes((prev) =>
+          prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+        );
+      }, []);
+      
+      const handleDurationChange = useCallback((change) => {
+        setDuration((prev) => Math.max(1, prev + change));
+      }, []);
+    const clearFilters = () => {
+        setSelectedCarTypes([]);
+        setDuration(1);
+    };
 
+    const handleApplyFilters=useCallback(()=>{
+        const currentFilters={
+            selectedCarTypes,
+            duration
+        }
+        onApplyFilters(currentFilters)
+    },[selectedCarTypes, duration, onApplyFilters])
 
     return (
         <div className="bg-white min-h-screen rounded-2xl p-6 md:border md:border-gray-200">
+            {/* Header */}
             <div className="flex justify-between items-center pb-4">
                 <h2 className="text-xl font-bold text-gray-800">Filters</h2>
                 <button
-                    // onClick={clearFilters}
+                    onClick={clearFilters}
                     className="text-sm font-semibold text-blue-500 hover:text-blue-700 transition duration-150"
                 >
                     Clear All
                 </button>
             </div>
 
-            <div
-                style={{
-                    marginBottom: isMobile ? "50px" : 0,
-                }}
-                className="space-y-8"
-            >
-                {/* Price Range */}
-                <div>
-                    <h3 className="text-md font-semibold text-gray-700 mb-3">Price Range</h3>
-                    <div className="space-y-4">
-                        <div className="flex justify-between text-sm text-gray-600">
-                            <span>₹{priceRange.min.toLocaleString()}</span>
-                            <span>₹{priceRange.max.toLocaleString()}</span>
-                        </div>
-                        <div className="px-2">
-                            <Slider
-                                value={[priceRange.min, priceRange.max]}
-                                min={0}
-                                max={20000}
-                                step={500}
-                                //   onChange={(_, newValue) => {
-                                //     // newValue is [min, max]
-                                //     handlePriceRangeChange('min', newValue[0]);
-                                //     handlePriceRangeChange('max', newValue[1]);
-                                //   }}
-                                valueLabelDisplay="auto"
-                                getAriaLabel={() => 'Price range'}
-                                marks={[
-                                    { value: 0, label: '₹0' },
-                                    { value: 20000, label: '₹20,000' }
-                                ]}
-                                sx={{
-                                    color: '#2563eb', // Tailwind blue-600
-                                    height: 6,
-                                    '& .MuiSlider-thumb': {
-                                        borderRadius: '50%',
-                                    },
-                                }}
-                            />
-                        </div>
+            <div className="space-y-8">
+                {/* Duration */}
+                <div style={{ marginBottom: "15px" }}>
+                    <h3 className="text-md font-semibold text-gray-700 mb-3">Duration</h3>
+                    <div style={{ marginTop: '7px' }} className="flex items-center justify-between w-48">
+                        <button
+                            onClick={() => handleDurationChange(-1)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                        >
+                            –
+                        </button>
+                        <span className="text-lg font-semibold text-gray-800 text-center flex-1">
+                            {duration} Day{duration > 1 ? "s" : ""}
+                        </span>
+                        <button
+                            onClick={() => handleDurationChange(1)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                        >
+                            +
+                        </button>
                     </div>
                 </div>
-
-                {/* Tags */}
+                {/* Car Types */}
                 <div>
-                    <h3 className="text-md font-semibold text-gray-700 mb-3">Traveler Types</h3>
-                    <div className="flex flex-wrap gap-3">
-                        {availableTags.map((tag) => (
-                            <label key={tag} className="inline-flex items-center gap-2 cursor-pointer text-sm">
+                    <h3 className="text-md font-semibold text-gray-700 mb-3">Car Type</h3>
+                    <div className="flex flex-col gap-3">
+                        {carTypes.map((type) => (
+                            <label
+                                key={type}
+                                className="inline-flex items-center gap-2 cursor-pointer text-sm"
+                            >
                                 <input
                                     type="checkbox"
-                                    checked={selectedTags.includes(tag)}
-                                    onChange={() => handleTagToggle(tag)}
+                                    checked={selectedCarTypes.includes(type)}
+                                    onChange={() => handleCarTypeToggle(type)}
                                     className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                 />
-                                <span className="text-gray-700">{tag}</span>
+                                <span className="text-gray-700">{type}</span>
                             </label>
                         ))}
                     </div>
                 </div>
 
-                {/* Amenities */}
-                <div style={{ marginTop: "10px" }}>
-                    <h3 className="text-md font-semibold text-gray-700 mb-3">Amenities</h3>
-                    <div className="flex flex-col gap-2">
-                        {availableAmenities.map((amenity) => (
-                            <label key={amenity.name} className="flex items-center gap-2 cursor-pointer text-sm">
-                                <input
-                                    type="checkbox"
-                                    // checked={selectedAmenities.includes(amenity.name)}
-                                    // onChange={() => handleAmenityToggle(amenity.name)}
-                                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">{amenity.name}</span>
-                            </label>
-                        ))}
-                    </div>
-                </div>
 
 
 
                 {/* Apply Button */}
-                <div className='pt-5'>
+                <div className="pt-5">
                     <button
-                        //   onClick={handleApplyFilters}
+                        onClick={handleApplyFilters}
                         className="w-full py-3 px-4 mt-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:scale-[1.01] transition duration-200"
                     >
                         Apply Filters
@@ -179,7 +154,6 @@ const FilterSection = React.memo(() => {
                 </div>
             </div>
         </div>
-
     );
 });
 
@@ -188,86 +162,405 @@ const monthNames = [
     "July", "August", "September", "October", "November", "December"
 ];
 
+const parseDate = (str) => {
+    if (!str) return null;
+    const [day, month, year] = str.split("-");
+    return new Date(`${year}-${month}-${day}`);
+};
+
 const CarPackageSearchResults = () => {
     const location = useLocation();
     const { state } = location;
     const dispatch = useDispatch()
+    const [dest, setDest] = useState([])
+    const [date, setDate] = useState(parseDate(state.travelDate));
+    const [loc, setLoc] = useState(state.location)
+    const [suggestions, setSuggestions] = useState([]);
+    const [loadedImages, setLoadedImages] = useState({});
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [page, setPage] = useState(0);
+    const [priceSort, setPriceSort] = useState("");
     const { packages, packagesLoading, packagesError, packagesStatus } = useSelector((state) => state.carPackage)
-    useEffect(() => {
-        console.log(packages)
-    }, [packages])
+    const { destinations } = useSelector((state) => state.carPackage);
 
+    //filters
+    const [filters, setFilters] = useState({
+        selectedCarTypes: [],
+        duration: '1'
+    })
+    const [appliedFilters, setAppliedFilters] = useState({
+        selectedCarTypes: [],
+        duration: 1
+    })
+
+    const handleFilterChange = useCallback((newFilters) => {
+        setFilters(newFilters);
+    }, []);
+    const handleApplyFilters = useCallback((newFilters) => {
+        setAppliedFilters(newFilters);
+    }, []);
+
+    useEffect(() => {
+      console.log(appliedFilters)
+    }, [appliedFilters])
+    
+
+    const navigate = useNavigate()
     const fetchCarPackage = useCallback(() => {
         const [day, month, year] = state.travelDate.split("-");
-        dispatch(getPackages({ area: state.location, month: month }))
-    }, [dispatch, state])
+        dispatch(getPackages({ area: state.location, month: month, catTypes:appliedFilters.selectedCarTypes, duration:appliedFilters.duration }))
+    }, [dispatch, state, appliedFilters])
+
+    useEffect(() => {
+        dispatch(getDestinations());
+    }, [dispatch]);
 
     useEffect(() => {
         fetchCarPackage()
     }, [fetchCarPackage])
 
-    const [date, setDate] = useState(state.travelDate)
-    const [loc, setLoc] = useState(state.location)
-    const [loadedImages, setLoadedImages] = useState({});
+    useEffect(() => {
+        console.log(packages)
+    }, [packages])
+  
+
+    useEffect(() => {
+        if (destinations.length) {
+            const processedDestinations = [
+                ...new Set(
+                    destinations.flatMap((item) =>
+                        item.split(",").map((part) => part.trim())
+                    )
+                ),
+            ];
+            setDest(processedDestinations)
+        }
+    }, [destinations])
+
+    // const [date, setDate] = useState(state.travelDate)
+
+
 
     const handleImageLoad = (id) => {
         setLoadedImages((prev) => ({ ...prev, [id]: true }));
     };
 
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setLoc(value);
+
+        if (value.length > 0) {
+            const filtered = dest.filter((d) =>
+                d.toLowerCase().includes(value.toLowerCase())
+            );
+            setSuggestions(filtered);
+            setShowSuggestions(true);
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    };
+
+    const handleSuggestionClick = (value) => {
+        setLoc(value);
+        setShowSuggestions(false);
+    };
+
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
+    const handleSearch = () => {
+        const data = {
+            location: loc,
+            travelDate: formatDate(date)
+        }
+        window.location.reload();
+        navigate(".", { state: data });
+    }
+
 
     return (
-        <div className="max-w-screen overflow-x-hidden">
+        <div className="min-h-screen overflow-x-hidden">
             <div className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>
-        {/* Banner */}
-        <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
+                {/* Banner */}
+                <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
 
-        </div>
-
-        <div className="flex flex-col md:flex-row lg:w-[70%] w-full md:justify-center px-6 lg:px-0 pt-20 md:pt-4 gap-6 absolute top-[-5vh] md:top-[0vh] z-10">
-          <div className="package-search-container w-full pt-10 md:pt-0">
-            <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative">
-              {/* Decorative background elements */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-transparent rounded-full opacity-20 -translate-y-12 translate-x-12"></div>
-              <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-200 to-transparent rounded-full opacity-20 translate-y-10 -translate-x-10"></div>
-
-              <div className="flex flex-col md:flex-row pr-0 gap-[10px] w-full md:px-2 relative z-10">
-                <div className="flex-[1.5] w-full">
-                  <label className="block text-sm font-medium mb-1 flex pb-1 text-gray-700 flex items-center gap-2">
-                    {/* <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div> */}
-                    Dates
-                  </label>
-                  <div className="relative">
-                  <DatePicker
-                selected={date}
-                onChange={(date) => setDate(date)}
-                minDate={new Date()}
-                isClearable
-                placeholderText="Select Date"
-                customInput={<CustomDateInput />}
-                popperPlacement="bottom-start"
-                popperClassName="custom-datepicker"
-                className="w-full"
-              />
-                  </div>
                 </div>
 
-                
+                <div className="flex flex-col md:flex-row lg:w-[70%] w-full md:justify-center px-6 lg:px-0 pt-20 md:pt-4 gap-6 absolute top-[-5vh] md:top-[0vh] z-10">
+                    <div className="package-search-container w-full pt-10 md:pt-0">
+                        <div className="bg-white rounded-2xl p-6 border border-blue-100 backdrop-blur-sm relative">
+                            {/* Decorative background elements */}
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200 to-transparent rounded-full opacity-20 -translate-y-12 translate-x-12"></div>
+                            <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-200 to-transparent rounded-full opacity-20 translate-y-10 -translate-x-10"></div>
 
-                <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
-                  <button
-                    // onClick={handleSearch}
-                    className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
+                            <div className="flex flex-col md:flex-row pr-0 gap-[10px] w-full md:px-2 relative z-10">
+                                <div className="flex-1 w-full relative">
+                                    <label className="block flex pb-1 text-sm font-medium mb-1">Destination</label>
+                                    <div className="relative">
+                                        <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
+                                        <input
+                                            type="text"
+                                            value={loc}
+                                            onChange={handleInputChange}
+                                            onFocus={() => loc && setShowSuggestions(true)}
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Enter Destination"
+                                        />
+                                        {showSuggestions && suggestions.length > 0 && (
+                                            <ul className="absolute z-10 bg-white border border-gray-200 rounded-xl mt-1 w-full max-h-40 overflow-y-auto shadow-lg">
+                                                {suggestions.map((s, index) => (
+                                                    <li
+                                                        key={index}
+                                                        onClick={() => handleSuggestionClick(s)}
+                                                        className="px-4 py-2 cursor-pointer hover:bg-blue-100 text-left"
+                                                    >
+                                                        {s}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex-1 w-full">
+                                    <label className="block text-sm font-medium mb-1 flex pb-1 text-gray-700 flex items-center gap-2">
+                                        {/* <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div> */}
+                                        Dates
+                                    </label>
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={date}
+                                            onChange={(date) => setDate(date)}
+                                            minDate={new Date()}
+                                            isClearable
+                                            placeholderText="Select Date"
+                                            customInput={<CustomDateInput />}
+                                            popperPlacement="bottom-start"
+                                            popperClassName="custom-datepicker"
+                                            className="w-full"
+                                        />
+                                    </div>
+                                </div>
+
+
+
+                                <div className="flex flex-col justify-end w-full md:w-auto self-stretch pb-[2px]">
+                                    <button
+                                        onClick={handleSearch}
+                                        className="bg-blue-600 w-full md:w-auto justify-center cursor-pointer
       text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
-                  >
-                    Search
-                  </button>
+                                    >
+                                        Search
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className='w-full bg-[#f2f2f2] flex justify-center pt-50 md:pt-10'>
+                <div className='flex flex-col md:flex-row lg:w-[70%] w-full  md:justify-center px-6 lg:px-2 py-0 md:py-6 gap-6 min-h-screen'>
+                    <div className="hidden md:block md:w-1/3 ">
+                        <FilterSection
+                            onFilterChange={handleFilterChange}
+                            onApplyFilters={handleApplyFilters}
+                            initialFilters={filters}
+                        />
+                    </div>
+                    <div className="w-full flex flex-col h-full md:min-h-screen pt-5 md:pt-0">
+                        <div className="w-full flex justify-between flex-col md:flex-row items-center pb-4">
+                            <div className="text-2xl font-bold text-center md:text-left pb-2 md:pb-0">
+                                Showing Car Packages in {state.location}
+                            </div>
+
+                            <div className="flex justify-center gap-2 items-center">
+                                <label
+                                    htmlFor="priceSort"
+                                    className="text-sm font-medium text-gray-700"
+                                >
+                                    Sort by price:
+                                </label>
+                                <select
+                                    id="priceSort"
+                                    value={priceSort}
+                                    onChange={(e) => setPriceSort(e.target.value)}
+                                    className="w-40 px-3 py-2 border border-gray-300 rounded-md text-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 hover:border-blue-400"
+                                >
+                                    <option value="">Select</option>
+                                    <option value="lowToHigh">Low to High</option>
+                                    <option value="highToLow">High to Low</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        {(packagesLoading) && (
+                            <div className="w-full flex flex-col gap-6 mb-6">
+                                {[...Array(3)].map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
+                                    >
+                                        {/* Image skeleton */}
+                                        <div className="w-full md:w-[30%] h-[200px] md:h-full bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                            <Skeleton
+                                                variant="rectangular"
+                                                animation="wave"
+                                                width="100%"
+                                                height="100%"
+                                                className="rounded-lg"
+                                            />
+                                        </div>
+
+                                        {/* Content skeleton */}
+                                        <div className="flex-1 flex flex-col justify-between h-auto md:h-[80%] px-0 md:px-4 w-full gap-2">
+                                            <div className="flex flex-row justify-between md:items-start gap-2">
+                                                <Skeleton animation="wave" variant="text" width="60%" height={28} />
+                                                <Skeleton animation="wave" variant="rectangular" width={80} height={24} className="rounded-full" />
+                                            </div>
+
+                                            <Skeleton animation="wave" variant="text" width="50%" height={20} />
+                                            <Skeleton animation="wave" variant="text" width="80%" height={20} />
+                                            <Skeleton animation="wave" variant="text" width="90%" height={48} />
+
+                                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4">
+                                                <Skeleton animation="wave" variant="text" width="30%" height={24} />
+                                                <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                ))}
+                            </div>
+                        )}
+                        {packagesError && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {packagesError}</div>}
+                        {packages && !packagesLoading && !packagesError && (
+                            <>
+                                {packages.length > 0 ? (
+                                    <div className="w-full flex-1 gap-6 mb-6">
+                                        {[...packages]
+                                            .sort((a, b) => {
+                                                if (priceSort === "lowToHigh") {
+                                                    return a.price - b.price; // normal order
+                                                }
+                                                if (priceSort === "highToLow") {
+                                                    return b.price - a.price; // reverse order
+                                                }
+                                                return 0;
+                                            })
+                                            .map((pkg) => (
+                                                <div
+                                                    key={pkg.id}
+                                                    style={{ marginBottom: "10px" }}
+                                                    className="relative mb-6 "
+                                                >
+                                                    <div className={`transition-opacity duration-300 ${loadedImages[pkg.id] ? "opacity-100" : "opacity-0"
+                                                        }`}>
+                                                        <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4">
+
+                                                            {/* Image */}
+                                                            <div className="w-full md:w-[30%] h-[200px] md:h-full bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                                <img
+                                                                    src={pkg.thumbnailUrl}
+                                                                    alt={pkg.title}
+                                                                    onLoad={() => handleImageLoad(pkg.id)}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+
+                                                            {/* Content */}
+                                                            <div className="flex-1 flex flex-col justify-between h-auto md:h-[80%] px-0 md:px-4 w-full">
+                                                                <div className="flex flex-row justify-between md:items-start gap-2">
+                                                                    <h3 className="text-lg md:text-2xl font-bold text-gray-800">
+                                                                        {pkg.title}
+                                                                    </h3>
+                                                                    <span className="bg-green-100 text-green-700 text-xs md:text-sm font-semibold px-2 md:px-3 py-1 rounded-full">
+                                                                        Available
+                                                                    </span>
+                                                                </div>
+
+                                                                <p className="text-gray-600 text-sm md:text-base mt-2">
+                                                                    {pkg.description}
+                                                                </p>
+
+                                                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4">
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-gray-500 text-xs md:text-sm font-normal mb-1">
+                                                                            Starting from
+                                                                        </span>
+                                                                        <div className="text-lg md:text-xl font-bold text-blue-700">
+                                                                            ₹{pkg.price}
+                                                                            <span className="text-gray-500 text-xs md:text-sm font-normal">
+                                                                                {" "}
+                                                                                / {pkg.durationDays} Days - {pkg.durationDays - 1} Nights
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <button
+                                                                        className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-xs md:text-sm font-semibold hover:bg-blue-700 transition"
+                                                                    >
+                                                                        Book Now
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {!loadedImages[pkg.id] && (
+                                                        <div className="absolute inset-0 z-10">
+                                                            <div
+                                                                className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-2xl shadow-lg overflow-hidden w-full h-auto md:h-60 p-4 gap-4"
+                                                            >
+                                                                {/* Image skeleton */}
+                                                                <div className="w-full md:w-[30%] h-[200px] md:h-full bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                                    <Skeleton
+                                                                        variant="rectangular"
+                                                                        animation="wave"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        className="rounded-lg"
+                                                                    />
+                                                                </div>
+
+                                                                {/* Content skeleton */}
+                                                                <div className="flex-1 flex flex-col justify-between h-auto md:h-[80%] px-0 md:px-4 w-full gap-2">
+                                                                    <div className="flex flex-row justify-between md:items-start gap-2">
+                                                                        <Skeleton animation="wave" variant="text" width="60%" height={28} />
+                                                                        <Skeleton animation="wave" variant="rectangular" width={80} height={24} className="rounded-full" />
+                                                                    </div>
+
+                                                                    <Skeleton animation="wave" variant="text" width="50%" height={20} />
+                                                                    <Skeleton animation="wave" variant="text" width="80%" height={20} />
+                                                                    <Skeleton animation="wave" variant="text" width="90%" height={48} />
+
+                                                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4">
+                                                                        <Skeleton animation="wave" variant="text" width="30%" height={24} />
+                                                                        <Skeleton animation="wave" variant="rectangular" width={100} height={36} className="rounded-full" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    )}
+                                                </div>
+                                            ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center text-gray-500 font-semibold text-lg py-10">
+                                        No packages available.
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
 
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
         </div>
     )
 }
