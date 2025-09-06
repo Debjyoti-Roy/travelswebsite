@@ -854,16 +854,7 @@ const HotelDetails = () => {
     return hotel.rooms.filter(room => room.pricePerNight <= currentState.startingPrice);
   }, [hotel, currentState]);
 
-  // const allocatedRooms = useMemo(() => {
-  //   if (!filteredRooms || !totalPeople) return [];
-  //   // return allocateRooms_func(filteredRooms, totalPeople);
-  //   console.log(filteredRooms)
-  //   const allocation = allocateRooms_func(filteredRooms, totalPeople)
-
-  //   if (allocation === null) {
-  //     return allocateRooms_func(hotel.rooms, totalPeople)
-  //   } else { return allocation; }
-  // }, [filteredRooms, totalPeople]);
+  
   const allocatedRooms = useMemo(() => {
     if (!filteredRooms || !totalPeople) return [];
 
@@ -879,11 +870,7 @@ const HotelDetails = () => {
     return <div className="min-h-screen flex items-center justify-center">Invalid request: Missing required parameters. Please ensure you have a valid hotel ID, check-in, and check-out dates.</div>;
   }
 
-  // if (!hotel || Object.keys(hotel).length === 0) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">Loading hotel details...</div>
-  //   );
-  // }
+  
   if (!hotel || Object.keys(hotel).length === 0) {
     return (
       <div className="min-h-screen w-full bg-gray-50">

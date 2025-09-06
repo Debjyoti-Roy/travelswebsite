@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getDestinations, getPackages } from '../Redux/store/carPackageSlice';
 import DatePicker from 'react-datepicker';
-import { FaBolt, FaCalendar, FaCar, FaChair, FaConciergeBell, FaFire, FaFirstAid, FaHamburger, FaMapPin, FaSuitcase, FaThermometerHalf, FaTint, FaUserTie, FaUtensils, FaVideo, FaWater, FaWifi } from 'react-icons/fa';
+import { FaBolt, FaCalendar, FaCar, FaChair, FaChevronDown, FaConciergeBell, FaFilter, FaFire, FaFirstAid, FaHamburger, FaMapPin, FaSuitcase, FaThermometerHalf, FaTimes, FaTint, FaUserTie, FaUtensils, FaVideo, FaWater, FaWifi } from 'react-icons/fa';
 import { duration, Skeleton, Slider } from '@mui/material';
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
@@ -37,52 +37,49 @@ function packageDescription({ description }) {
             {displayedText}
         </p>)
 }
-
 const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilters }) => {
+    const carTypes = ["HATCHBACK", "SEDAN", "SUV", "TEMPO TRAVELLER", "MINI BUS"];
 
-    // Car types
-    const carTypes = [
-        "HATCHBACK",
-        "SEDAN",
-        "SUV",
-        "TEMPO TRAVELLER",
-        "MINI BUS",
-    ];
+    // Match parent filter structure
+    const [selectedCarTypes, setSelectedCarTypes] = useState(initialFilters.selectedCarTypes || []);
+    const [duration, setDuration] = useState(initialFilters.duration ?? 0); // start from 0
 
-    // States
-    const [selectedCarTypes, setSelectedCarTypes] = useState(initialFilters.selectedCars||[]);
-    const [duration, setDuration] = useState(initialFilters.selectedDuration||1);
-
-    
     useEffect(() => {
         onFilterChange({
-          selectedCarTypes,
-          duration
+            selectedCarTypes,
+            duration: duration === 0 ? null : duration, // send null if 0
         });
-      }, [selectedCarTypes, duration, onFilterChange]);
-      
-      // Handlers (only update local state)
-      const handleCarTypeToggle = useCallback((type) => {
+    }, [selectedCarTypes, duration, onFilterChange]);
+
+    const handleCarTypeToggle = useCallback((type) => {
         setSelectedCarTypes((prev) =>
-          prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+            prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
         );
-      }, []);
-      
-      const handleDurationChange = useCallback((change) => {
-        setDuration((prev) => Math.max(1, prev + change));
-      }, []);
+    }, []);
+
+    const handleDurationChange = useCallback((change) => {
+        setDuration((prev) => {
+            const current = prev ?? 0;
+            const newVal = current + change;
+            return Math.max(0, newVal); // allow 0 (Not selected)
+        });
+    }, []);
+
     const clearFilters = () => {
         setSelectedCarTypes([]);
-        setDuration(1);
+        setDuration(0);
+        onApplyFilters({
+            selectedCarTypes: [],
+            duration: null,
+        });
     };
 
-    const handleApplyFilters=useCallback(()=>{
-        const currentFilters={
+    const handleApplyFilters = useCallback(() => {
+        onApplyFilters({
             selectedCarTypes,
-            duration
-        }
-        onApplyFilters(currentFilters)
-    },[selectedCarTypes, duration, onApplyFilters])
+            duration: duration === 0 ? null : duration, // send null if 0
+        });
+    }, [selectedCarTypes, duration, onApplyFilters]);
 
     return (
         <div className="bg-white min-h-screen rounded-2xl p-6 md:border md:border-gray-200">
@@ -101,15 +98,17 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
                 {/* Duration */}
                 <div style={{ marginBottom: "15px" }}>
                     <h3 className="text-md font-semibold text-gray-700 mb-3">Duration</h3>
-                    <div style={{ marginTop: '7px' }} className="flex items-center justify-between w-48">
+                    <div style={{ marginTop: "7px" }} className="flex items-center justify-between w-48">
                         <button
                             onClick={() => handleDurationChange(-1)}
                             className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
                         >
                             –
                         </button>
-                        <span className="text-lg font-semibold text-gray-800 text-center flex-1">
-                            {duration} Day{duration > 1 ? "s" : ""}
+                        <span className="text-sm font-medium text-gray-500 text-center flex-1">
+                            {duration === 0
+                                ? "Not selected"
+                                : `${duration} Day${duration > 1 ? "s" : ""}`}
                         </span>
                         <button
                             onClick={() => handleDurationChange(1)}
@@ -119,15 +118,13 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
                         </button>
                     </div>
                 </div>
+
                 {/* Car Types */}
                 <div>
                     <h3 className="text-md font-semibold text-gray-700 mb-3">Car Type</h3>
                     <div className="flex flex-col gap-3">
                         {carTypes.map((type) => (
-                            <label
-                                key={type}
-                                className="inline-flex items-center gap-2 cursor-pointer text-sm"
-                            >
+                            <label key={type} className="inline-flex items-center gap-2 cursor-pointer text-sm">
                                 <input
                                     type="checkbox"
                                     checked={selectedCarTypes.includes(type)}
@@ -139,9 +136,6 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
                         ))}
                     </div>
                 </div>
-
-
-
 
                 {/* Apply Button */}
                 <div className="pt-5">
@@ -156,6 +150,8 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
         </div>
     );
 });
+
+
 
 const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -180,17 +176,18 @@ const CarPackageSearchResults = () => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [page, setPage] = useState(0);
     const [priceSort, setPriceSort] = useState("");
+    const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     const { packages, packagesLoading, packagesError, packagesStatus } = useSelector((state) => state.carPackage)
     const { destinations } = useSelector((state) => state.carPackage);
 
     //filters
     const [filters, setFilters] = useState({
         selectedCarTypes: [],
-        duration: '1'
+        duration: '0'
     })
     const [appliedFilters, setAppliedFilters] = useState({
         selectedCarTypes: [],
-        duration: 1
+        duration: ""
     })
 
     const handleFilterChange = useCallback((newFilters) => {
@@ -201,20 +198,30 @@ const CarPackageSearchResults = () => {
     }, []);
 
     useEffect(() => {
-      console.log(appliedFilters)
+        console.log(appliedFilters)
     }, [appliedFilters])
-    
+
 
     const navigate = useNavigate()
     const fetchCarPackage = useCallback(() => {
         const [day, month, year] = state.travelDate.split("-");
-        dispatch(getPackages({ area: state.location, month: month, catTypes:appliedFilters.selectedCarTypes, duration:appliedFilters.duration }))
-    }, [dispatch, state, appliedFilters])
-
+        dispatch(getPackages({ area: state.location, month: month }))
+    }, [dispatch, state])
+    const fetchCarPackage2 = useCallback(() => {
+        const [day, month, year] = state.travelDate.split("-");
+        const appfilters = appliedFilters.selectedCarTypes
+        if (appliedFilters.duration !== "" || appfilters.length) {
+            dispatch(getPackages({ area: state.location, month: month, catTypes: appliedFilters.selectedCarTypes, duration: appliedFilters.duration }))
+        } else {
+            dispatch(getPackages({ area: state.location, month: month }))
+        }
+    }, [appliedFilters])
     useEffect(() => {
         dispatch(getDestinations());
     }, [dispatch]);
-
+    useEffect(() => {
+        fetchCarPackage2()
+    }, [fetchCarPackage2])
     useEffect(() => {
         fetchCarPackage()
     }, [fetchCarPackage])
@@ -222,7 +229,7 @@ const CarPackageSearchResults = () => {
     useEffect(() => {
         console.log(packages)
     }, [packages])
-  
+
 
     useEffect(() => {
         if (destinations.length) {
@@ -283,9 +290,34 @@ const CarPackageSearchResults = () => {
         navigate(".", { state: data });
     }
 
+    const handleBookNow = (id) => {
+        const data = {
+            id: id,
+            travelDate:state.travelDate
+        }
+        navigate("/carpackagedetails", { state: data })
+    }
+
 
     return (
-        <div className="min-h-screen overflow-x-hidden">
+        <div className="max-w-screen overflow-x-hidden">
+            <div
+                // ref={topRef}
+                className="md:hidden fixed left-0 bg-white border-t border-gray-200 z-40 min-w-screen overflow-x-hidden"
+            >
+                <div className="flex items-center justify-between px-4 py-3 w-full">
+                    <div className="flex items-center gap-2 flex-shrink">
+                        <FaFilter className="text-blue-600" />
+                        <span className="text-sm font-medium text-gray-700">Filters</span>
+                    </div>
+                    <button
+                        onClick={() => setIsMobileFilterOpen(true)}
+                        className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition flex-shrink-0"
+                    >
+                        <FaChevronDown />
+                    </button>
+                </div>
+            </div>
             <div className='w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex justify-center relative pt-10 md:pt-0'>
                 {/* Banner */}
                 <div className="h-[10vh] w-full bg-gradient-to-r from-[#2589f3] via-[#4ea3f8] to-[#5dacf2] flex justify-center items-center text-center px-4 relative">
@@ -503,6 +535,8 @@ const CarPackageSearchResults = () => {
                                                                     </div>
 
                                                                     <button
+                                                                    onClick={()=>handleBookNow(pkg.id)}
+                                                                    // onClick={()=>console.log(pkg.id)}
                                                                         className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-full text-xs md:text-sm font-semibold hover:bg-blue-700 transition"
                                                                     >
                                                                         Book Now
@@ -559,6 +593,35 @@ const CarPackageSearchResults = () => {
                         )}
                     </div>
                 </div>
+
+                {isMobileFilterOpen && (
+                    <div className="md:hidden fixed inset-0  bg-opacity-50 z-50 flex items-end">
+                        <div className="bg-white w-full h-[85vh] rounded-t-3xl overflow-hidden">
+                            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                                <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+                                <button
+                                    onClick={() => setIsMobileFilterOpen(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition"
+                                >
+                                    <FaTimes className="text-gray-600" />
+                                </button>
+                            </div>
+
+                            <div className="h-full overflow-y-hidden">
+                                <div className="p-4">
+                                    <FilterSection
+                                        onFilterChange={handleFilterChange}
+                                        onApplyFilters={(newFilters) => {
+                                            handleApplyFilters(newFilters);
+                                            setIsMobileFilterOpen(false);
+                                        }}
+                                        initialFilters={filters}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>
