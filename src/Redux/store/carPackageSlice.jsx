@@ -87,6 +87,33 @@ export const getCarDetails = createAsyncThunk(
     }
 );
 
+export const bookPackage = createAsyncThunk(
+    "public/bookPackage",
+    async ({ data, token }, { rejectWithValue }) => {
+      try {
+        const response = await api.post(
+          `/v1/private/car-package-booking`,
+            data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        return {
+          data: response.data,
+          status: response.status,
+        };
+      } catch (error) {
+        console.error(error);
+        return rejectWithValue(error.response ? error.response.data : error.message);
+      }
+    }
+  );
+  
+
 
 // Slice
 const carPackageSlice = createSlice({
@@ -109,6 +136,12 @@ const carPackageSlice = createSlice({
         carDetailsLoading: false,
         carDetailsError: null,
         carDetailsStatus: null,
+
+        // book package state
+        bookPackageData: null,
+        bookPackageLoading: false,
+        bookPackageError: null,
+        bookPackageStatus: null,
     },
     reducers: {
         clearDestinations: (state) => {
@@ -120,6 +153,11 @@ const carPackageSlice = createSlice({
             state.packages = [];
             state.packagesError = null;
             state.packagesStatus = null;
+        },
+        clearBookPackage: (state) => {
+            state.bookPackageData = null;
+            state.bookPackageError = null;
+            state.bookPackageStatus = null;
         },
     },
     extraReducers: (builder) => {
@@ -167,9 +205,24 @@ const carPackageSlice = createSlice({
             .addCase(getCarDetails.rejected, (state, action) => {
                 state.carDetailsLoading = false;
                 state.carDetailsError = action.payload;
+            })
+
+            // Book Package cases
+            .addCase(bookPackage.pending, (state) => {
+                state.bookPackageLoading = true;
+                state.bookPackageError = null;
+            })
+            .addCase(bookPackage.fulfilled, (state, action) => {
+                state.bookPackageLoading = false;
+                state.bookPackageData = action.payload.data;
+                state.bookPackageStatus = action.payload.status;
+            })
+            .addCase(bookPackage.rejected, (state, action) => {
+                state.bookPackageLoading = false;
+                state.bookPackageError = action.payload;
             });
     },
 });
 
-export const { clearDestinations, clearPackages } = carPackageSlice.actions;
+export const { clearDestinations, clearPackages, clearBookPackage } = carPackageSlice.actions;
 export default carPackageSlice.reducer;

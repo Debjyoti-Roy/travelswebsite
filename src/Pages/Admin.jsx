@@ -2,31 +2,27 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { countAwaiting } from "../Redux/store/adminSlices";
 import { useNavigate } from "react-router-dom";
+import { carCountAwaiting } from "../Redux/store/adminCarSlice";
 
 const Admin = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const { awaitingCount, loading, error } = useSelector((state) => state.admin);
+  const { carAwaitingCount, awaitingLoading, awaitingError } = useSelector(
+    (state) => state.admincar
+  );
+  
 
-  // Call countAwaiting every 5 minutes
   useEffect(() => {
-    // Initial call
     dispatch(countAwaiting());
-
-    // Set up interval for every 5 minutes (300000 milliseconds)
+    dispatch(carCountAwaiting());
     const interval = setInterval(() => {
       dispatch(countAwaiting());
+      dispatch(carCountAwaiting());
     }, 300000);
-
-    // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, [dispatch]);
-
-  // Log awaitingCount whenever it changes
-  // useEffect(() => {
-  //   console.log("Awaiting Count:", awaitingCount);
-  // }, [awaitingCount]);
-
+  
   const cards = [
     {
       title: "Manage Partner",
@@ -68,6 +64,9 @@ const Admin = () => {
               else if (card.title === "Manage Car Package") {
                 navigate("/admin/managecarpackage")
               }
+              else if (card.title === "Manage Car Bookings") {
+                navigate("/admin/managecarbookings")
+              }
             }}
             className={`bg-gradient-to-r ${card.color} p-6 rounded-2xl shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer aspect-square flex flex-col justify-center items-center text-center relative`}
           >
@@ -75,6 +74,11 @@ const Admin = () => {
             {card.title === "Manage Hotel Bookings" && (
               <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-lg">
                 {loading ? "..." : error ? "!" : awaitingCount}
+              </div>
+            )}
+            {card.title === "Manage Car Bookings" && (
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-lg">
+                {loading ? "..." : error ? "!" : carAwaitingCount}
               </div>
             )}
             <h2 className="text-white text-2xl font-semibold mb-2">{card.title}</h2>

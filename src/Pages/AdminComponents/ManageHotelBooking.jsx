@@ -107,7 +107,7 @@ const ManageHotelBooking = () => {
       return;
     }
 
-    console.log("Cancel booking:", reason);
+    // console.log("Cancel booking:", reason);
     const res = await dispatch(cancelBooking({ bookingId: selectedBookingId, reasonforCancel: reason }))
     if (res.payload.status === 200) {
       setBookings((prev) => prev.filter((item) => item.bookingId !== selectedBookingId))

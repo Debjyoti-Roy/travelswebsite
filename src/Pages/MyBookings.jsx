@@ -26,14 +26,7 @@ const tabDropdownOptions = {
   Past: ["COMPLETED"],
   Canceled: ["ALL", "EXPIRED", "REJECTED", "CANCELLED"],
 };
-// const tabDropdownOptions2 = {
-//   Upcoming: ["CONFIRMED"],
-//   // "Payment Pending": ["PENDING", "PAYMENT PENDING"],
-//   "Payment Pending": ["ALL","PENDING","AWAITING_CUSTOMER_PAYMENT"],
-//   Processing: ["AWAITING_ADMIN_CONFIRMATION"],
-//   Past: ["COMPLETED"],
-//   Canceled: ["EXPIRED", "REJECTED", "CANCELLED"],
-// };
+
 
 const MyBookings = () => {
   const dispatch = useDispatch();
@@ -218,7 +211,7 @@ const MyBookings = () => {
         return;
       }
       console.log(refundStatus)
-      setRefundBookingId(bookingGroupCode); 
+      setRefundBookingId(bookingGroupCode);
       setShowRefundModal(true);
     } catch (error) {
       setNotEligibleMessage("Unfortunately, this booking is not eligible for a refund. If you believe this is a mistake or have questions, please contact our support team for assistance.");
@@ -348,13 +341,6 @@ const MyBookings = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
-
-            {/* <button
-              onClick={() => fetchBookings(0, status)}
-              className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Retry
-            </button> */}
           </div>
         ) : bookings.length > 0 ? (
           bookings.map((item) => (
@@ -426,16 +412,6 @@ const MyBookings = () => {
                       {item.hotelContact}
                     </p>
                     {(item.status === "PENDING" || item.status === "AWAITING_CUSTOMER_PAYMENT") && (
-                      // <strong className="break-all text-red-800">
-                      //   Pay Before: {new Date(item.expiredAt).toLocaleString("en-US", {
-                      //     year: "numeric",
-                      //     month: "short",
-                      //     day: "2-digit",
-                      //     hour: "2-digit",
-                      //     minute: "2-digit",
-                      //     hour12: true,
-                      //   })}
-                      // </strong>
                       <PaymentDeadline expiredAt={item.expiredAt} />
                     )}
 
@@ -539,14 +515,10 @@ const MyBookings = () => {
                         const checkInDate = new Date(item.checkIn);
                         const diffTime = checkInDate - today;
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        // if (diffDays <= 10) {
-                        //   setPendingCancelBookingId(item.bookingGroupCode);
-                        //   setShowNotEligibleConfirmModal(true);
-                        // } else {
-                          setShowCancelModal(true);
-                          setCancelBookingId(item.bookingGroupCode);
-                          setCancelReason("");
-                          setShowCustomReason(false);
+                        setShowCancelModal(true);
+                        setCancelBookingId(item.bookingGroupCode);
+                        setCancelReason("");
+                        setShowCustomReason(false);
                         // }
                       }}
                     >
@@ -666,198 +638,194 @@ const MyBookings = () => {
 
         {/* Refund Status Modal */}
         {showRefundModal && refundStatus && (
-  <div
-    className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center"
-    onClick={() => setShowRefundModal(false)}
-  >
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.2 }}
-        className="bg-white p-8 rounded-2xl shadow-2xl w-[90%] md:w-full max-w-lg relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Refund Status</h2>
-
-        {/* Progress Bar with Icons */}
-        <div className="pb-6">
-          <div className="flex justify-between items-center pb-3">
-            <div className="flex items-center gap-2">
-              <Clock
-                className={`w-5 h-5 ${
-                  ["INITIATED", "PARTIALLY_COMPLETED", "PARTIALLY_FAILED", "COMPLETED"].includes(
-                    refundStatus.refundStatus
-                  )
-                    ? "text-blue-600"
-                    : "text-red-500"
-                }`}
-              />
-              <span className="text-sm font-medium">INITIATED</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">COMPLETED</span>
-              <CheckCircle
-                className={`w-5 h-5 ${
-                  refundStatus.refundStatus === "COMPLETED"
-                    ? "text-green-600"
-                    : "text-gray-400"
-                }`}
-              />
-            </div>
-          </div>
-
-          {/* Gradient Progress Line */}
-          <div className="relative h-2 rounded bg-gray-200 overflow-hidden">
-            <div
-              className={`absolute inset-0 transition-all duration-300 ${
-                ["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus)
-                  ? "bg-gradient-to-r from-red-400 to-red-600"
-                  : "bg-gradient-to-r from-blue-400 to-blue-600"
-              }`}
-              style={{
-                width:
-                  refundStatus.refundStatus === "COMPLETED"
-                    ? "100%"
-                    : refundStatus.refundStatus === "PARTIALLY_COMPLETED"
-                    ? "75%"
-                    : refundStatus.refundStatus === "INITIATED"
-                    ? "50%"
-                    : refundStatus.refundStatus === "FAILED"
-                    ? "0%"
-                    : refundStatus.refundStatus === "PARTIALLY_FAILED"
-                    ? "0%"
-                    : "0%",
-              }}
-            ></div>
-          </div>
-
-          {/* Status Badge */}
-          <div className="mt-4 text-center">
-            <span
-              className={`inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-medium transition ${
-                refundStatus.refundStatus === "COMPLETED"
-                  ? "bg-green-100 text-green-700"
-                  : ["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus)
-                  ? "bg-red-100 text-red-700"
-                  : "bg-blue-100 text-blue-700"
-              }`}
-            >
-              {refundStatus.refundStatus === "COMPLETED" && <CheckCircle className="w-4 h-4" />}
-              {["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus) && (
-                <XCircle className="w-4 h-4" />
-              )}
-              {["INITIATED", "PARTIALLY_COMPLETED"].includes(refundStatus.refundStatus) && (
-                <Clock className="w-4 h-4" />
-              )}
-              {refundStatus.refundStatus}
-            </span>
-          </div>
-        </div>
-
-        {/* Refund Details */}
-        <div className="space-y-4 pb-6 text-sm text-gray-700">
-          {/* Common Details */}
-          <div className="flex justify-between">
-            <span className="text-gray-500">Cancel Reason:</span>
-            <span className="font-medium text-gray-800">{refundStatus.cancelReason}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Cancelled On:</span>
-            <span className="text-gray-800">
-              {new Date(refundStatus.cancelAt).toLocaleDateString()}
-            </span>
-          </div>
-
-          {/* Conditional Details */}
-          {refundStatus.refundStatus === "INITIATED" && (
-            <div className="flex justify-between">
-              <span className="text-gray-500">To be Refunded:</span>
-              <span className="font-semibold text-gray-800">₹{refundStatus.refundPending}</span>
-            </div>
-          )}
-
-          {refundStatus.refundStatus === "PARTIALLY_COMPLETED" && (
-            <>
-              <div className="flex justify-between">
-                <span className="text-gray-500">To be Refunded:</span>
-                <span className="font-semibold text-gray-800">₹{refundStatus.refundPending}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Refunded Amount:</span>
-                <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
-              </div>
-            </>
-          )}
-
-          {refundStatus.refundStatus === "PARTIALLY_FAILED" && (
-            <>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Refunded Amount:</span>
-                <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Refund Failed Amount:</span>
-                <span className="font-semibold text-gray-800">₹{refundStatus.refundFailed}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Failure Reason:</span>
-                <span className="font-medium text-red-600">{refundStatus.failureReason}</span>
-              </div>
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-                Please contact customer support for further assistance.
-              </div>
-            </>
-          )}
-
-          {refundStatus.refundStatus === "FAILED" && (
-            <>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Refund Failed Amount:</span>
-                <span className="font-semibold text-gray-800">₹{refundStatus.refundFailed}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Failure Reason:</span>
-                <span className="font-medium text-red-600">{refundStatus.failureReason}</span>
-              </div>
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-                Please contact customer support for further assistance.
-              </div>
-            </>
-          )}
-
-          {refundStatus.refundStatus === "COMPLETED" && (
-            <div className="flex justify-between">
-              <span className="text-gray-500">Refunded Amount:</span>
-              <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Info Box */}
-        {refundStatus.refundStatus === "INITIATED" && (
-          <div className="pb-6">
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800 mb-4">
-              Your refund will be processed within 5–7 business days.
-            </div>
-          </div>
-        )}
-
-        {/* Close Button */}
-        <div className="flex justify-end">
-          <button
-            className="px-5 py-2 rounded-xl bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+          <div
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center"
             onClick={() => setShowRefundModal(false)}
           >
-            Close
-          </button>
-        </div>
-      </motion.div>
-    </AnimatePresence>
-  </div>
-)}
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white p-8 rounded-2xl shadow-2xl w-[90%] md:w-full max-w-lg relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Refund Status</h2>
+
+                {/* Progress Bar with Icons */}
+                <div className="pb-6">
+                  <div className="flex justify-between items-center pb-3">
+                    <div className="flex items-center gap-2">
+                      <Clock
+                        className={`w-5 h-5 ${["INITIATED", "PARTIALLY_COMPLETED", "PARTIALLY_FAILED", "COMPLETED"].includes(
+                          refundStatus.refundStatus
+                        )
+                            ? "text-blue-600"
+                            : "text-red-500"
+                          }`}
+                      />
+                      <span className="text-sm font-medium">INITIATED</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">COMPLETED</span>
+                      <CheckCircle
+                        className={`w-5 h-5 ${refundStatus.refundStatus === "COMPLETED"
+                            ? "text-green-600"
+                            : "text-gray-400"
+                          }`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Gradient Progress Line */}
+                  <div className="relative h-2 rounded bg-gray-200">
+                    <div
+                      className={`absolute inset-0 transition-all duration-300 ${["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus)
+                          ? "bg-gradient-to-r from-red-400 to-red-600"
+                          : "bg-gradient-to-r from-blue-400 to-blue-600"
+                        }`}
+                      style={{
+                        width:
+                          refundStatus.refundStatus === "COMPLETED"
+                            ? "100%"
+                            : refundStatus.refundStatus === "PARTIALLY_COMPLETED"
+                              ? "75%"
+                              : refundStatus.refundStatus === "INITIATED"
+                                ? "50%"
+                                : refundStatus.refundStatus === "FAILED"
+                                  ? "0%"
+                                  : refundStatus.refundStatus === "PARTIALLY_FAILED"
+                                    ? "0%"
+                                    : "0%",
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="mt-4 text-center">
+                    <span
+                      className={`inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm font-medium transition ${refundStatus.refundStatus === "COMPLETED"
+                          ? "bg-green-100 text-green-700"
+                          : ["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus)
+                            ? "bg-red-100 text-red-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                    >
+                      {refundStatus.refundStatus === "COMPLETED" && <CheckCircle className="w-4 h-4" />}
+                      {["FAILED", "PARTIALLY_FAILED"].includes(refundStatus.refundStatus) && (
+                        <XCircle className="w-4 h-4" />
+                      )}
+                      {["INITIATED", "PARTIALLY_COMPLETED"].includes(refundStatus.refundStatus) && (
+                        <Clock className="w-4 h-4" />
+                      )}
+                      {refundStatus.refundStatus}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Refund Details */}
+                <div className="space-y-4 pb-6 text-sm text-gray-700">
+                  {/* Common Details */}
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Cancel Reason:</span>
+                    <span className="font-medium text-gray-800">{refundStatus.cancelReason}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Cancelled On:</span>
+                    <span className="text-gray-800">
+                      {new Date(refundStatus.cancelAt).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  {/* Conditional Details */}
+                  {refundStatus.refundStatus === "INITIATED" && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">To be Refunded:</span>
+                      <span className="font-semibold text-gray-800">₹{refundStatus.refundPending}</span>
+                    </div>
+                  )}
+
+                  {refundStatus.refundStatus === "PARTIALLY_COMPLETED" && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">To be Refunded:</span>
+                        <span className="font-semibold text-gray-800">₹{refundStatus.refundPending}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Refunded Amount:</span>
+                        <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
+                      </div>
+                    </>
+                  )}
+
+                  {refundStatus.refundStatus === "PARTIALLY_FAILED" && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Refunded Amount:</span>
+                        <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Refund Failed Amount:</span>
+                        <span className="font-semibold text-gray-800">₹{refundStatus.refundFailed}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Failure Reason:</span>
+                        <span className="font-medium text-red-600">{refundStatus.failureReason}</span>
+                      </div>
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                        Please contact customer support for further assistance.
+                      </div>
+                    </>
+                  )}
+
+                  {refundStatus.refundStatus === "FAILED" && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Refund Failed Amount:</span>
+                        <span className="font-semibold text-gray-800">₹{refundStatus.refundFailed}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Failure Reason:</span>
+                        <span className="font-medium text-red-600">{refundStatus.failureReason}</span>
+                      </div>
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                        Please contact customer support for further assistance.
+                      </div>
+                    </>
+                  )}
+
+                  {refundStatus.refundStatus === "COMPLETED" && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Refunded Amount:</span>
+                      <span className="font-semibold text-gray-800">₹{refundStatus.refundAmount}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Info Box */}
+                {refundStatus.refundStatus === "INITIATED" && (
+                  <div className="pb-6">
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800 mb-4">
+                      Your refund will be processed within 5–7 business days.
+                    </div>
+                  </div>
+                )}
+
+                {/* Close Button */}
+                <div className="flex justify-end">
+                  <button
+                    className="px-5 py-2 rounded-xl bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+                    onClick={() => setShowRefundModal(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        )}
 
 
         {/* Refund Status Not Eligible Modal */}

@@ -560,7 +560,7 @@ const HotelDetails = () => {
   const [userData, setUserData] = useState();
 
 
-  
+
 
   const handleClose = () => {
     setShowModal(false);
@@ -854,7 +854,7 @@ const HotelDetails = () => {
     return hotel.rooms.filter(room => room.pricePerNight <= currentState.startingPrice);
   }, [hotel, currentState]);
 
-  
+
   const allocatedRooms = useMemo(() => {
     if (!filteredRooms || !totalPeople) return [];
 
@@ -870,7 +870,7 @@ const HotelDetails = () => {
     return <div className="min-h-screen flex items-center justify-center">Invalid request: Missing required parameters. Please ensure you have a valid hotel ID, check-in, and check-out dates.</div>;
   }
 
-  
+
   if (!hotel || Object.keys(hotel).length === 0) {
     return (
       <div className="min-h-screen w-full bg-gray-50">
@@ -1013,21 +1013,16 @@ const HotelDetails = () => {
     const value = userDataCookie.split("=")[1];
     const decoded = JSON.parse(decodeURIComponent(value));
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY, // ⭐ replace with your Razorpay Key ID
+      key: import.meta.env.VITE_RAZORPAY_KEY,
       name: "INO TRAVELS",
       description: "Hotel Booking Payment",
       order_id: orderId,
 
       handler: async function (response) {
-        // console.log("Payment successful!", response);
-
-        // Send to backend for verification
-        // Example: verifyPayment(response)
         await handlePaymentConfirm(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature)
       },
       modal: {
         ondismiss: () => {
-          // Called when user closes the Razorpay popup
           toast.error("Booking not confirmed. Payment was cancelled.", {
             style: {
               borderRadius: "10px",
@@ -1038,26 +1033,11 @@ const HotelDetails = () => {
         },
       },
 
-      //       const verifyPayment = async (response) => {
-      //   const res = await api.post("/verify-payment", {
-      //     payment_id: response.razorpay_payment_id,
-      //     order_id: response.razorpay_order_id,
-      //     signature: response.razorpay_signature,
-      //   });
-
-      //   console.log("Payment verification response:", res);
-      // };
-
-
       prefill: {
         name: decoded.name,
         email: decoded.email,
         contact: (!decoded.phoneNumber || decoded.phoneNumber === "" || decoded.phoneNumber === "NA") ? null : decoded.phoneNumber,
       },
-
-      // notes: {
-      //   booking_id: "OptionalBookingId",
-      // },
 
       theme: {
         color: "#3399cc",
@@ -1198,7 +1178,7 @@ const HotelDetails = () => {
                     );
 
                   })}
-                  
+
                   <div className="mt-6 border-t border-gray-200 pt-4 flex flex-col md:flex-row md:justify-between items-center">
                     <div className="text-2xl flex items-center gap-[2px] font-bold text-gray-800">
                       <div>
@@ -1276,62 +1256,62 @@ const HotelDetails = () => {
                     </div>
                   </div>
                   <div className="w-full rounded-2xl p-4 sm:p-6">
-  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
-    Booking & Advance Fee Policy
-  </h3>
-  
-  <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4">
-    To place a booking request, a small{" "}
-    <span className="font-medium text-gray-900">advance fee</span> is required.
-    We'll review availability and confirm your request within{" "}
-    <span className="font-medium text-gray-900">24 hours</span>.
-  </p>
-  
-  <ul className="space-y-3 sm:space-y-2.5 mb-4">
-    <li className="flex items-start gap-3">
-      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
-      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
-        If approved, you'll receive a payment link by email/SMS.
-      </span>
-    </li>
-    
-    <li className="flex items-start gap-3">
-      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
-      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
-        You'll have{" "}
-        <span className="font-semibold text-gray-900">48 hours</span> to
-        complete the full payment.
-      </span>
-    </li>
-    
-    <li className="flex items-start gap-3">
-      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
-      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
-        If payment isn't completed in time, your request will be{" "}
-        <span className="font-semibold text-gray-900">automatically cancelled</span>{" "}
-        and the advance fee becomes{" "}
-        <span className="font-semibold text-gray-900">non-refundable</span>.
-      </span>
-    </li>
-    
-    <li className="flex items-start gap-3">
-      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
-      <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
-        You can cancel within the 48-hour window and get a{" "}
-        <span className="font-semibold text-gray-900">full refund</span>{" "}
-        of the advance fee.
-      </span>
-    </li>
-  </ul>
-  
-  <div className="rounded-xl bg-gray-50 p-4 sm:p-3">
-    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-      <span className="font-medium text-gray-700">Tip:</span> Keep an eye on your inbox/SMS for the payment link to secure your
-      booking on time. You can pay via the link or from the website from My
-      Booking section.
-    </p>
-  </div>
-</div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
+                      Booking & Advance Fee Policy
+                    </h3>
+
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4">
+                      To place a booking request, a small{" "}
+                      <span className="font-medium text-gray-900">advance fee</span> is required.
+                      We'll review availability and confirm your request within{" "}
+                      <span className="font-medium text-gray-900">24 hours</span>.
+                    </p>
+
+                    <ul className="space-y-3 sm:space-y-2.5 mb-4">
+                      <li className="flex items-start gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+                        <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                          If approved, you'll receive a payment link by email/SMS.
+                        </span>
+                      </li>
+
+                      <li className="flex items-start gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+                        <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                          You'll have{" "}
+                          <span className="font-semibold text-gray-900">48 hours</span> to
+                          complete the full payment.
+                        </span>
+                      </li>
+
+                      <li className="flex items-start gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+                        <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                          If payment isn't completed in time, your request will be{" "}
+                          <span className="font-semibold text-gray-900">automatically cancelled</span>{" "}
+                          and the advance fee becomes{" "}
+                          <span className="font-semibold text-gray-900">non-refundable</span>.
+                        </span>
+                      </li>
+
+                      <li className="flex items-start gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+                        <span className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                          You can cancel within the 48-hour window and get a{" "}
+                          <span className="font-semibold text-gray-900">full refund</span>{" "}
+                          of the advance fee.
+                        </span>
+                      </li>
+                    </ul>
+
+                    <div className="rounded-xl bg-gray-50 p-4 sm:p-3">
+                      <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                        <span className="font-medium text-gray-700">Tip:</span> Keep an eye on your inbox/SMS for the payment link to secure your
+                        booking on time. You can pay via the link or from the website from My
+                        Booking section.
+                      </p>
+                    </div>
+                  </div>
 
 
                 </div>
