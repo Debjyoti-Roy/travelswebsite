@@ -90,32 +90,76 @@ export const getCarDetails = createAsyncThunk(
 export const bookPackage = createAsyncThunk(
     "public/bookPackage",
     async ({ data, token }, { rejectWithValue }) => {
-      try {
-        const response = await api.post(
-          `/v1/private/car-package-booking`,
-            data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        return {
-          data: response.data,
-          status: response.status,
-        };
-      } catch (error) {
-        console.error(error);
-        return rejectWithValue(error.response ? error.response.data : error.message);
-      }
+        try {
+            const response = await api.post(
+                `/v1/private/car-package-booking`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            return {
+                data: response.data,
+                status: response.status,
+            };
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response ? error.response.data : error.message);
+        }
     }
-  );
-  
+);
+
+export const getRefundStatus = createAsyncThunk(
+    "public/getRefundStatus",
+    async ({ token, bookingGroupCode }, { rejectWithValue }) => {
+        try {
+            const response = await api.get(
+                `/v1/private/car-package-booking/${bookingGroupCode}/refund-status`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "ngrok-skip-browser-warning": "xyz",
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Refund status fetch failed");
+        }
+    }
+);
+
+export const cancelcarPackageBooking = createAsyncThunk(
+    "public/cancelcarPackageBooking",
+    async ({ token, bookingGroupCode, cancelReason }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(
+                "/v1/private/car-package-booking/cancel",
+                {
+                    bookingGroupCode,
+                    cancelReason,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || { message: "Cancel failed" });
+        }
+    }
+);
+
 
 
 // Slice
+// ✅ Inside your slice definition
 const carPackageSlice = createSlice({
     name: "carPackage",
     initialState: {
@@ -142,6 +186,18 @@ const carPackageSlice = createSlice({
         bookPackageLoading: false,
         bookPackageError: null,
         bookPackageStatus: null,
+
+        // refund status state
+        refundStatusData: null,
+        refundStatusLoading: false,
+        refundStatusError: null,
+        refundStatusStatus: null,
+
+        // ✅ cancel booking state
+        cancelBookingData: null,
+        cancelBookingLoading: false,
+        cancelBookingError: null,
+        cancelBookingStatus: null,
     },
     reducers: {
         clearDestinations: (state) => {
@@ -158,6 +214,17 @@ const carPackageSlice = createSlice({
             state.bookPackageData = null;
             state.bookPackageError = null;
             state.bookPackageStatus = null;
+        },
+        clearRefundStatus: (state) => {
+            state.refundStatusData = null;
+            state.refundStatusError = null;
+            state.refundStatusStatus = null;
+        },
+        // ✅ clear cancel booking
+        clearCancelBooking: (state) => {
+            state.cancelBookingData = null;
+            state.cancelBookingError = null;
+            state.cancelBookingStatus = null;
         },
     },
     extraReducers: (builder) => {
@@ -220,9 +287,47 @@ const carPackageSlice = createSlice({
             .addCase(bookPackage.rejected, (state, action) => {
                 state.bookPackageLoading = false;
                 state.bookPackageError = action.payload;
+            })
+
+            // Refund Status cases
+            .addCase(getRefundStatus.pending, (state) => {
+                state.refundStatusLoading = true;
+                state.refundStatusError = null;
+            })
+            .addCase(getRefundStatus.fulfilled, (state, action) => {
+                state.refundStatusLoading = false;
+                state.refundStatusData = action.payload.data;
+                state.refundStatusStatus = action.payload.status;
+            })
+            .addCase(getRefundStatus.rejected, (state, action) => {
+                state.refundStatusLoading = false;
+                state.refundStatusError = action.payload;
+            })
+
+            // ✅ Cancel Booking cases
+            .addCase(cancelcarPackageBooking.pending, (state) => {
+                state.cancelBookingLoading = true;
+                state.cancelBookingError = null;
+            })
+            .addCase(cancelcarPackageBooking.fulfilled, (state, action) => {
+                state.cancelBookingLoading = false;
+                state.cancelBookingData = action.payload.data;
+                state.cancelBookingStatus = action.payload.status;
+            })
+            .addCase(cancelcarPackageBooking.rejected, (state, action) => {
+                state.cancelBookingLoading = false;
+                state.cancelBookingError = action.payload;
             });
     },
 });
 
-export const { clearDestinations, clearPackages, clearBookPackage } = carPackageSlice.actions;
+// ✅ Export actions
+export const {
+    clearDestinations,
+    clearPackages,
+    clearBookPackage,
+    clearRefundStatus,
+    clearCancelBooking,
+} = carPackageSlice.actions;
+
 export default carPackageSlice.reducer;

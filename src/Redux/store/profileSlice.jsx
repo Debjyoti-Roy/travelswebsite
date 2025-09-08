@@ -105,6 +105,33 @@ export const fetchUserBookings = createAsyncThunk(
     }
   }
 );
+// ----------------- Fetch user car package bookings -----------------
+export const fetchUserCarPackageBookings = createAsyncThunk(
+  "profile/fetchUserCarPackageBookings",
+  async ({ token, page, size, status }, { rejectWithValue }) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true", // optional if ngrok is blocking
+      };
+
+      let url=`/v1/private/car-package-booking/get-all?page=${page}&size=${size}`
+
+      if (status !== "ALL") {
+        url += `&statuses=${status}`;
+      }
+
+      const response = await api.get(url, { headers });
+
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 
 // ----------------- Slice -----------------
@@ -120,6 +147,10 @@ const profileSlice = createSlice({
     bookings: [], // <== Add this
     bookingsLoading: false,
     bookingsError: null,
+    carPackagebookings: {}, // <== Add this
+    carPackagebookingsLoading: false,
+    carPackagebookingsError: null,
+    carPackagebookingsStatus: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -181,6 +212,21 @@ const profileSlice = createSlice({
       .addCase(fetchUserBookings.rejected, (state, action) => {
         state.bookingsLoading = false;
         state.bookingsError = action.payload;
+      });
+      // Fetch User Car Package Bookings
+    builder
+      .addCase(fetchUserCarPackageBookings.pending, (state) => {
+        state.carPackagebookingsLoading = true;
+        state.carPackagebookingsError = null;
+      })
+      .addCase(fetchUserCarPackageBookings.fulfilled, (state, action) => {
+        state.carPackagebookingsLoading = false;
+        state.carPackagebookings = action.payload.data;
+        state.carPackagebookingsStatus=action.payload.status;
+      })
+      .addCase(fetchUserCarPackageBookings.rejected, (state, action) => {
+        state.carPackagebookingsLoading = false;
+        state.carPackagebookingsError = action.payload;
       });
 
   },

@@ -4,22 +4,8 @@ import toast from 'react-hot-toast';
 
 const ShareButton = ({ hotel, className = "" }) => {
   const [showShareOptions, setShowShareOptions] = useState(false);
-
-  // useEffect(() => {
-  //   console.log("hotel", hotel);
-  // }, [hotel])
-
-  // useEffect(() => {
-  //   console.log("hotel", hotel);
-  // }, [])
-  
-  
-
-  // Get current URL parameters from the page state or URL
   const urlParams = new URLSearchParams(window.location.search);
   const currentState = window.history.state?.usr || {};
-  
-  // Create a shareable URL with all necessary parameters
   const baseUrl = window.location.origin + window.location.pathname;
   const shareParams = new URLSearchParams();
   
@@ -65,8 +51,6 @@ const ShareButton = ({ hotel, className = "" }) => {
         });
         setShowShareOptions(false);
       } catch (error) {
-        // console.log('Error sharing:', error);
-        // Fallback to copy link
         handleCopyLink();
       }
     } else {

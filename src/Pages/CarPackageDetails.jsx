@@ -12,10 +12,59 @@ import toast from 'react-hot-toast';
 import { carPackageConfirmPayment } from '../Redux/store/paymentSlice';
 import CarPackageSuccessModal from './ModalComponent/CarPackageSuccessModal';
 import PaymentFailedModal from './ModalComponent/PaymentFailModal';
+import CarShareButton from '../Components/CarShareButton';
 
 const CarPackageDetails = () => {
     const location = useLocation();
     const { state } = location;
+
+
+    //     const urlParams = new URLSearchParams(window.location.search);
+    //   let urlState = {};
+    //   if (urlParams.get('data')) {
+    //     console.log(urlParams)
+    //     try {
+    //       urlState = JSON.parse(decodeURIComponent(atob(urlParams.get('data'))));
+    //     } catch (e) {
+    //       urlState = {};
+    //     }
+    //   } else {
+    //     // urlState = {
+    //     //   id: urlParams.get('id'),
+    //     //   checkIn: urlParams.get('checkIn'),
+    //     //   checkOut: urlParams.get('checkOut'),
+    //     //   total: parseInt(urlParams.get('total')) || 1,
+    //     //   room: parseInt(urlParams.get('room')) || 1,
+    //     //   location: urlParams.get('location'),
+    //     //   startingPrice: urlParams.get('startingPrice') ? parseInt(urlParams.get('startingPrice')) : undefined
+    //     // };
+    //     console.log(urlParams.get('packageId'))
+    //   }
+    const urlParams = new URLSearchParams(window.location.search);
+    let urlState = {};
+
+    if (urlParams.get("carPackage")) {
+        try {
+            const data2 = JSON.parse(
+                decodeURIComponent(atob(urlParams.get("carPackage")))
+            );
+            const data = {
+                id: data2.carPackage.packageId,
+                travelDate: data2.travelDate
+            }
+            urlState = data
+            console.log("Decoded state:", data2);
+        } catch (e) {
+            console.error("Failed to decode carPackage", e);
+            urlState = {};
+        }
+    } else {
+        console.log("No carPackage found in URL");
+    }
+
+
+
+    const currentState = state || urlState
     const dispatch = useDispatch()
     const {
         carDetails,
@@ -207,7 +256,7 @@ const CarPackageDetails = () => {
     //Booking
     const [bookingData, setBookingData] = useState({})
     const handleBookNow = (applicablePrice, car) => {
-        const [day, month, year] = state.travelDate.split("-");
+        const [day, month, year] = currentState.travelDate.split("-");
         const formattedDate = `${year}-${month}-${day}`;
 
         const book = {
@@ -319,22 +368,27 @@ const CarPackageDetails = () => {
         handleRazorPay()
     }, [handleRazorPay])
 
+    useEffect(() => {
+        console.log(carDetails)
+    }, [carDetails])
+
+
 
     const getDetails = useCallback(() => {
-        dispatch(getCarDetails({ id: state.id }));
-    }, [dispatch, state])
+        dispatch(getCarDetails({ id: currentState.id }));
+    }, [dispatch, currentState])
     useEffect(() => {
         getDetails()
-        console.log(state)
+        console.log(currentState)
     }, [getCarDetails])
 
     useEffect(() => {
-        console.log(state)
-    }, [state])
+        console.log(currentState)
+    }, [currentState])
 
 
-    const travelMonth = state?.travelDate
-        ? parseInt(state.travelDate.split("-")[1], 10)
+    const travelMonth = currentState?.travelDate
+        ? parseInt(currentState.travelDate.split("-")[1], 10)
         : null;
 
     const pickupPoints = carDetails?.pickupLocation?.split(",").map((p) => p.trim()) || [];
@@ -378,6 +432,8 @@ const CarPackageDetails = () => {
                             </span>
                         </p>
                     )}
+                    <CarShareButton carPackage={carDetails} travelDate={currentState.travelDate} className="self-start md:self-end" />
+
                 </div>
             </div>
             <div className="flex justify-center">

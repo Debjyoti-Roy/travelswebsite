@@ -793,7 +793,9 @@ const HotelDetails = () => {
   }, [showInfo]);
 
 
-
+  useEffect(() => {
+    console.log(hotel)
+  }, [hotel])
 
   useEffect(() => {
     // console.log("HELLO");
@@ -1092,6 +1094,9 @@ const HotelDetails = () => {
   //     window.location.reload();
   //   }
   // };
+
+  
+  
 
 
 
