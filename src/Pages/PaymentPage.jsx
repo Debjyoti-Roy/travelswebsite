@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { auth, provider } from "../auth/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { fetchUserProfile, registerUser } from "../Redux/store/userSlice";
-import { confirmPayment } from "../Redux/store/paymentSlice";
+import { carPackageConfirmPayment, confirmPayment } from "../Redux/store/paymentSlice";
 import toast from "react-hot-toast";
 import LoginModal from "../Components/LoginModal";
 import PaymentSuccessfullModal from "./ModalComponent/PaymentSuccessfullModal";
@@ -227,8 +227,9 @@ const PaymentPage = () => {
 
   const handlePaymentConfirm = async (paymentId, razorpayOrderId, razorpaySignature) => {
     const token = localStorage.getItem("token");
-
-    const res = await dispatch(
+   let res;
+   if (bookingCode && bookingCode.startsWith("HBG")) {
+    res = await dispatch(
       confirmPayment({
         token,
         razorpayPaymentId: paymentId,
@@ -236,6 +237,16 @@ const PaymentPage = () => {
         razorpaySignature: razorpaySignature,
       })
     );
+  }else if(bookingCode && bookingCode.startsWith("CPB")){
+    res = await dispatch(
+      carPackageConfirmPayment({
+          token,
+          razorpayPaymentId: paymentId,
+          razorpayOrderId: razorpayOrderId,
+          razorpaySignature: razorpaySignature,
+      })
+  );
+  }
 
     if (res.payload.status == 200 || res.payload.status == 409) {
       setPaidAt(res.payload.data?.paidAt);

@@ -94,6 +94,7 @@ const MyCarPackageBookings = () => {
         }));
     };
     const fetchBookings = async (pageNum, selectedStatus = status) => {
+        console.log(selectedStatus)
         setLoading(true);
         setError(null);
         try {
@@ -111,41 +112,40 @@ const MyCarPackageBookings = () => {
         }
     }
     useEffect(() => {
-        if (status === "Payment Pending" && selectedDropdownOption === "ALL") {
+        if (status === "Payment Pending") {
+            // fetchBookings(0, statusMap[option]);
+            
             fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
-
-        } else if (status === "Canceled" && selectedDropdownOption === "ALL") {
+        } else if (status === "Canceled") {
+            
             fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
-        } else if (selectedDropdownOption !== "PAYMENT PENDING" && selectedDropdownOption !== "PENDING ADMIN CONFIRMATION") {
-
-            fetchBookings(0, selectedDropdownOption);
-        } else if (selectedDropdownOption === "PAYMENT PENDING") {
-            fetchBookings(0, "AWAITING_CUSTOMER_PAYMENT");
-        } else if (selectedDropdownOption === "PENDING ADMIN CONFIRMATION") {
-            fetchBookings(0, "AWAITING_ADMIN_CONFIRMATION");
-        }else{
-
-            fetchBookings(0, "CONFIRMED");
+        } else {
+            fetchBookings(0, statusMap[status]);
         }
     }, []);
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < totalPages) {
+            
             fetchBookings(newPage);
         }
     };
     const handleDropdownChange = (dropdownOption) => {
         setSelectedDropdownOption(dropdownOption);
         if (status === "Payment Pending" && dropdownOption === "ALL") {
+            
             fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
 
         } else if (status === "Canceled" && dropdownOption === "ALL") {
+            
             fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
         } else if (dropdownOption !== "PAYMENT PENDING" && dropdownOption !== "PENDING ADMIN CONFIRMATION") {
-
+            
             fetchBookings(0, dropdownOption);
         } else if (dropdownOption === "PAYMENT PENDING") {
+            
             fetchBookings(0, "AWAITING_CUSTOMER_PAYMENT");
         } else if (dropdownOption === "PENDING ADMIN CONFIRMATION") {
+            
             fetchBookings(0, "AWAITING_ADMIN_CONFIRMATION");
         }
     };
@@ -154,12 +154,10 @@ const MyCarPackageBookings = () => {
         setStatus(option);
         setSelectedDropdownOption(tabDropdownOptions[option][0]);
         if (option === "Payment Pending") {
-            // fetchBookings(0, statusMap[option]);
             fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
         } else if (option === "Canceled") {
             fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
         } else {
-            console.log(statusMap[option])
             fetchBookings(0, statusMap[option]);
         }
     };
@@ -175,6 +173,7 @@ const MyCarPackageBookings = () => {
         setCancelReason("");
         setShowCustomReason(false);
         // Refetch bookings
+        console.log("Hello")
         fetchBookings(page, "CONFIRMED");
     };
     const handleReasonSelect = (reason) => {

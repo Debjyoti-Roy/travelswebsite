@@ -33,16 +33,16 @@ const CarShareButton = ({ carPackage, travelDate, className = "" }) => {
     //         prices: car.carPrices,
     //     })),
     // };
-    const shareData={
-        carPackage,
-        travelDate
+    const shareData = {
+        packageId: carPackage.packageId,
+        travelDate: travelDate
     }
 
 
-    useEffect(() => {
-        console.log(shareData)
-        console.log(carPackage)
-    }, [shareData])
+    // useEffect(() => {
+    //     console.log(shareData)
+    //     console.log(carPackage)
+    // }, [shareData])
 
 
     // Encode in base64

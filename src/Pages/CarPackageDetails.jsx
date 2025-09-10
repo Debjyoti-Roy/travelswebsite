@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { MdOutlineCancel, MdAutorenew, MdSupportAgent, MdPlace, MdLocationOn, MdArrowForward } from "react-icons/md";
 import { bookPackage, getCarDetails } from '../Redux/store/carPackageSlice';
@@ -16,6 +16,7 @@ import CarShareButton from '../Components/CarShareButton';
 
 const CarPackageDetails = () => {
     const location = useLocation();
+    const navigate = useNavigate()
     const { state } = location;
 
 
@@ -49,13 +50,11 @@ const CarPackageDetails = () => {
                 decodeURIComponent(atob(urlParams.get("carPackage")))
             );
             const data = {
-                id: data2.carPackage.packageId,
+                id: data2.packageId,
                 travelDate: data2.travelDate
             }
             urlState = data
-            console.log("Decoded state:", data2);
         } catch (e) {
-            console.error("Failed to decode carPackage", e);
             urlState = {};
         }
     } else {
@@ -304,7 +303,7 @@ const CarPackageDetails = () => {
                 razorpaySignature: razorpaySignature,
             })
         );
-        console.log(res)
+
         if (res.payload.status == 200 || res.payload.status == 409) {
             // console.log(res.payload.data)
             setPaidAt(res.payload.data?.paidAt)
@@ -415,25 +414,28 @@ const CarPackageDetails = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
 
                 {/* Text Content */}
-                <div className="absolute bottom-6 left-6 right-6 text-white drop-shadow-lg">
-                    <h1 className="text-3xl md:text-5xl font-bold">
-                        {carDetails?.title}
-                    </h1>
+                <div className="absolute bottom-6 left-6 right-6 text-white drop-shadow-lg flex justify-between">
+                    <div>
 
-                    {/* Destination */}
-                    {carDetails?.destination && (
-                        <p className="mt-2 text-sm md:text-lg flex items-center gap-2">
-                            <span className="font-medium">Destination:</span>
-                            <span className="font-semibold text-blue-200">
-                                {carDetails.destination.name}
-                            </span>
-                            <span className="text-gray-200 text-sm">
-                                ({carDetails.destination.state})
-                            </span>
-                        </p>
-                    )}
+                        <h1 className="text-3xl md:text-5xl font-bold">
+                            {carDetails?.title}
+                        </h1>
+
+                        {/* Destination */}
+                        {carDetails?.destination && (
+                            <p className="mt-2 text-sm md:text-lg flex items-center gap-2">
+                                <span className="font-medium">Destination:</span>
+                                <span className="font-semibold text-blue-200">
+                                    {carDetails.destination.name}
+                                </span>
+                                <span className="text-gray-200 text-sm">
+                                    ({carDetails.destination.state})
+                                </span>
+                            </p>
+                        )}
+                    </div>
+
                     <CarShareButton carPackage={carDetails} travelDate={currentState.travelDate} className="self-start md:self-end" />
-
                 </div>
             </div>
             <div className="flex justify-center">
@@ -853,7 +855,10 @@ const CarPackageDetails = () => {
                     total={bookPackageData.initialAmount}
                     travelDate={state.travelDate}
                     numberofdays={carDetails.durationDays}
-                    onClose={() => setBookingModal(false)}
+                    onClose={() => {
+                        setBookingModal(false)
+                        navigate("/")
+                    }}
                 />
             )}
             {failModal && (
