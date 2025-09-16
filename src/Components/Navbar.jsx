@@ -727,7 +727,7 @@ const Navbar = () => {
                 >
                   <div className="googlediv">
                     <img src={google} className="GoogleImage" alt="google" />
-                    <p className="text-[#555}">Sign in with Google</p>
+                    <p className="text-[#555]">Sign in with Google</p>
                   </div>
                 </button>
               </div>

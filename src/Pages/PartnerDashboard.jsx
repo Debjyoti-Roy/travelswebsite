@@ -2,9 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import ManageProperties from './PartnerDashboardComponents/ManageProperties';
 import AddRoom from './PartnerDashboardComponents/AddRoom';
 import PropertyDashboard from './PartnerDashboardComponents/PropertyDashboard';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getHotels } from '../Redux/store/hotelSlice';
 import HotelAnalytics from './PartnerDashboardComponents/HotelAnalytics';
+import { getCars } from '../Redux/store/partnerCar';
+import AddCar from './PartnerDashboardComponents/AddCar';
+import CarList from './PartnerDashboardComponents/CarList';
 
 const PartnerDashboard = () => {
   const options = ["Hotel", "Car", "Guest house"];
@@ -16,7 +19,9 @@ const PartnerDashboard = () => {
   const [hotelPresent, setHotelPresent] = useState(false)
   const [hotelList, setHotelList] = useState([])
   const [counter, setCounter] = useState(false)
+  const [carCounter, setCarCounter] = useState(false)
   const dispatch = useDispatch()
+  const { cars, status, error } = useSelector((state) => state.partnerCar);
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false); // Start fade-out
@@ -43,18 +48,31 @@ const PartnerDashboard = () => {
     }
     job()
   }, [counter])
+  useEffect(() => {
+    const job = async () => {
+      const token = localStorage.getItem('token')
+      dispatch(getCars({ token }));
+    }
+    job()
+  }, [carCounter])
+
+  useEffect(() => {
+    console.log(cars)
+  }, [cars])
+
+
   const topRef = useRef(null);
 
-useEffect(() => {
-  if (topRef.current) {
-    const navbarHeight = 80; // px height of your navbar
-    const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: elementTop - navbarHeight,
-      behavior: "smooth",
-    });
-  }
-}, []);
+  useEffect(() => {
+    if (topRef.current) {
+      const navbarHeight = 80; // px height of your navbar
+      const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementTop - navbarHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
 
   return (
@@ -117,9 +135,9 @@ useEffect(() => {
 
       {/* Content */}
       <div className="w-full flex justify-center">
-        <div 
-        className="lg:w-[70%] w-full px-6 lg:px-0 mx-auto">
-        {/* className="lg:w-[70%] w-full px-6 lg:px-0 mx-auto"> */}
+        <div
+          className="lg:w-[70%] w-full px-6 lg:px-0 mx-auto">
+          {/* className="lg:w-[70%] w-full px-6 lg:px-0 mx-auto"> */}
           {tab === "overview" && (
             <div className='w-full'>
               <HotelAnalytics hotelList={hotelList} />
@@ -143,9 +161,15 @@ useEffect(() => {
             </>
           )}
           {tab === "vehicles" && (
-            <div className="text-center text-gray-700">
-              <p className="text-lg">Manage all your vehicles and rental options here.</p>
-            </div>
+            <>
+              {cars.length > 0 ? (<>
+                <CarList cars={cars} counter={() => setCarCounter(!carCounter)} />
+              </>) : (
+                <>
+                  <AddCar counter={() => setCarCounter(!carCounter)} />
+                </>
+              )}
+            </>
           )}
         </div>
       </div>
