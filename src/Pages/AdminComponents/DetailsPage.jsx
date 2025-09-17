@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { Dialog, Transition } from "@headlessui/react";
-import { FaAddressCard, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import BasicDetails from './DetailsPageComponents/BasicDetails';
 import ItenaryDetails from './DetailsPageComponents/ItenaryDetails';

@@ -263,7 +263,7 @@ export const getCarAwaiting = createAsyncThunk(
 
 export const confirmBooking = createAsyncThunk(
     "partner/confirmBooking",
-    async ({ bookingId }, { rejectWithValue }) => {
+    async ({ bookingId, carId }, { rejectWithValue }) => {
 
         const token = localStorage.getItem("token"); // ✅ added this
         try {
@@ -271,6 +271,7 @@ export const confirmBooking = createAsyncThunk(
                 `/v1/private/car-package-bookings/${bookingId}/confirm`,
                 {}, // no body
                 {
+                    params: { carId },
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -300,6 +301,33 @@ export const cancelBooking = createAsyncThunk(
                     params: { reason },
                     headers: {
                         Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return {
+                data: response.data,
+                status: response.status
+            };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data || { message: "Confirm failed" }
+            );
+        }
+    }
+);
+export const searchCarBooking = createAsyncThunk(
+    "partner/searchCarBooking",
+    async ({ bookingId, page, size }, { rejectWithValue }) => {
+
+        const token = localStorage.getItem("token"); // ✅ added this
+        try {
+            const response = await api.get(
+                `/v1/private/car-package-bookings/${bookingId}/search-car`,
+                {
+                    params: { page, size },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "ngrok-skip-browser-warning": "xyz",
                     },
                 }
             );
@@ -362,16 +390,28 @@ const adminCarSlice = createSlice({
 
         confirmLoading: false,
         confirmSuccess: null,
-        confirmerror:null,
-        confirmstatus:null,
+        confirmerror: null,
+        confirmstatus: null,
 
         cancelLoading: false,
         cancelSuccess: null,
-        cancelerror:null,
-        cancelstatus:null,
+        cancelerror: null,
+        cancelstatus: null,
 
 
         pagination: {
+            pageNumber: 0,
+            pageSize: 10,
+            totalElements: 0,
+            totalPages: 0,
+            last: true,
+        },
+
+        // booking seach
+        searchLoading: false,
+        searchError: null,
+        searchResults: [],
+        searchPagination: {
             pageNumber: 0,
             pageSize: 10,
             totalElements: 0,
@@ -644,7 +684,27 @@ const adminCarSlice = createSlice({
             .addCase(cancelBooking.rejected, (state, action) => {
                 state.cancelLoading = false;
                 state.cancelerror = action.payload;
+            })
+            .addCase(searchCarBooking.pending, (state) => {
+                state.searchLoading = true;
+                state.searchError = null;
+            })
+            .addCase(searchCarBooking.fulfilled, (state, action) => {
+                state.searchLoading = false;
+                state.searchResults = action.payload.data.content || []; // assuming paged response
+                state.searchPagination = {
+                    pageNumber: action.payload.data.pageNumber,
+                    pageSize: action.payload.data.pageSize,
+                    totalElements: action.payload.data.totalElements,
+                    totalPages: action.payload.data.totalPages,
+                    last: action.payload.data.last,
+                };
+            })
+            .addCase(searchCarBooking.rejected, (state, action) => {
+                state.searchLoading = false;
+                state.searchError = action.payload;
             });
+
     },
 });
 

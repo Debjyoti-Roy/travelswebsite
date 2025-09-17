@@ -114,10 +114,10 @@ const MyCarPackageBookings = () => {
     useEffect(() => {
         if (status === "Payment Pending") {
             // fetchBookings(0, statusMap[option]);
-            
+
             fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
         } else if (status === "Canceled") {
-            
+
             fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
         } else {
             fetchBookings(0, statusMap[status]);
@@ -125,27 +125,27 @@ const MyCarPackageBookings = () => {
     }, []);
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < totalPages) {
-            
+
             fetchBookings(newPage);
         }
     };
     const handleDropdownChange = (dropdownOption) => {
         setSelectedDropdownOption(dropdownOption);
         if (status === "Payment Pending" && dropdownOption === "ALL") {
-            
+
             fetchBookings(0, "PENDING,AWAITING_CUSTOMER_PAYMENT");
 
         } else if (status === "Canceled" && dropdownOption === "ALL") {
-            
+
             fetchBookings(0, "EXPIRED,REJECTED,CANCELLED");
         } else if (dropdownOption !== "PAYMENT PENDING" && dropdownOption !== "PENDING ADMIN CONFIRMATION") {
-            
+
             fetchBookings(0, dropdownOption);
         } else if (dropdownOption === "PAYMENT PENDING") {
-            
+
             fetchBookings(0, "AWAITING_CUSTOMER_PAYMENT");
         } else if (dropdownOption === "PENDING ADMIN CONFIRMATION") {
-            
+
             fetchBookings(0, "AWAITING_ADMIN_CONFIRMATION");
         }
     };
@@ -353,43 +353,36 @@ const MyCarPackageBookings = () => {
                                         {/* <h5 className="text-base md:text-md font-semibold text-gray-800">Car Type: {item.carType}</h5> */}
                                         <h5 className="text-base md:text-md font-semibold text-gray-800">Car: {item.carModel}({item.carType})</h5>
                                     </div>
+                                    <div className="flex flex-col sm:flex-col gap-2 mb-2">
+                                        {/* <h5 className="text-base md:text-md font-semibold text-gray-800">Car Type: {item.carType}</h5> */}
+                                        {item.carDetailsDTO ? (
+                                            <>
+                                                {/* render car details here */}
+                                                <h5 className="text-base md:text-md font-semibold text-gray-800">
+                                                    Driver Name: {item.carDetailsDTO.driverName}
+                                                    Phone: {item.carDetailsDTO.driverNumber}
+                                                    Car Number: {item.carDetailsDTO.carNumber}
+                                                </h5>
+                                            </>
+                                        ) : (
+                                            (() => {
+                                                const startDate = new Date(item.expiredAt);
+                                                const diffInDays = Math.ceil((startDate - now) / (1000 * 60 * 60 * 24));
 
-                                    {/* <div className="space-y-2 mb-3">
-                    {item.roomBookingsList.map((room, idx) => (
-                      <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2">
-                        <div className="text-sm text-gray-700">
-                          <span className="font-medium">{room.roomName}</span> ({room.numberOfRooms} room{room.numberOfRooms > 1 ? "s" : ""}) — ₹{room.totalPrice}
-                        </div>
-                        {item.status === "PARTIALLY_CANCELLED" && (
-                          <span
-                            className={`inline-block px-2 py-1 text-xs rounded-full font-medium self-start sm:self-center ${room.status === "CONFIRMED"
-                              ? "bg-green-100 text-green-700"
-                              : room.status === "CANCELLED"
-                                ? "bg-red-100 text-red-700"
-                                : room.status === "PARTIALLY_CANCELLED"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : room.status === "COMPLETED"
-                                    ? "bg-blue-100 text-blue-700"
-                                    : "bg-gray-100 text-gray-700"
-                              }`}
-                          >
-                            {room.status.replace(/_/g, " ")}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div> */}
+                                                if (diffInDays <= 10 && diffInDays > 0) {
+                                                    return (
+                                                        <h5 className="text-base md:text-md font-semibold text-gray-800">
+                                                            The driver’s contact details will be shared with you 10 days prior to your start date
+                                                        </h5>
+                                                    );
+                                                }
+                                                return null;
+                                            })()
+                                        )}
+                                    </div>
 
-                                    {/* Hotel address and contact */}
-                                    {/* <div className="text-sm text-gray-600 space-y-1">
-                    <p className="break-words">
-                      {item.hotelAddress}
-                    </p>
-                    <p className="break-all">
-                      {item.hotelContact}
-                    </p>
-                    
-                    </div> */}
+
+
                                     {(item.status === "PENDING" || item.status === "AWAITING_CUSTOMER_PAYMENT") && (
                                         <PaymentDeadline expiredAt={item.expiredAt} />
                                     )}
