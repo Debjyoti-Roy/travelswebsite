@@ -13,7 +13,7 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
   <div
     onClick={onClick}
     ref={ref}
-    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
   >
     <FaCalendar className="absolute left-3 text-blue-500 w-5 h-5" />
     <span className={value ? "text-black" : "text-gray-400"}>
@@ -139,18 +139,20 @@ const Hotelsearch = () => {
 
   return (
     <div className="package-search-container">
+    {/* <div className="package-search-container"> */}
       <h2 className="flex lg:justify-start justify-center font-bold lg:pl-6 text-2xl text-black pt-5 pb-3">Find Your Perfect Stay</h2>
       <div className="flex w-full lg:p-4">
 
-        <div className="w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
+        <div className="w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
+        {/* <div className="w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col lg:flex-row gap-4 lg:gap-2 items-center"> */}
           <div className="flex-1 w-full">
-            <label className="block flex pb-1 text-sm font-medium mb-1">Location</label>
+            <label className="block flex pb-1 text-md font-medium mb-1">Location</label>
             <div className="relative">
               <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
               <select
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Location</option>
                 {locationOptions.map((place, index) => (
@@ -163,7 +165,7 @@ const Hotelsearch = () => {
           </div>
 
           <div className="flex-[1.5] w-full">
-            <label className="block text-sm font-medium mb-1 flex pb-1">Dates</label>
+            <label className="block text-md font-medium mb-1 flex pb-1">Dates</label>
             <div className="relative">
               <DatePicker
                 selectsRange
@@ -186,13 +188,13 @@ const Hotelsearch = () => {
 
 
           <div className="relative flex-1 w-full">
-            <label className="block text-sm font-medium mb-1 flex pb-1">Guests & Rooms</label>
+            <label className="block text-md font-medium mb-1 flex pb-1">Guests & Rooms</label>
             <div
               onClick={() => setShowGuestOptions(!showGuestOptions)}
-              className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="relative w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <FaUsers className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
-              <span className="flex lg:justify-center justify-start">
+              <span className="flex lg:justify-start justify-start">
 
                 {`${adults} Adults${children > 0 ? ` · ${children} Children` : ""} · ${rooms} Rooms`}
               </span>
@@ -264,7 +266,7 @@ const Hotelsearch = () => {
             <button
               onClick={handleSearch}
               className="bg-blue-600 flex w-full lg:w-auto justify-center
-            items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+            items-end text-white rounded-xl px-6 py-3 text-md font-medium hover:bg-blue-700 transition"
             >
               Search
             </button>

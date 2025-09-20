@@ -16,30 +16,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
 function App() {
-  // useEffect(() => {
-  //   const script = document.createElement("script");
-  //   script.src = "https://checkout.razorpay.com/v1/checkout.js";
-  //   script.async = true;
-  //   script.onload = () => {
-  //     const options = {
-  //       key: import.meta.env.VITE_RAZORPAY_KEY,
-  //       // amount: 50000, // Amount in paise
-  //       currency: "INR",
-  //       name: "Your Company",
-  //       description: "Payment for XYZ",
-  //       order_id: "order_R5Jthcgb3OnhZy", // from your backend
-  //       handler: function (response) {
-  //         console.log(response);
-  //       },
-  //       theme: {
-  //         color: "#3399cc"
-  //       }
-  //     };
-  //     const rzp = new window.Razorpay(options);
-  //     rzp.open();
-  //   };
-  //   document.body.appendChild(script);
-  // }, []);
+ 
   return (
     <PrimeReactProvider>
       <AuthProvider>

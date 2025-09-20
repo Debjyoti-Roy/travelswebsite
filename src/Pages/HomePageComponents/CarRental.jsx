@@ -10,7 +10,7 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
   <div
     onClick={onClick}
     ref={ref}
-    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md cursor-pointer flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
   >
     <FaCalendar className="absolute left-3 text-blue-500 w-5 h-5" />
     <span className={value ? "text-black" : "text-gray-400"}>
@@ -107,11 +107,11 @@ const CarRental = () => {
         Rent Your Car
       </h2>
       <div className="flex w-full lg:p-4">
-        <div className="w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
+        <div className="w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
 
           {/* Destination Suggestive Input */}
           <div className="flex-1 w-full relative">
-            <label className="block flex pb-1 text-sm font-medium mb-1">Destination</label>
+            <label className="block flex pb-1 text-md font-medium mb-1">Destination</label>
             <div className="relative">
               <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
               <input
@@ -119,7 +119,7 @@ const CarRental = () => {
                 value={from}
                 onChange={handleInputChange}
                 onFocus={() => from && setShowSuggestions(true)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter Destination"
               />
               {showSuggestions && suggestions.length > 0 && (
@@ -140,7 +140,7 @@ const CarRental = () => {
 
           {/* Travel Date */}
           <div className="flex-1 w-full">
-            <label className="block text-sm font-medium mb-1 flex pb-1">Date</label>
+            <label className="block text-md font-medium mb-1 flex pb-1">Date</label>
             <div className="relative">
               <DatePicker
                 selected={travelDate}
@@ -158,7 +158,7 @@ const CarRental = () => {
           <div className="h-full w-full lg:w-auto flex items-end">
             <button
               onClick={handleSubmit}
-              className="bg-blue-600 flex w-full lg:w-auto justify-center items-end text-white rounded-xl px-6 py-3 text-sm font-medium hover:bg-blue-700 transition"
+              className="bg-blue-600 flex w-full lg:w-auto justify-center items-end text-white rounded-xl px-6 py-3 text-md font-medium hover:bg-blue-700 transition"
             >
               Search
             </button>
