@@ -103,6 +103,7 @@ import Query from "./HomePageComponents/Query";
 import { fetchPartnerProfile } from "../Redux/store/partnerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import About from "./HomePageComponents/About";
 
 const HomePage = () => {
   const topRef = useRef(null);
@@ -161,6 +162,7 @@ const HomePage = () => {
   return (
     <>
       <Search ref={topRef} />
+      <About />
       <Query />
     </>
   );

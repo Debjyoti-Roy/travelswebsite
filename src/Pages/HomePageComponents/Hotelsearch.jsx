@@ -140,8 +140,8 @@ const Hotelsearch = () => {
   return (
     <div className="package-search-container">
     {/* <div className="package-search-container"> */}
-      <h2 className="flex lg:justify-start justify-center font-bold lg:pl-6 text-2xl text-black pt-5 pb-3">Find Your Perfect Stay</h2>
-      <div className="flex w-full lg:p-4">
+      <h2 className="flex lg:justify-start justify-center font-bold lg:pl-[15px] text-2xl text-black pt-[5px] pb-[5px]">Find Your Perfect Stay</h2>
+      <div className="flex w-full lg:p-[10px] p-2">
 
         <div className="w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
         {/* <div className="w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col lg:flex-row gap-4 lg:gap-2 items-center"> */}

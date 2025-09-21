@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getDestinations, getPackages } from '../Redux/store/carPackageSlice';
 import DatePicker from 'react-datepicker';
 import { FaCalendar, FaChevronDown, FaFilter, FaMapPin, FaTimes } from 'react-icons/fa';
 import { Skeleton } from '@mui/material';
+import { getPackages } from '../Redux/store/tourPackageSlice';
+import { getDestinations } from '../Redux/store/carPackageSlice';
+
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
     <div
@@ -19,26 +21,8 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
     </div>
 ));
 
-function packageDescription({ description }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const toggleDescription = () => {
-        setIsExpanded(!isExpanded);
-    };
-
-    // You can adjust this character limit
-    const charLimit = 100;
-
-    const shouldTruncate = description.length > charLimit;
-    const displayedText = isExpanded ? description : description.slice(0, charLimit) + (shouldTruncate ? "..." : "");
-
-    return (
-        <p className="hidden lg:block text-gray-500 text-md pt-2">
-            {displayedText}
-        </p>)
-}
 const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilters }) => {
-    const carTypes = ["HATCHBACK", "SEDAN", "SUV", "TEMPO TRAVELLER", "MINI BUS"];
+    const tourTypes = ["BUDGET", "PREMIUM", "LUXURY"];
 
     // Match parent filter structure
     const [selectedCarTypes, setSelectedCarTypes] = useState(initialFilters.selectedCarTypes || []);
@@ -106,7 +90,7 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
                             –
                         </button>
                         <span className="text-sm font-medium text-gray-500 text-center flex-1">
-                            {duration === 0
+                            {(duration === 0 || duration ==='0')
                                 ? "Not selected"
                                 : `${duration} Day${duration > 1 ? "s" : ""}`}
                         </span>
@@ -121,9 +105,9 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
 
                 {/* Car Types */}
                 <div>
-                    <h3 className="text-md font-semibold text-gray-700 mb-3">Car Type</h3>
+                    <h3 className="text-md font-semibold text-gray-700 mb-3">Tour Type</h3>
                     <div className="flex flex-col gap-3">
-                        {carTypes.map((type) => (
+                        {tourTypes.map((type) => (
                             <label key={type} className="inline-flex items-center gap-2 cursor-pointer text-sm">
                                 <input
                                     type="checkbox"
@@ -151,20 +135,13 @@ const FilterSection = React.memo(({ onFilterChange, onApplyFilters, initialFilte
     );
 });
 
-
-
-const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-];
-
 const parseDate = (str) => {
     if (!str) return null;
     const [day, month, year] = str.split("-");
     return new Date(`${year}-${month}-${day}`);
 };
 
-const CarPackageSearchResults = () => {
+const PackageSearchResults = () => {
     const location = useLocation();
     const { state } = location;
     const dispatch = useDispatch()
@@ -174,10 +151,9 @@ const CarPackageSearchResults = () => {
     const [suggestions, setSuggestions] = useState([]);
     const [loadedImages, setLoadedImages] = useState({});
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [page, setPage] = useState(0);
     const [priceSort, setPriceSort] = useState("");
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-    const { packages, packagesLoading, packagesError, packagesStatus } = useSelector((state) => state.carPackage)
+    const { packages, loading, error } = useSelector((state) => state.tourPackage);
     const { destinations } = useSelector((state) => state.carPackage);
 
     //filters
@@ -197,19 +173,16 @@ const CarPackageSearchResults = () => {
         setAppliedFilters(newFilters);
     }, []);
 
-    
 
-
-    const navigate = useNavigate()
-    const fetchCarPackage = useCallback(() => {
+    const fetchTourPackage = useCallback(() => {
         const [day, month, year] = state.travelDate.split("-");
         dispatch(getPackages({ area: state.location, month: month }))
     }, [dispatch, state])
-    const fetchCarPackage2 = useCallback(() => {
+    const fetchTourPackage2 = useCallback(() => {
         const [day, month, year] = state.travelDate.split("-");
         const appfilters = appliedFilters.selectedCarTypes
         if (appliedFilters.duration !== "" || appfilters.length) {
-            dispatch(getPackages({ area: state.location, month: month, catTypes: appliedFilters.selectedCarTypes, duration: appliedFilters.duration }))
+            dispatch(getPackages({ area: state.location, month: month, tourTypes: appliedFilters.selectedCarTypes, duration: appliedFilters.duration }))
         } else {
             dispatch(getPackages({ area: state.location, month: month }))
         }
@@ -218,13 +191,11 @@ const CarPackageSearchResults = () => {
         dispatch(getDestinations());
     }, [dispatch]);
     useEffect(() => {
-        fetchCarPackage2()
-    }, [fetchCarPackage2])
+        fetchTourPackage()
+    }, [fetchTourPackage])
     useEffect(() => {
-        fetchCarPackage()
-    }, [fetchCarPackage])
-
-
+        fetchTourPackage2()
+    }, [fetchTourPackage2])
     useEffect(() => {
         if (destinations.length) {
             const processedDestinations = [
@@ -238,9 +209,11 @@ const CarPackageSearchResults = () => {
         }
     }, [destinations])
 
-    // const [date, setDate] = useState(state.travelDate)
 
-
+    useEffect(() => {
+      console.log(packages)
+    }, [packages])
+    
 
     const handleImageLoad = (id) => {
         setLoadedImages((prev) => ({ ...prev, [id]: true }));
@@ -266,7 +239,6 @@ const CarPackageSearchResults = () => {
         setLoc(value);
         setShowSuggestions(false);
     };
-
     const formatDate = (date) => {
         const d = new Date(date);
         const day = String(d.getDate()).padStart(2, "0");
@@ -274,7 +246,6 @@ const CarPackageSearchResults = () => {
         const year = d.getFullYear();
         return `${day}-${month}-${year}`;
     };
-
     const handleSearch = () => {
         const data = {
             location: loc,
@@ -283,16 +254,13 @@ const CarPackageSearchResults = () => {
         window.location.reload();
         navigate(".", { state: data });
     }
-
-    const handleBookNow = (id) => {
-        const data = {
-            id: id,
-            travelDate:state.travelDate
-        }
-        navigate("/carpackagedetails", { state: data })
-    }
-
-
+    // const handleBookNow = (id) => {
+    //     const data = {
+    //         id: id,
+    //         travelDate:state.travelDate
+    //     }
+    //     navigate("/carpackagedetails", { state: data })
+    // }
     return (
         <div className="max-w-screen overflow-x-hidden">
             <div
@@ -425,7 +393,7 @@ const CarPackageSearchResults = () => {
 
                             </div>
                         </div>
-                        {(packagesLoading) && (
+                        {(loading) && (
                             <div className="w-full flex flex-col gap-6 mb-6">
                                 {[...Array(3)].map((_, idx) => (
                                     <div
@@ -464,8 +432,8 @@ const CarPackageSearchResults = () => {
                                 ))}
                             </div>
                         )}
-                        {packagesError && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {packagesError}</div>}
-                        {packages && !packagesLoading && !packagesError && (
+                        {error && <div className='w-full flex flex-col items-center mt-6 min-h-screen p-8 text-red-500'>Error: {packagesError}</div>}
+                        {packages && !loading && !error && (
                             <>
                                 {packages.length > 0 ? (
                                     <div className="w-full flex-1 gap-6 mb-6">
@@ -622,4 +590,4 @@ const CarPackageSearchResults = () => {
     )
 }
 
-export default CarPackageSearchResults
+export default PackageSearchResults

@@ -11,6 +11,7 @@ import adminReducer from './adminSlices'
 import adminCarReducer from './adminCarSlice'
 import carPackageReducer from './carPackageSlice'
 import partnercarReducers from './partnerCar'
+import tourPackageReducer from './tourPackageSlice'
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     admin: adminReducer,
     admincar: adminCarReducer,
     carPackage:carPackageReducer,
-    partnerCar:partnercarReducers
+    partnerCar:partnercarReducers,
+    tourPackage:tourPackageReducer
   },
 });

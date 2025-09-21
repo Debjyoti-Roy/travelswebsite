@@ -62,37 +62,6 @@ const Search = () => {
           <div className="pt-5">
 
             <div className="bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl border border-gray-100">
-              {/* <div className="flex justify-start w-full border-b border-gray-300">
-                <button
-                  onClick={() => setTab("Package")}
-                  className={`flex items-center gap-2 px-5 py-5  border-b-2 transition-all duration-300
-      ${tab === "Package" ? "border-blue-500 text-blue-500" : "border-transparent text-gray-600 hover:text-blue-400"}
-    `}
-                >
-                  <FaBoxOpen size={18} />
-                  <span className="hidden md:inline">Packages</span>
-                </button>
-
-                <button
-                  onClick={() => setTab("Hotels")}
-                  className={`flex items-center gap-2 px-5 py-5  border-b-2 transition-all duration-300
-      ${tab === "Hotels" ? "border-blue-500 text-blue-500" : "border-transparent text-gray-600  hover:text-blue-400"}
-    `}
-                >
-                  <FaHotel size={18} className={${tab === 'hotels' ? 'text-blue-500' : ''}} />
-                  <span className="hidden md:inline">Hotels</span>
-                </button>
-
-                <button
-                  onClick={() => setTab("Cars")}
-                  className={`flex items-center gap-2 px-5 py-5  border-b-2 transition-all duration-300
-      ${tab === "Cars" ? "border-blue-500 text-blue-500" : "border-transparent text-gray-600 hover:text-blue-400"}
-    `}
-                >
-                  <FaCar size={18} />
-                  <span className="hidden md:inline">Cars</span>
-                </button>
-              </div> */}
               <div className="flex items-center gap-3 p-3 sm:p-4 border-b border-gray-200">
                 <div className="flex items-center gap-2 bg-white/60 rounded-full p-1 shadow-inner">
                   <TabButton

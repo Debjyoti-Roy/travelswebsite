@@ -1,15 +1,24 @@
 .Nav {
   width: 100%;
-  background-color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  /* background-color: transparent; */
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
 }
 .Navspan {
   font-size: 20px;
   cursor: default;
 }
 .Navtext {
-  color: #1e40af;
+  /* color: white; */
+  /* color: #1e40af; */
 }
+.Nav.scrolled {
+  background-color: white;
+}
+
+.Nav.scrolled .Navtext {
+  color: #1e40af; /* blue-600 */
+}
+
 .NavSection {
   padding-top: 1.5vh;
   padding-bottom: 1.5vh;
@@ -43,10 +52,12 @@
 }
 .hero-img {
   width: 100%;
-  height: auto;
+  height: 480px;
+  /* height: 53vh; */
   object-fit: cover;
-  max-height: 50vh;
+  /* max-height: 50vh; */
   z-index: 0;
+  margin-top: -8vh;
 }
 
 /* .hero-section::before {
@@ -299,6 +310,7 @@
     /* margin-top: 213px; */
   }
   .hero-img {
+    /* height: 100px; */
     height: 100vh;
   }
   .css-kimw2q {
