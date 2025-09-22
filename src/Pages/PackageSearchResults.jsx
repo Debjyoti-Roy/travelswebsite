@@ -142,6 +142,7 @@ const parseDate = (str) => {
 };
 
 const PackageSearchResults = () => {
+    const navigate = useNavigate()
     const location = useLocation();
     const { state } = location;
     const dispatch = useDispatch()
@@ -254,13 +255,13 @@ const PackageSearchResults = () => {
         window.location.reload();
         navigate(".", { state: data });
     }
-    // const handleBookNow = (id) => {
-    //     const data = {
-    //         id: id,
-    //         travelDate:state.travelDate
-    //     }
-    //     navigate("/carpackagedetails", { state: data })
-    // }
+    const handleBookNow = (id) => {
+        const data = {
+            id: id,
+            travelDate:state.travelDate
+        }
+        navigate("/tourdetails", { state: data })
+    }
     return (
         <div className="max-w-screen overflow-x-hidden">
             <div

@@ -1,46 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { IoIosInformationCircleOutline } from "react-icons/io";
-import { MdOutlineCancel, MdAutorenew, MdSupportAgent, MdPlace, MdLocationOn, MdArrowForward } from "react-icons/md";
-import { bookPackage, getCarDetails } from '../Redux/store/carPackageSlice';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../auth/firebase';
 import LoginModal from '../Components/LoginModal';
-import { fetchUserProfile, registerUser } from '../Redux/store/userSlice';
-import { signInWithPopup } from 'firebase/auth';
-import toast from 'react-hot-toast';
-import { carPackageConfirmPayment } from '../Redux/store/paymentSlice';
-import CarPackageSuccessModal from './ModalComponent/CarPackageSuccessModal';
-import PaymentFailedModal from './ModalComponent/PaymentFailModal';
-import CarShareButton from '../Components/CarShareButton';
+import { getTourDetails } from '../Redux/store/tourPackageSlice';
+import { MdArrowForward, MdAutorenew, MdHotel, MdLocationOn, MdOutlineCancel, MdSupportAgent } from 'react-icons/md';
+import { Carousel } from 'react-responsive-carousel';
+import { FaCarSide } from 'react-icons/fa';
 
-const CarPackageDetails = () => {
+const TourDetails = () => {
     const location = useLocation();
     const navigate = useNavigate()
     const { state } = location;
-
-
-    //     const urlParams = new URLSearchParams(window.location.search);
-    //   let urlState = {};
-    //   if (urlParams.get('data')) {
-    //     console.log(urlParams)
-    //     try {
-    //       urlState = JSON.parse(decodeURIComponent(atob(urlParams.get('data'))));
-    //     } catch (e) {
-    //       urlState = {};
-    //     }
-    //   } else {
-    //     // urlState = {
-    //     //   id: urlParams.get('id'),
-    //     //   checkIn: urlParams.get('checkIn'),
-    //     //   checkOut: urlParams.get('checkOut'),
-    //     //   total: parseInt(urlParams.get('total')) || 1,
-    //     //   room: parseInt(urlParams.get('room')) || 1,
-    //     //   location: urlParams.get('location'),
-    //     //   startingPrice: urlParams.get('startingPrice') ? parseInt(urlParams.get('startingPrice')) : undefined
-    //     // };
-    //     console.log(urlParams.get('packageId'))
-    //   }
     const urlParams = new URLSearchParams(window.location.search);
     let urlState = {};
 
@@ -60,20 +32,9 @@ const CarPackageDetails = () => {
     } else {
         console.log("No carPackage found in URL");
     }
-
-
-
     const currentState = state || urlState
     const dispatch = useDispatch()
-    const {
-        carDetails,
-        carDetailsLoading,
-        carDetailsError,
-        carDetailsStatus,
-        bookPackageData,
-        bookPackageError,
-        bookPackageLoading,
-    } = useSelector((state) => state.carPackage);
+    const { tourDetails, tourDetailsLoading, tourDetailsError, tourDetailsStatus } = useSelector((state) => state.tourPackage)
     const [showModal2, setShowModal2] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
     const [paidAt, setPaidAt] = useState("")
@@ -250,9 +211,6 @@ const CarPackageDetails = () => {
     };
 
     //LOGIN KHOTOM
-
-
-    //Booking
     const [bookingData, setBookingData] = useState({})
     const handleBookNow = (applicablePrice, car) => {
         const [day, month, year] = currentState.travelDate.split("-");
@@ -280,127 +238,42 @@ const CarPackageDetails = () => {
 
         }
     };
-
-    const handleBook = async () => {
-        console.log(bookingData.book)
-        const token = localStorage.getItem('token')
-        dispatch(bookPackage({ data: bookingData.book, token: token }))
-    }
-
-    const handlePaymentConfirm = async (paymentId, razorpayOrderId, razorpaySignature) => {
-        const token = localStorage.getItem("token");
-
-        const res = await dispatch(
-            carPackageConfirmPayment({
-                token,
-                razorpayPaymentId: paymentId,
-                razorpayOrderId: razorpayOrderId,
-                razorpaySignature: razorpaySignature,
-            })
-        );
-
-        if (res.payload.status == 200 || res.payload.status == 409) {
-            // console.log(res.payload.data)
-            setPaidAt(res.payload.data?.paidAt)
-            setBookingModal(true)
-            // console.log("SUCCESSFULL")
-        } else {
-            // console.log("NOT SUCCESSFULL")
-            setFailModal(true)
-        }
-    };
-
-    const handleRazorPay = useCallback(() => {
-        if (bookPackageData) {
-            console.log(bookPackageData)
-            const cookies = document.cookie.split("; ");
-            const userDataCookie = cookies.find((row) =>
-                row.startsWith("userData=")
-            );
-            const value = userDataCookie.split("=")[1];
-            const decoded = JSON.parse(decodeURIComponent(value));
-
-
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY,
-                name: "INO TRAVELS",
-                description: "Car Package Booking Payment",
-                order_id: bookPackageData.razorpayOrderId,
-
-                handler: async function (response) {
-                    await handlePaymentConfirm(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature)
-                },
-                modal: {
-                    ondismiss: () => {
-                        toast.error("Booking not confirmed. Payment was cancelled.", {
-                            style: {
-                                borderRadius: "10px",
-                                background: "#333",
-                                color: "#fff",
-                            },
-                        });
-                    },
-                },
-
-                prefill: {
-                    name: decoded.name,
-                    email: decoded.email,
-                    contact: (!decoded.phoneNumber || decoded.phoneNumber === "" || decoded.phoneNumber === "NA") ? null : decoded.phoneNumber,
-                },
-
-                theme: {
-                    color: "#3399cc",
-                },
-            };
-            const rzp = new window.Razorpay(options);
-            rzp.open();
-        }
-    }, [bookPackageData])
-
+    const [mnth, setMnth] = useState()
     useEffect(() => {
-        // console.log(bookPackageData)
-        handleRazorPay()
-    }, [handleRazorPay])
-
-    useEffect(() => {
-        console.log(carDetails)
-    }, [carDetails])
-
-
-
+        const [day, month, year] = state.travelDate.split("-");
+        setMnth(month)
+    }, [state])
     const getDetails = useCallback(() => {
-        dispatch(getCarDetails({ id: currentState.id }));
+        dispatch(getTourDetails({ id: currentState.id }));
     }, [dispatch, currentState])
     useEffect(() => {
         getDetails()
         console.log(currentState)
-    }, [getCarDetails])
+    }, [getTourDetails])
 
-    useEffect(() => {
-        console.log(currentState)
-    }, [currentState])
+    const getMonthName = (monthNumber) => {
+        const date = new Date();
+        date.setMonth(monthNumber - 1); // JS months are 0-indexed
+        return date.toLocaleString('default', { month: 'long' });
+    };
 
-
+    // const { tourDetails, tourDetailsLoading, tourDetailsError, tourDetailsStatus } = useSelector((state) => state.tourPackage)
     const travelMonth = currentState?.travelDate
         ? parseInt(currentState.travelDate.split("-")[1], 10)
         : null;
 
-    const pickupPoints = carDetails?.pickupLocation?.split(",").map((p) => p.trim()) || [];
-    const dropPoints = carDetails?.dropLocation?.split(",").map((d) => d.trim()) || [];
+    const pickupPoints = tourDetails?.pickupLocation?.split(",").map((p) => p.trim()) || [];
+    const dropPoints = tourDetails?.dropLocation?.split(",").map((d) => d.trim()) || [];
 
-    if (carDetailsLoading) return <p>Loading...</p>;
-    if (carDetailsError) return <p className="text-red-600">{carDetailsError}</p>;
-    if (!carDetails || carDetails.length === 0) return <p>No details available</p>;
-
-
-
-
+    if (tourDetailsLoading) return <p>Loading...</p>;
+    if (tourDetailsError) return <p className="text-red-600">{tourDetailsError}</p>;
+    if (!tourDetails || tourDetails.length === 0) return <p>No details available</p>;
     return (
         <div className="w-full bg-gray-50">
             {/* Package Header */}
             <div className="relative h-[450px] w-full">
                 <img
-                    src={carDetails?.thumbnailUrl}
+                    src={tourDetails?.thumbnailUrl}
                     alt="package thumbnail"
                     className="h-full w-full object-cover"
                 />
@@ -413,36 +286,124 @@ const CarPackageDetails = () => {
                     <div>
 
                         <h1 className="text-3xl md:text-5xl font-bold">
-                            {carDetails?.title}
+                            {tourDetails?.title}
                         </h1>
 
                         {/* Destination */}
-                        {carDetails?.destination && (
+                        {tourDetails?.destination && (
                             <p className="mt-2 text-sm md:text-lg flex items-center gap-2">
                                 <span className="font-medium">Destination:</span>
                                 <span className="font-semibold text-blue-200">
-                                    {carDetails.destination.name}
+                                    {tourDetails.destination.name}
                                 </span>
                                 <span className="text-gray-200 text-sm">
-                                    ({carDetails.destination.state})
+                                    ({tourDetails.destination.state})
                                 </span>
                             </p>
                         )}
                     </div>
 
-                    <CarShareButton carPackage={carDetails} travelDate={currentState.travelDate} className="self-start md:self-end" />
+                    {/* <CarShareButton carPackage={carDetails} travelDate={currentState.travelDate} className="self-start md:self-end" /> */}
                 </div>
             </div>
             <div className="flex justify-center">
                 <div className="lg:w-[70%] w-full flex justify-center flex-col">
+
+                    {/* <div className="p-4 md:p-8 bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
+                        <div className="space-y-12 max-w-7xl mx-auto" style={{ marginTop: "40px", marginBottom: "40px" }}>
+                            {tourDetails?.tourPackageTypes?.map((pkg, index) => (
+                                <div
+                                    key={pkg.id || index}
+                                    className="grid grid-cols-1 lg:grid-cols-3 gap-10 p-8 rounded-3xl shadow-2xl 
+                   bg-white/60 backdrop-blur-lg border border-gray-200 
+                   hover:shadow-3xl hover:scale-[1.03] transition-all duration-500"
+                                    style={{ margin: "20px 0" }}
+                                >
+                                    
+                                    <div className="lg:col-span-1 flex flex-col gap-8">
+                                        {(pkg.sampleHotelImageUrls?.length > 0 || pkg.sampleCarImageUrls?.length > 0) && (
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-purple-500 pl-3">
+                                                    Sample Hotels & Cars
+                                                </h3>
+                                                <Carousel
+                                                    showThumbs={false}
+                                                    autoPlay
+                                                    infiniteLoop
+                                                    showStatus={false}
+                                                    interval={4000}
+                                                    className="rounded-2xl overflow-hidden shadow-lg"
+                                                >
+                                                    {[...(pkg.sampleHotelImageUrls || []), ...(pkg.sampleCarImageUrls || [])].map(
+                                                        (url, i) => (
+                                                            <div key={`sample-${i}`} className="aspect-square">
+                                                                <img
+                                                                    src={url}
+                                                                    alt={`Sample ${i + 1}`}
+                                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                                                />
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </Carousel>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="lg:col-span-2 flex flex-col">
+                                        <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
+                                            {pkg.tourType} Package
+                                        </h2>
+                                        <p className="text-gray-700 italic text-lg mb-6">
+                                            {pkg.carTypes} & {pkg.hotelType} Hotel
+                                        </p>
+
+                                        {pkg.seasonPrices?.length > 0 && (
+                                            <div className="mt-8">
+                                                <h3 className="text-2xl font-semibold text-gray-800 mb-5 border-b pb-2">
+                                                    Seasonal Pricing
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {pkg.seasonPrices.map((season, i) =>
+                                                        season.isActive && (
+                                                            <div
+                                                                key={i}
+                                                                className="flex items-center justify-between p-5 rounded-xl 
+                 bg-gradient-to-r from-gray-50 to-gray-100 
+                 border border-gray-200 shadow-sm hover:shadow-md transition-all"
+                                                            >
+                                                                <div className="font-medium text-gray-700 text-md">
+                                                                    {getMonthName(season.startMonth)}
+                                                                    <span className="mx-2 text-gray-500"> to </span>
+                                                                    {getMonthName(season.endMonth)}
+                                                                </div>
+                                                                <div className="flex items-center gap-5">
+                                                                    <span className="text-xl font-bold text-gray-900">
+                                                                        ₹{season.price.toLocaleString("en-IN")}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    )}
+
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div> */}
+
+
                     {/* Cars Section */}
-                    <div className="max-w-full mx-auto px-6 pb-3 pt-8">
+                    {/* <div className="max-w-full mx-auto px-6 pb-3 pt-8">
                         <h2 className="text-3xl font-semibold pb-6 text-gray-800">
                             Available Cars
                         </h2>
 
                         <div className="space-y-6">
-                            {carDetails.carDetails.map((car) => {
+                            {tourDetails.carDetails.map((car) => {
                                 const applicablePrice = travelMonth
                                     ? car.carPrices.find(
                                         (p) => travelMonth >= p.startMonth && travelMonth <= p.endMonth
@@ -454,7 +415,6 @@ const CarPackageDetails = () => {
                                         key={car.carId}
                                         className="relative border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-md transition bg-white flex flex-col md:flex-row"
                                     >
-                                        {/* Left Content */}
                                         <div className="flex-1 pr-4">
                                             <h3 className="text-xl font-bold text-gray-800">{car.carName}</h3>
                                             <p className="text-gray-600 mt-1 text-sm md:text-base">
@@ -469,9 +429,7 @@ const CarPackageDetails = () => {
                                             )}
                                         </div>
 
-                                        {/* Right Content */}
                                         <div className="flex flex-col items-end justify-between mt-4 md:mt-0 md:w-40">
-                                            {/* Price - Top Right */}
                                             <div className="text-right">
                                                 <p className="text-gray-500 text-sm">Price</p>
                                                 {applicablePrice ? (
@@ -485,7 +443,6 @@ const CarPackageDetails = () => {
                                                 )}
                                             </div>
 
-                                            {/* Book Now - Bottom Right */}
                                             <button onClick={() => handleBookNow(applicablePrice, car)} className="cursor-pointer mt-3 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow">
                                                 Book Now
                                             </button>
@@ -495,7 +452,7 @@ const CarPackageDetails = () => {
                             })}
                         </div>
 
-                    </div>
+                    </div> */}
                     <div className="max-w-full mx-auto px-6 pb-6 pt-8">
                         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-100 rounded-2xl shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
 
@@ -506,7 +463,7 @@ const CarPackageDetails = () => {
                                     <span>Pickup</span>
                                 </div>
                                 <div className="flex justify-center flex-wrap gap-2">
-                                    {pickupPoints.map((p, i) => (
+                                    {pickupPoints?.map((p, i) => (
                                         <span
                                             key={i}
                                             className="px-3 py-1 text-sm bg-white border border-blue-200 text-blue-700 rounded-full shadow-sm hover:bg-blue-100 transition"
@@ -529,7 +486,7 @@ const CarPackageDetails = () => {
                                     <span>Drop</span>
                                 </div>
                                 <div className="flex justify-center flex-wrap gap-2">
-                                    {dropPoints.map((d, i) => (
+                                    {dropPoints?.map((d, i) => (
                                         <span
                                             key={i}
                                             className="px-3 py-1 text-sm bg-white border border-green-200 text-green-700 rounded-full shadow-sm hover:bg-green-100 transition"
@@ -554,7 +511,7 @@ const CarPackageDetails = () => {
                                 Journey Start
                             </div>
 
-                            {carDetails?.itineraries?.map((day, idx) => (
+                            {tourDetails?.itineraries?.map((day, idx) => (
                                 <div
                                     key={day.itineraryId}
                                     className={`relative flex flex-col md:flex-row gap-5 items-center md:items-stretch ${idx % 2 === 1 ? "md:flex-row-reverse" : ""
@@ -606,21 +563,196 @@ const CarPackageDetails = () => {
                             <div>
                                 <h3 className="font-semibold text-xl pb-2">Included</h3>
                                 <ul className="list-disc list-inside text-gray-600 space-y-1">
-                                    {carDetails?.includedFeatures?.map((f) => (
-                                        <li key={f.inclusionId}>{f.description}</li>
+                                    {tourDetails?.included?.map((f, ind) => (
+                                        <li key={ind}>{f}</li>
                                     ))}
                                 </ul>
                             </div>
                             <div>
                                 <h3 className="font-semibold text-xl pb-2">Excluded</h3>
                                 <ul className="list-disc list-inside text-gray-600 space-y-1">
-                                    {carDetails?.excludedFeatures?.map((f) => (
-                                        <li key={f.inclusionId}>{f.description}</li>
+                                    {tourDetails?.excluded?.map((f, ind) => (
+                                        <li key={ind}>{f}</li>
                                     ))}
                                 </ul>
                             </div>
                         </div>
                     </div>
+
+                    <div className='p-4'>
+                        <div
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto"
+                            // style={{ marginTop: "40px", marginBottom: "40px" }}
+                        >
+                            {tourDetails?.tourPackageTypes?.map((pkg, index) => {
+                                const activePrice =
+                                    pkg.seasonPrices?.find(
+                                        (season) => season.isActive && mnth >= season.startMonth && mnth <= season.endMonth
+                                    )?.price || pkg.seasonPrices?.[0]?.price || 0;
+
+                                return (
+                                    <div
+                                        key={pkg.id || index}
+                                        className="rounded-3xl bg-white overflow-hidden border border-gray-200 hover:shadow-2xl hover:scale-[1.02] transition-all duration-500"
+                                    >
+                                        <Carousel
+                                            showThumbs={false}
+                                            infiniteLoop
+                                            showStatus={false}
+                                            interval={4000}
+                                            className="rounded-2xl overflow-hidden shadow-lg"
+                                        >
+
+                                            {[...(pkg.sampleHotelImageUrls || []), ...(pkg.sampleCarImageUrls || [])].map(
+                                                (url, i) => (
+                                                    <div key={`sample-${i}`} className="h-52 w-full aspect-square">
+                                                        <img
+                                                            src={url}
+                                                            alt={`Sample ${i + 1}`}
+                                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                                        />
+                                                    </div>
+                                                )
+                                            )}
+                                        </Carousel>
+
+
+
+                                        {/* Content */}
+                                        <div className="p-6 flex flex-col h-full">
+                                            {/* Title */}
+                                            <h2 className="text-xl font-bold text-gray-900 mb-2">
+                                                {pkg.tourType.toUpperCase()} Package
+                                            </h2>
+
+                                            {/* <p className="text-gray-600 text-sm mb-6">
+                                                {pkg.hotelType} • {pkg.carTypes}
+                                            </p> */}
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <MdHotel className="text-blue-600 text-xl" />
+                                                <span className="text-gray-800">
+                                                    <span className="font-semibold">Accommodation</span>
+                                                    <br />
+                                                    <span className="text-gray-600">{pkg.hotelType}</span>
+                                                </span>
+                                            </div>
+
+                                            {/* Transportation */}
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <FaCarSide className="text-green-600 text-xl" />
+                                                <span className="text-gray-800">
+                                                    <span className="font-semibold">Transportation</span>
+                                                    <br />
+                                                    <span className="text-gray-600">{pkg.carTypes}</span>
+                                                </span>
+                                            </div>
+
+                                            {/* Price + Button */}
+                                            <div className="flex items-center justify-between mt-auto">
+                                                <span className="text-lg font-bold text-gray-900">
+                                                    ₹{activePrice.toLocaleString("en-IN")}
+                                                </span>
+                                                <button className="cursor-pointer px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+                                                    Book Now →
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* <div className="p-4 md:p-8 bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
+                        <div className="space-y-12 max-w-7xl mx-auto" style={{ marginTop: "40px", marginBottom: "40px" }}>
+                            {tourDetails?.tourPackageTypes?.map((pkg, index) => (
+                                <div
+                                    key={pkg.id || index}
+                                    className="grid grid-cols-1 lg:grid-cols-3 gap-10 p-8 rounded-3xl shadow-2xl 
+                   bg-white/60 backdrop-blur-lg border border-gray-200 
+                   hover:shadow-3xl hover:scale-[1.03] transition-all duration-500"
+                                    style={{ margin: "20px 0" }}
+                                >
+                                    
+                                    <div className="lg:col-span-1 flex flex-col gap-8">
+                                        {(pkg.sampleHotelImageUrls?.length > 0 || pkg.sampleCarImageUrls?.length > 0) && (
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-purple-500 pl-3">
+                                                    Sample Hotels & Cars
+                                                </h3>
+                                                <Carousel
+                                                    showThumbs={false}
+                                                    // autoPlay
+                                                    infiniteLoop
+                                                    showStatus={false}
+                                                    interval={4000}
+                                                    className="rounded-2xl overflow-hidden shadow-lg"
+                                                >
+                                                    {[...(pkg.sampleHotelImageUrls || []), ...(pkg.sampleCarImageUrls || [])].map(
+                                                        (url, i) => (
+                                                            <div key={`sample-${i}`} className="aspect-square">
+                                                                <img
+                                                                    src={url}
+                                                                    alt={`Sample ${i + 1}`}
+                                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                                                />
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </Carousel>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="lg:col-span-2 flex flex-col">
+                                        <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
+                                            {pkg.tourType} Package
+                                        </h2>
+                                        <p className="text-gray-700 italic text-lg mb-6">
+                                            {pkg.carTypes} & {pkg.hotelType} Hotel
+                                        </p>
+
+                                        {pkg.seasonPrices?.length > 0 && (
+                                            <div className="mt-8">
+                                                <h3 className="text-2xl font-semibold text-gray-800 mb-5 pb-2">
+                                                    Seasonal Pricing
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {pkg.seasonPrices
+                                                        .filter(
+                                                            (season) =>
+                                                                season.isActive &&
+                                                                mnth >= season.startMonth &&
+                                                                mnth <= season.endMonth
+                                                        )
+                                                        .map((season, i) => (
+                                                            <div
+                                                                key={i}
+                                                                className="flex items-center justify-between p-5 rounded-xl 
+                 bg-gradient-to-r from-gray-50 to-gray-100 
+                 border border-gray-200 shadow-sm hover:shadow-md transition-all"
+                                                            >
+                                                                <div className="flex items-center gap-5">
+                                                                    <span className="text-xl font-bold text-gray-900">
+                                                                        ₹{season.price.toLocaleString("en-IN")}
+                                                                    </span>
+                                                                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                                                        Book Now
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div> */}
+
+
 
                     {/* Cancellation / Refund Policy (like hotel theme) */}
                     <div className="bg-gray-50 p-8 rounded-xl mx-auto mt-8">
@@ -670,7 +802,7 @@ const CarPackageDetails = () => {
                 phone={phone}
                 handleChange={(e) => handleChange(e)}
             />
-            {showModal2 && bookingData && (
+            {/* {showModal2 && bookingData && (
                 <div
                     className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50 p-4"
                     onClick={() => setShowModal2(false)}
@@ -679,7 +811,6 @@ const CarPackageDetails = () => {
                         className="bg-white rounded-xl w-full max-w-3xl shadow-xl overflow-y-auto max-h-[90vh] mx-4"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
                         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold text-gray-800">Booking Summary</h2>
@@ -694,10 +825,7 @@ const CarPackageDetails = () => {
                                 Please review your booking details
                             </p>
                         </div>
-
-                        {/* Car Details */}
                         <div className="bg-white overflow-hidden">
-                            {/* Vehicle Name & Main Info */}
                             <div className="px-8 py-6 border-b border-gray-100">
                                 <h4 className="text-3xl font-bold text-gray-900 mb-3">
                                     {bookingData.car?.carName}
@@ -720,11 +848,8 @@ const CarPackageDetails = () => {
                                     )}
                                 </div>
                             </div>
-
-                            {/* Specifications Grid */}
                             <div className="px-8 py-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Passenger Capacity */}
                                     <div className="flex flex-col items-center text-center space-y-4">
                                         <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                                             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -742,7 +867,6 @@ const CarPackageDetails = () => {
                                         </div>
                                     </div>
 
-                                    {/* Luggage Capacity */}
                                     <div className="flex flex-col items-center text-center space-y-4">
                                         <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                                             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -762,7 +886,6 @@ const CarPackageDetails = () => {
                                 </div>
                             </div>
 
-                            {/* Additional Notes */}
                             {bookingData.car?.notes && (
                                 <div className="px-8 py-6 bg-gray-50 border-t border-gray-100">
                                     <div className="flex items-start space-x-3">
@@ -779,8 +902,6 @@ const CarPackageDetails = () => {
                                 </div>
                             )}
                         </div>
-
-                        {/* Season Info */}
                         <div className="px-6 py-4">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">Season Info</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
@@ -794,8 +915,6 @@ const CarPackageDetails = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Price Breakdown */}
                         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">Price Breakdown</h3>
                             <div className="flex justify-between items-center py-3 border-b border-gray-200">
@@ -820,7 +939,7 @@ const CarPackageDetails = () => {
                             </div>
                         </div>
 
-                        {/* Footer */}
+                        
                         <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-xl">
                             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
                                 <button
@@ -842,8 +961,8 @@ const CarPackageDetails = () => {
                         </div>
                     </div>
                 </div>
-            )}
-            {bookingModal && (
+            )} */}
+            {/* {bookingModal && (
                 <CarPackageSuccessModal
                     bookingId={bookPackageData.bookingGroupCode}
                     paidAt={paidAt}
@@ -862,10 +981,10 @@ const CarPackageDetails = () => {
                         setFailModal(false)
                     }}
                 />
-            )}
+            )} */}
 
         </div>
     )
 }
 
-export default CarPackageDetails
+export default TourDetails

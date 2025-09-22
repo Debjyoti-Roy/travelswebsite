@@ -72,8 +72,7 @@ const CarPackageSearchResults = lazy(() => import("../Pages/CarPackageSearchResu
 const CarPackageDetails=lazy(()=>import("../Pages/CarPackageDetails"))
 const ManageCarBookings=lazy(()=>import("../Pages/AdminComponents/ManageCarBookings"))
 const PackageSearchResults=lazy(()=> import("../Pages/PackageSearchResults"))
-
-
+const TourDetails=lazy(()=>import("../Pages/TourDetails"))
 
 export const routes = [
   {
@@ -488,6 +487,36 @@ export const routes = [
   {
     path: "/carpackagedetails",
     element: <CarPackageDetails />,
+    fallback: <div className="min-h-screen w-full bg-gray-50">
+    <div className="relative h-[450px] w-full">
+      <Skeleton variant="rectangular" width="100%" height="100%" />
+      <div className="absolute bottom-6 left-6 right-6">
+        <Skeleton variant="text" width="60%" height={40} />
+        <Skeleton variant="text" width="40%" height={25} />
+      </div>
+    </div>
+
+    {/* About Section */}
+    <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
+      <Skeleton variant="text" width="40%" height={35} className="mb-4" />
+      <Skeleton variant="rectangular" height={120} className="rounded-lg" />
+
+      {/* Rooms Placeholder */}
+      <div className="pt-10 space-y-4">
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="bg-white p-4 rounded-xl shadow-sm">
+            <Skeleton variant="text" width="50%" height={30} />
+            <Skeleton variant="text" width="30%" height={20} className="mt-2" />
+            <Skeleton variant="text" width="70%" height={20} className="mt-2" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>,
+  },
+  {
+    path: "/tourdetails",
+    element: <TourDetails />,
     fallback: <div className="min-h-screen w-full bg-gray-50">
     <div className="relative h-[450px] w-full">
       <Skeleton variant="rectangular" width="100%" height="100%" />

@@ -177,6 +177,7 @@ const CarPackageSearchResults = () => {
     const [page, setPage] = useState(0);
     const [priceSort, setPriceSort] = useState("");
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+    
     const { packages, packagesLoading, packagesError, packagesStatus } = useSelector((state) => state.carPackage)
     const { destinations } = useSelector((state) => state.carPackage);
 
@@ -214,6 +215,8 @@ const CarPackageSearchResults = () => {
             dispatch(getPackages({ area: state.location, month: month }))
         }
     }, [appliedFilters])
+    
+    
     useEffect(() => {
         dispatch(getDestinations());
     }, [dispatch]);
