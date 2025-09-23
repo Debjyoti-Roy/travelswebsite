@@ -282,7 +282,6 @@ const CarPackageDetails = () => {
     };
 
     const handleBook = async () => {
-        console.log(bookingData.book)
         const token = localStorage.getItem('token')
         dispatch(bookPackage({ data: bookingData.book, token: token }))
     }
@@ -848,7 +847,7 @@ const CarPackageDetails = () => {
                     bookingId={bookPackageData.bookingGroupCode}
                     paidAt={paidAt}
                     total={bookPackageData.initialAmount}
-                    travelDate={state.travelDate}
+                    travelDate={currentState.travelDate}
                     numberofdays={carDetails.durationDays}
                     onClose={() => {
                         setBookingModal(false)

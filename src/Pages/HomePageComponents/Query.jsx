@@ -11,9 +11,9 @@ import toast from "react-hot-toast";
 const Query = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loggedIn, setLoggedIn] = useState(false);
+  const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [error2, setError2] = useState("");
-  const [name, setName] = useState("");
   const [Subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [tokenModal, setTokenModal] = useState(false);

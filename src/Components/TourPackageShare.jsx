@@ -1,4 +1,3 @@
-// CarShareButton.jsx
 import React, { useEffect, useState } from "react";
 import {
     FaShare,
@@ -9,23 +8,28 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-const CarShareButton = ({ carPackage, travelDate, className = "" }) => {
+const TourPackageShare = ({ tourPackage, travelDate, className = "" }) => {
     const [showShareOptions, setShowShareOptions] = useState(false);
-
     const baseUrl = window.location.origin + window.location.pathname;
     const shareData = {
-        packageId: carPackage.packageId,
+        id: tourPackage.id,
         travelDate: travelDate
     }
+    // useEffect(() => {
+    //   console.log(tourPackage)
+    // }, [tourPackage])
+    // useEffect(() => {
+    //   console.log(shareData)
+    // }, [shareData])
+    
     const encoded = btoa(encodeURIComponent(JSON.stringify(shareData)));
-    const shareUrl = `${baseUrl}?carPackage=${encoded}`;
-    const shareText = `🚗 Check out this amazing package: ${carPackage?.title} - ${carPackage?.destination?.name}, ${carPackage?.destination?.state}`;
-
+    const shareUrl = `${baseUrl}?tourPackage=${encoded}`;
+    const shareText = `🚗 Check out this amazing package: ${tourPackage?.title} - ${tourPackage?.destination?.name}, ${tourPackage?.destination?.state}`;
     const handleNativeShare = async () => {
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: carPackage?.title,
+                    title: tourPackage?.title,
                     text: shareText,
                     url: shareUrl,
                 });
@@ -75,9 +79,8 @@ const CarShareButton = ({ carPackage, travelDate, className = "" }) => {
         window.open(twitterUrl, "_blank");
         setShowShareOptions(false);
     };
-
-    return (
-        <div className={`relative ${className}`}>
+  return (
+    <div className={`relative ${className}`}>
             <button
                 onClick={() => setShowShareOptions(!showShareOptions)}
                 className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200"
@@ -143,7 +146,7 @@ const CarShareButton = ({ carPackage, travelDate, className = "" }) => {
                 </>
             )}
         </div>
-    );
-};
+  )
+}
 
-export default CarShareButton;
+export default TourPackageShare
