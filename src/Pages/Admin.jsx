@@ -43,6 +43,16 @@ const Admin = () => {
       title: "Manage Car Package",
       desc: "Create, update, and manage car packages.",
       color: "from-indigo-500 to-purple-600"
+    },
+    {
+      title: "Manage Tour Bookings",
+      desc: "View and manage car rental bookings.",
+      color: "from-cyan-500 to-blue-500"
+    },
+    {
+      title: "Manage Tour Package",
+      desc: "Create, update, and manage car packages.",
+      color: "from-indigo-500 to-purple-600"
     }
   ];
 
@@ -63,6 +73,9 @@ const Admin = () => {
               }
               else if (card.title === "Manage Car Package") {
                 navigate("/admin/managecarpackage")
+              }
+              else if (card.title === "Manage Tour Package") {
+                navigate("/admin/managetourpackage")
               }
               else if (card.title === "Manage Car Bookings") {
                 navigate("/admin/managecarbookings")

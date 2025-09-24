@@ -942,22 +942,22 @@ const AddCarPackage = ({ setTabRef }) => {
                                         </div>
                                     ))}
                                     {(() => {
-    const lastPrice = car.prices[car.prices.length - 1];
-    const endMonth = String(lastPrice?.endMonth).toLowerCase();
-    if (endMonth !== "12" && endMonth !== "december") {
-      return (
-        <button
-          type="button"
-          style={{ marginTop: "1vh" }}
-          onClick={() => addPrice(idx)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-        >
-          Add Price
-        </button>
-      );
-    }
-    return null;
-  })()}
+                                        const lastPrice = car.prices[car.prices.length - 1];
+                                        const endMonth = String(lastPrice?.endMonth).toLowerCase();
+                                        if (endMonth !== "12" && endMonth !== "december") {
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    style={{ marginTop: "1vh" }}
+                                                    onClick={() => addPrice(idx)}
+                                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                                                >
+                                                    Add Price
+                                                </button>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
                                 </div>
                             </div>
                         ))}

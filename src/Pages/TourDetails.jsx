@@ -392,6 +392,12 @@ const TourDetails = () => {
 
     //Booking
 
+    useEffect(() => {
+        console.log("numberOfPeople:", numberofPeople, "type:", typeof numberofPeople);
+      }, [numberofPeople]);
+      
+    
+
 
     const getMonthName = (monthNumber) => {
         const date = new Date();
@@ -660,98 +666,6 @@ const TourDetails = () => {
                             })}
                         </div>
                     </div>
-
-                    {/* <div className="p-4 md:p-8 bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
-                        <div className="space-y-12 max-w-7xl mx-auto" style={{ marginTop: "40px", marginBottom: "40px" }}>
-                            {tourDetails?.tourPackageTypes?.map((pkg, index) => (
-                                <div
-                                    key={pkg.id || index}
-                                    className="grid grid-cols-1 lg:grid-cols-3 gap-10 p-8 rounded-3xl shadow-2xl 
-                   bg-white/60 backdrop-blur-lg border border-gray-200 
-                   hover:shadow-3xl hover:scale-[1.03] transition-all duration-500"
-                                    style={{ margin: "20px 0" }}
-                                >
-                                    
-                                    <div className="lg:col-span-1 flex flex-col gap-8">
-                                        {(pkg.sampleHotelImageUrls?.length > 0 || pkg.sampleCarImageUrls?.length > 0) && (
-                                            <div>
-                                                <h3 className="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-purple-500 pl-3">
-                                                    Sample Hotels & Cars
-                                                </h3>
-                                                <Carousel
-                                                    showThumbs={false}
-                                                    // autoPlay
-                                                    infiniteLoop
-                                                    showStatus={false}
-                                                    interval={4000}
-                                                    className="rounded-2xl overflow-hidden shadow-lg"
-                                                >
-                                                    {[...(pkg.sampleHotelImageUrls || []), ...(pkg.sampleCarImageUrls || [])].map(
-                                                        (url, i) => (
-                                                            <div key={`sample-${i}`} className="aspect-square">
-                                                                <img
-                                                                    src={url}
-                                                                    alt={`Sample ${i + 1}`}
-                                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                                                                />
-                                                            </div>
-                                                        )
-                                                    )}
-                                                </Carousel>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="lg:col-span-2 flex flex-col">
-                                        <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
-                                            {pkg.tourType} Package
-                                        </h2>
-                                        <p className="text-gray-700 italic text-lg mb-6">
-                                            {pkg.carTypes} & {pkg.hotelType} Hotel
-                                        </p>
-
-                                        {pkg.seasonPrices?.length > 0 && (
-                                            <div className="mt-8">
-                                                <h3 className="text-2xl font-semibold text-gray-800 mb-5 pb-2">
-                                                    Seasonal Pricing
-                                                </h3>
-                                                <div className="space-y-4">
-                                                    {pkg.seasonPrices
-                                                        .filter(
-                                                            (season) =>
-                                                                season.isActive &&
-                                                                mnth >= season.startMonth &&
-                                                                mnth <= season.endMonth
-                                                        )
-                                                        .map((season, i) => (
-                                                            <div
-                                                                key={i}
-                                                                className="flex items-center justify-between p-5 rounded-xl 
-                 bg-gradient-to-r from-gray-50 to-gray-100 
-                 border border-gray-200 shadow-sm hover:shadow-md transition-all"
-                                                            >
-                                                                <div className="flex items-center gap-5">
-                                                                    <span className="text-xl font-bold text-gray-900">
-                                                                        ₹{season.price.toLocaleString("en-IN")}
-                                                                    </span>
-                                                                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                                                        Book Now
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div> */}
-
-
-
                     {/* Cancellation / Refund Policy (like hotel theme) */}
                     <div className="bg-gray-50 p-8 rounded-xl mx-auto mt-8">
                         <h2 className="text-3xl font-bold pb-6 text-gray-800">Our Premium Cancellation Policy</h2>
@@ -941,7 +855,7 @@ const TourDetails = () => {
                                 </button>
                                 <button
                                     onClick={handleEnquire}
-                                    disabled={!loggedIn && (!name || !contact || numberofPeople === "" || numberofPeople === "0" || numberofPeople === 0)}
+                                    disabled={(!name || !contact || numberofPeople === "" || numberofPeople === "0" ||numberofPeople === 0)}
                                     className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Enquire
@@ -951,186 +865,6 @@ const TourDetails = () => {
                     </div>
                 </div>
             )}
-            {/* {showModal2 && bookingData && (
-                <div
-                    className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50 p-4"
-                    onClick={() => setShowModal2(false)}
-                >
-                    <div
-                        className="bg-white rounded-xl w-full max-w-3xl shadow-xl overflow-y-auto max-h-[90vh] mx-4"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-bold text-gray-800">Booking Summary</h2>
-                                <button
-                                    onClick={() => setShowModal2(false)}
-                                    className="text-gray-400 hover:text-gray-600 text-2xl font-light"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                            <p className="text-gray-600 text-sm mt-1">
-                                Please review your booking details
-                            </p>
-                        </div>
-                        <div className="bg-white overflow-hidden">
-                            <div className="px-8 py-6 border-b border-gray-100">
-                                <h4 className="text-3xl font-bold text-gray-900 mb-3">
-                                    {bookingData.car?.carName}
-                                </h4>
-                                <div className="flex items-center  space-x-4">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                                        {bookingData.car?.carType}
-                                    </span>
-                                    {bookingData.car?.acAvailable ? (
-                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-200">
-                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            AC Available
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-50 text-gray-600 border border-gray-200">
-                                            No AC
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="px-8 py-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="flex flex-col items-center text-center space-y-4">
-                                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h6 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Capacity</h6>
-                                            <p className="text-2xl font-bold text-blue-600 mt-1">
-                                                {bookingData.car?.capacity}
-                                            </p>
-                                            <p className="text-sm text-gray-500">
-                                                {bookingData.car?.capacity === 1 ? 'Passenger' : 'Passengers'}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col items-center text-center space-y-4">
-                                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h6 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Luggage</h6>
-                                            <p className="text-2xl font-bold text-blue-600 mt-1">
-                                                {bookingData.car?.luggageCapacity}
-                                            </p>
-                                            <p className="text-sm text-gray-500">
-                                                {bookingData.car?.luggageCapacity === 1 ? 'Large bag' : 'Large bags'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {bookingData.car?.notes && (
-                                <div className="px-8 py-6 bg-gray-50 border-t border-gray-100">
-                                    <div className="flex items-start space-x-3">
-                                        <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <div>
-                                            <h6 className="text-sm font-semibold text-gray-900 mb-1">Additional Information</h6>
-                                            <p className="text-gray-700 text-sm leading-relaxed">
-                                                {bookingData.car?.notes}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="px-6 py-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Season Info</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
-                                <div>
-                                    <p className="text-sm text-gray-600">Travel Date</p>
-                                    <p className="font-semibold">{bookingData.book?.journeyStartDate}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Number of days</p>
-                                    <p className="font-semibold">{carDetails.durationDays}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Price Breakdown</h3>
-                            <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                                <span className="text-gray-700 font-medium">Total Price</span>
-                                <span className="text-xl font-bold text-green-600">
-                                    ₹{bookingData.applicablePrice.price?.toLocaleString()}
-                                </span>
-                            </div>
-
-                            <div className="flex justify-between items-center mt-3">
-                                <span className="text-gray-700 font-medium">Pay Now</span>
-                                <span className="text-lg font-bold text-orange-600">
-                                    ₹{Math.max(499, bookingData.applicablePrice.price * 0.1).toLocaleString()}
-                                </span>
-                            </div>
-
-                            <div className="flex justify-between items-center mt-2">
-                                <span className="text-gray-700 font-medium">Remaining Amount</span>
-                                <span className="text-lg font-bold text-blue-600">
-                                    ₹{(bookingData.applicablePrice.price - Math.max(499, bookingData.applicablePrice.price * 0.1)).toLocaleString()}
-                                </span>
-                            </div>
-                        </div>
-
-                        
-                        <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-xl">
-                            <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-                                <button
-                                    onClick={() => setShowModal2(false)}
-                                    className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        handleBook();
-                                        setShowModal2(false);
-                                    }}
-                                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                                >
-                                    Confirm Payment
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )} */}
-            {/* {bookingModal && (
-                <CarPackageSuccessModal
-                    bookingId={bookPackageData.bookingGroupCode}
-                    paidAt={paidAt}
-                    total={bookPackageData.initialAmount}
-                    travelDate={state.travelDate}
-                    numberofdays={carDetails.durationDays}
-                    onClose={() => {
-                        setBookingModal(false)
-                        navigate("/")
-                    }}
-                />
-            )}
-            {failModal && (
-                <PaymentFailedModal
-                    onClose={() => {
-                        setFailModal(false)
-                    }}
-                />
-            )} */}
             {bookingModal && (
                 <TourPackageSuccessModal
                     bookingId={bookingId}
