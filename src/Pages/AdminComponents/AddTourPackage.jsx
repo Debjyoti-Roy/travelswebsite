@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getStates } from '../../Redux/store/adminCarSlice';
 import CreatableSelect from "react-select/creatable";
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { addTourPackage } from '../../Redux/store/adminTourSlice';
+import toast from 'react-hot-toast';
 
 const CAR_TYPES = ["HATCHBACK", "SEDAN", "SUV", "TEMPO_TRAVELLER", "MINI_BUS"];
 const TOUR_TYPES = ["BUDGET", "PREMIUM", "LUXURY"];
@@ -287,6 +289,7 @@ const AddTourPackage = ({ setTabRef }) => {
     };
 
     const handleSubmit = async () => {
+        setSubmitting(true)
         const uploadedPaths = []
         if (!(basicValid && itinerariesValid && typesValid)) return;
         const thumbnailUrl = basic.thumbnailFile
@@ -311,8 +314,8 @@ const AddTourPackage = ({ setTabRef }) => {
             const tp = types[i];
             const hotelImage = tp.sampleHotelImageFile ? await uploadFileMock(tp.sampleHotelImageFile, basic.title.trim()) : "";
             const carImage = tp.sampleCarImageFile ? await uploadFileMock(tp.sampleCarImageFile, basic.title.trim()) : "";
-            if(hotelImage) uploadedPaths.push(hotelImage)
-            if(carImage) uploadedPaths.push(carImage)
+            if (hotelImage) uploadedPaths.push(hotelImage)
+            if (carImage) uploadedPaths.push(carImage)
             typeswithUrls.push({
                 tourType: tp.tourType,
                 carTypes: tp.carTypes,
@@ -320,8 +323,8 @@ const AddTourPackage = ({ setTabRef }) => {
                 sampleHotelImageUrls: hotelImage,
                 sampleCarImageUrls: carImage,
                 seasonPrices: tp.seasonPrices.map((sp) => ({
-                    startMonth: sp.startMonth+1,
-                    endMonth: sp.endMonth+1,
+                    startMonth: sp.startMonth + 1,
+                    endMonth: sp.endMonth + 1,
                     price: sp.price,
                     isActive: sp.isActive,
                 }))
@@ -352,6 +355,47 @@ const AddTourPackage = ({ setTabRef }) => {
         };
 
         console.log(payload);
+        const push = await dispatch(addTourPackage(payload))
+        if (addTourPackage.fulfilled.match(push)) {
+            setSubmitting(false)
+            setBasic([
+                {
+                    tourType: "",
+                    carTypes: "",
+                    hotelType: "",
+                    sampleHotelImageUrls: '',
+                    sampleHotelImageFile: null,
+                    sampleCarImageUrls: '',
+                    sampleCarImageFile: null,
+                    seasonPrices: [
+                        { startMonth: 0, endMonth: 0, price: 0, isActive: true }
+                    ]
+                }
+            ])
+            setItineraries([
+                { title: '', description: '', imageFile: null, imagePreview: '' }
+            ])
+            setTypes([
+                {
+                    tourType: "",
+                    carTypes: "",
+                    hotelType: "",
+                    sampleHotelImageUrls: '',
+                    sampleHotelImageFile: null,
+                    sampleCarImageUrls: '',
+                    sampleCarImageFile: null,
+                    seasonPrices: [
+                        { startMonth: 0, endMonth: 0, price: 0, isActive: true }
+                    ]
+                }
+            ])
+            setTab(0)
+            toast.success("Tour package added successfully");
+        } else {
+            setSubmitting(false)
+            await deleteFiles(uploadedPaths);
+            toast.error("Failed to add tour package. Uploads removed.");
+        }
 
 
     }
@@ -955,7 +999,7 @@ const AddTourPackage = ({ setTabRef }) => {
                         <div className="mt-6">
                             <button
                                 type="button"
-                                disabled={!typesValid}
+                                disabled={!typesValid || submitting}
                                 onClick={handleSubmit}
                                 // onClick={() => console.log("Submitting:", types)}
                                 className={`px-4 py-2 rounded-lg text-white transition ${typesValid
@@ -963,7 +1007,7 @@ const AddTourPackage = ({ setTabRef }) => {
                                     : "bg-gray-300 cursor-not-allowed"
                                     }`}
                             >
-                                Submit
+                                {submitting ? "Submitting..." : "Submit"}
                             </button>
                         </div>
                     </section>

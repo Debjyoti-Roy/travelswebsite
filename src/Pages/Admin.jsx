@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { countAwaiting } from "../Redux/store/adminSlices";
 import { useNavigate } from "react-router-dom";
 import { carCountAwaiting } from "../Redux/store/adminCarSlice";
+import { tourCountAwaiting } from "../Redux/store/adminTourSlice";
 
 const Admin = () => {
   const navigate = useNavigate()
@@ -11,14 +12,18 @@ const Admin = () => {
   const { carAwaitingCount, awaitingLoading, awaitingError } = useSelector(
     (state) => state.admincar
   );
+  const { awaitingtourCount, awaitingtourCountLoading, awaitingtourCountError } = useSelector((state) => state.adminTour)
+
   
 
   useEffect(() => {
     dispatch(countAwaiting());
     dispatch(carCountAwaiting());
+    dispatch(tourCountAwaiting());
     const interval = setInterval(() => {
       dispatch(countAwaiting());
       dispatch(carCountAwaiting());
+      dispatch(tourCountAwaiting());
     }, 300000);
     return () => clearInterval(interval);
   }, [dispatch]);
@@ -60,9 +65,6 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-8">
       <h1 className="text-3xl font-bold mb-8 text-blue-800">Admin Dashboard</h1>
-
-
-
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {cards.map((card, idx) => (
           <div
@@ -92,6 +94,11 @@ const Admin = () => {
             {card.title === "Manage Car Bookings" && (
               <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-lg">
                 {loading ? "..." : error ? "!" : carAwaitingCount}
+              </div>
+            )}
+            {card.title === "Manage Tour Bookings" && (
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-lg">
+                {loading ? "..." : error ? "!" : awaitingtourCount}
               </div>
             )}
             <h2 className="text-white text-2xl font-semibold mb-2">{card.title}</h2>

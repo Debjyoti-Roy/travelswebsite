@@ -41,7 +41,6 @@ const DetailsPage = ({ carPackageDetails, isOpen, onEditBasic, onEditItineraries
                 onEditBasic(carPackageDetails.packageId)
                 setSureModal(false)
                 toast.error("Failed to deregister car");
-                // console.error(err);
             });
     }
 

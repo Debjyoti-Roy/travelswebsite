@@ -54,12 +54,8 @@ const CarPackagesList = () => {
 
   const [packageDetails, setPackageDetails] = useState({})
   const viewDetails = async (id) => {
-
     dispatch(getCarPackageDetails({ id: id }));
-    // setPackageDetails(carPackageDetails)
     setIsOpen(true);
-
-
   }
 
 
