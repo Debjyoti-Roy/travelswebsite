@@ -932,6 +932,7 @@
 import React, { useState } from "react";
 import MyHotelBookings from "./MyBookingsComponent/MyHotelBookings";
 import MyCarPackageBookings from "./MyBookingsComponent/MyCarPackageBookings";
+import MyTourQueries from "./MyBookingsComponent/MyTourQueries";
 
 const MyBookings = () => {
   const [tab, setTab] = useState(0);
@@ -963,6 +964,14 @@ const MyBookings = () => {
           >
             2) Car Bookings
           </div>
+          <div
+            onClick={() => setTab(2)}
+            className={`px-4 py-3 mb-2 rounded-lg cursor-pointer transition 
+              ${tab === 2 ? "bg-blue-500 font-medium text-white" : "hover:bg-blue-100"}
+            `}
+          >
+            3) Tour Queries
+          </div>
         </div>
 
         {/* Content */}
@@ -973,6 +982,9 @@ const MyBookings = () => {
 
           {tab === 1 && (
             <MyCarPackageBookings />
+          )}
+          {tab === 2 && (
+            <MyTourQueries />
           )}
         </div>
       </div>

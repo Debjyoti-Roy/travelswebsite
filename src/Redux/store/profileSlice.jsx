@@ -132,6 +132,30 @@ export const fetchUserCarPackageBookings = createAsyncThunk(
     }
   }
 );
+// ----------------- Fetch user car package bookings -----------------
+export const fetchUserTourPackageBookings = createAsyncThunk(
+  "profile/fetchUserTourPackageBookings",
+  async ({ page, size, status }, { rejectWithValue }) => {
+    try {
+      const token=localStorage.getItem('token')
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true", // optional if ngrok is blocking
+      };
+
+      let url=`/v1/private/tour-booking/get-query?page=${page}&size=${size}&queryStatus=${status}`
+
+      const response = await api.get(url, { headers });
+
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 
 // ----------------- Slice -----------------
@@ -141,20 +165,29 @@ const profileSlice = createSlice({
     data: null,
     loading: false,
     error: null,
-    queries: [], // <- new state for queries
+
+    queries: [], 
     queriesLoading: false,
     queriesError: null,
-    bookings: [], // <== Add this
+
+    bookings: [], 
     bookingsLoading: false,
     bookingsError: null,
-    carPackagebookings: {}, // <== Add this
+
+    carPackagebookings: {}, 
     carPackagebookingsLoading: false,
     carPackagebookingsError: null,
     carPackagebookingsStatus: null,
+
+    // ✅ New state for tour package bookings
+    tourPackageBookings: [],
+    tourPackageBookingsLoading: false,
+    tourPackageBookingsError: null,
+    tourPackageBookingsStatus: null,
   },
   reducers: {},
   extraReducers: (builder) => {
-    // Upload Image
+    // --- Upload Image ---
     builder
       .addCase(uploadProfileImage.pending, (state) => {
         state.loading = true;
@@ -169,7 +202,7 @@ const profileSlice = createSlice({
         state.error = action.payload;
       });
 
-    // Upload Details
+    // --- Upload Details ---
     builder
       .addCase(uploadProfileDetails.pending, (state) => {
         state.loading = true;
@@ -184,7 +217,7 @@ const profileSlice = createSlice({
         state.error = action.payload;
       });
 
-    // Fetch User Queries
+    // --- Fetch User Queries ---
     builder
       .addCase(fetchUserQueries.pending, (state) => {
         state.queriesLoading = true;
@@ -199,7 +232,7 @@ const profileSlice = createSlice({
         state.queriesError = action.payload;
       });
 
-    // Fetch User Bookings
+    // --- Fetch User Bookings ---
     builder
       .addCase(fetchUserBookings.pending, (state) => {
         state.bookingsLoading = true;
@@ -213,7 +246,8 @@ const profileSlice = createSlice({
         state.bookingsLoading = false;
         state.bookingsError = action.payload;
       });
-      // Fetch User Car Package Bookings
+
+    // --- Fetch User Car Package Bookings ---
     builder
       .addCase(fetchUserCarPackageBookings.pending, (state) => {
         state.carPackagebookingsLoading = true;
@@ -222,13 +256,28 @@ const profileSlice = createSlice({
       .addCase(fetchUserCarPackageBookings.fulfilled, (state, action) => {
         state.carPackagebookingsLoading = false;
         state.carPackagebookings = action.payload.data;
-        state.carPackagebookingsStatus=action.payload.status;
+        state.carPackagebookingsStatus = action.payload.status;
       })
       .addCase(fetchUserCarPackageBookings.rejected, (state, action) => {
         state.carPackagebookingsLoading = false;
         state.carPackagebookingsError = action.payload;
       });
 
+    // --- ✅ Fetch User Tour Package Bookings ---
+    builder
+      .addCase(fetchUserTourPackageBookings.pending, (state) => {
+        state.tourPackageBookingsLoading = true;
+        state.tourPackageBookingsError = null;
+      })
+      .addCase(fetchUserTourPackageBookings.fulfilled, (state, action) => {
+        state.tourPackageBookingsLoading = false;
+        state.tourPackageBookings = action.payload.data;
+        state.tourPackageBookingsStatus = action.payload.status;
+      })
+      .addCase(fetchUserTourPackageBookings.rejected, (state, action) => {
+        state.tourPackageBookingsLoading = false;
+        state.tourPackageBookingsError = action.payload;
+      });
   },
 });
 

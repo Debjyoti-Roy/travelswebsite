@@ -82,6 +82,9 @@ const Admin = () => {
               else if (card.title === "Manage Car Bookings") {
                 navigate("/admin/managecarbookings")
               }
+              else if (card.title === "Manage Tour Bookings") {
+                navigate("/admin/managetourbookings")
+              }
             }}
             className={`bg-gradient-to-r ${card.color} p-6 rounded-2xl shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer aspect-square flex flex-col justify-center items-center text-center relative`}
           >
