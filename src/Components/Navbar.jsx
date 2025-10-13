@@ -19,7 +19,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -428,36 +428,38 @@ const Navbar = () => {
     return () => window.removeEventListener("tokenUpdated", handleUser);
   }, []);
 
- 
+  const { pathname } = useLocation();
+
+  const isTransparentRoute = ["/", "/details", "/carpackagedetails", "/tourdetails"].includes(pathname);
+
+
+
 
   return (
     <>
-      <div className={`Nav sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md" : "bg-gradient-to-r from-black/60 via-black/40 to-transparent"
-      }`}>
-      {/* <div className="Nav sticky top-0 z-50 bg-gradient-to-r from-black/60 via-black/40 to-transparent"> */}
+      <div
+        className={`Nav sticky top-0 z-50 transition-all duration-300 ${isTransparentRoute ? scrolled ? "bg-white shadow-md" : "bg-gradient-to-r from-black/60 via-black/40 to-transparent" : "bg-white shadow-md"}`}
+      >
         <div className="NavSection">
           {/* Desktop Layout - Single Row */}
           <div className="hidden lg:flex justify-between items-center">
-            <h2 className={`Navspan Navtext ${scrolled ? "text-blue-600" : "text-white"}`}>Ino Travels</h2>
-            {/* <h2 className="Navspan Navtext">Ino Travels</h2> */}
+            <h2 className={`Navspan Navtext ${isTransparentRoute ? scrolled ? "text-blue-600" : "text-white" : "text-blue-600"}`}>Ino Travels</h2>
             <ul className="NavOptions Navtext">
               <li onClick={() => {
                 navigate("/")
-              }} 
-              className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
-                ${scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white"}
+              }}
+                className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
+                ${isTransparentRoute ?scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white":"text-blue-600 hover:text-blue-500 after:bg-blue-500"}
               `}>
-              {/* }} className="cursor-pointer relative text-white hover:text-white transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-white after:transition-all after:duration-300 hover:after:w-full"> */}
                 Home
               </li>
               <li className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
-                ${scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white"}
+                 ${isTransparentRoute ?scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white":"text-blue-600 hover:text-blue-500 after:bg-blue-500"}
               `}>
                 About
               </li>
               <li className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
-                ${scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white"}
+                 ${isTransparentRoute ?scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white":"text-blue-600 hover:text-blue-500 after:bg-blue-500"}
               `}>
                 Contact us
               </li>
@@ -466,7 +468,7 @@ const Navbar = () => {
                   navigate('/partner')
                 }}
                 className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
-                  ${scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white"}
+                   ${isTransparentRoute ?scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white":"text-blue-600 hover:text-blue-500 after:bg-blue-500"}
                 `}
               >
                 <span  >

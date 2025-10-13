@@ -127,53 +127,6 @@ const MyTourQueries = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* {tourPackageBookingsLoading ? (
-                    <div className="space-y-4">
-                        
-                        {[1, 2, 3].map((index) => (
-                            <div
-                                key={index}
-                                className="relative border border-gray-200 p-5 rounded-xl shadow-sm bg-white animate-pulse"
-                            >
-                                <div className="flex justify-between items-start">
-                                    
-                                    <div className="flex-1 pr-4 space-y-3">
-                                        <div className="h-5 bg-gray-200 rounded w-40"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-60"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-48"></div>
-                                    </div>
-
-                                  
-                                    <div className="flex flex-col justify-start gap-3 items-end text-right pl-4">
-                                        <div className="h-4 bg-gray-200 rounded w-24"></div>
-                                        <div className="h-4 bg-gray-200 rounded w-20"></div>
-                                    </div>
-                                </div>
-
-                                
-                                <div className="absolute bottom-4 right-4">
-                                    <div className="h-8 bg-gray-200 rounded w-24"></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : tourPackageBookingsError ? (
-                    <div className="flex flex-col items-center justify-center py-16 px-4">
-                        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                            <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
-                    </div>
-                ) : tourPackageBookings.content?.length > 0 ? (
-                    tourPackageBookings.content?.map((item) => (
-                        <div></div>
-                    ))
-                ) : (
-                    <div></div>
-                )} */}
                 <div className="pt-6 w-full">
                     {tourPackageBookingsLoading && <div className="space-y-4">
 
@@ -227,9 +180,12 @@ const MyTourQueries = () => {
                                             Ticket ID: <span className="font-medium">{item.ticketId}</span>
                                         </p>
                                         <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.subject}</h3>
-                                        <p className="text-gray-700 mb-2">
-                                            {expandedCards[item.ticketId] ? item.message : truncate(item.message, 100)}
+                                        <p className="text-gray-700 mb-2 whitespace-pre-line">
+                                            {expandedCards[item.ticketId]
+                                                ? item.message
+                                                : truncate(item.message, 50)}
                                         </p>
+
                                     </div>
 
                                     {/* Right content (status and dates) */}

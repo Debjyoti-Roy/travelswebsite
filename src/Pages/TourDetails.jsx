@@ -394,9 +394,9 @@ const TourDetails = () => {
 
     useEffect(() => {
         console.log("numberOfPeople:", numberofPeople, "type:", typeof numberofPeople);
-      }, [numberofPeople]);
-      
-    
+    }, [numberofPeople]);
+
+
 
 
     const getMonthName = (monthNumber) => {
@@ -419,15 +419,16 @@ const TourDetails = () => {
     return (
         <div className="w-full bg-gray-50">
             {/* Package Header */}
-            <div className="relative h-[450px] w-full">
+            <div className="hero-section">
+            {/* <div className="relative h-[350px] w-full "> */}
                 <img
+                    style={{ marginTop: "-8vh" }}
                     src={tourDetails?.thumbnailUrl}
                     alt="package thumbnail"
-                    className="h-full w-full object-cover"
+                    className="hero-img"
+                    // className="h-full w-full object-cover"
                 />
-
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+                <div className='absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent'></div>
 
                 {/* Text Content */}
                 <div className="absolute bottom-6 left-6 right-6 text-white drop-shadow-lg flex justify-between">
@@ -855,7 +856,7 @@ const TourDetails = () => {
                                 </button>
                                 <button
                                     onClick={handleEnquire}
-                                    disabled={(!name || !contact || numberofPeople === "" || numberofPeople === "0" ||numberofPeople === 0)}
+                                    disabled={(!name || !contact || numberofPeople === "" || numberofPeople === "0" || numberofPeople === 0)}
                                     className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Enquire

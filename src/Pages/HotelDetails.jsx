@@ -943,19 +943,6 @@ const HotelDetails = () => {
     // Optionally force reload if needed
     window.location.reload();
   };
-
-  //   const handleBookNow = (rooms) => {
-  //     console.log(rooms)
-  //   const user = auth.currentUser;
-
-  //   if (user) {
-  //     console.log(1); // user is logged in
-  //   } else {
-  //     console.log(0); // user not logged in
-  //     setShowModal(true)
-  //     window.location.reload();
-  //   }
-  // };
   const handleBookNow = (rooms) => {
     // console.log("Rooms array from child:", rooms);
 
@@ -1068,57 +1055,23 @@ const HotelDetails = () => {
     }
   }
 
-  // const handleBookNow = (selectedRooms, hotelRooms, state) => {
-  //   const user = auth.currentUser;
-
-  //   // Build roomBookings array
-  //   const roomBookings = Object.entries(selectedRooms).map(([roomId, count]) => {
-  //     return {
-  //       roomId: parseInt(roomId),
-  //       checkInDate: state.checkIn,
-  //       checkOutDate: state.checkOut,
-  //       numberOfRooms: count,
-  //       numberOfGuests: state.total,
-  //     };
-  //   });
-
-  //   console.log("roomBookings JSON:", JSON.stringify({ roomBookings }, null, 2));
-
-  //   if (user) {
-  //     console.log(1); // logged in
-  //     // Optionally show modal or continue booking here
-  //   } else {
-  //     console.log(0); // not logged in
-  //     setShowModal(true);
-  //     // Optionally reload or navigate here
-  //     window.location.reload();
-  //   }
-  // };
-
-  
-  
-
-
-
-
-
   return (
     <div ref={topRef} className="w-full bg-gray-50">
       {/* Hero Image */}
-      <div className="relative h-[450px] w-full">
+      <div className="hero-section">
         {hotel && hotel.videoUrl ? (
-          <video autoPlay muted loop className="h-full w-full object-cover">
+          <video style={{ marginTop: "-8vh" }} autoPlay muted loop className="hero-img">
             <source src={hotel.videoUrl} type="video/mp4" />
           </video>
         ) : (
           <img
-
+            style={{ marginTop: "-8vh" }}
             src={hotel?.imageUrls[0]}
             alt={hotel?.name}
-            className="h-full w-full object-cover"
+            className="hero-img"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+        <div className='absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent'></div>
         <div className="absolute bottom-6 left-6 right-6 text-white">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>

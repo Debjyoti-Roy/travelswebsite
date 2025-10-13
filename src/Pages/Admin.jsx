@@ -58,6 +58,11 @@ const Admin = () => {
       title: "Manage Tour Package",
       desc: "Create, update, and manage car packages.",
       color: "from-indigo-500 to-purple-600"
+    },
+    {
+      title: "Manage Partners",
+      desc: "Accept or Reject Partner Requests",
+      color: "from-indigo-500 to-purple-600"
     }
   ];
 
@@ -84,6 +89,9 @@ const Admin = () => {
               }
               else if (card.title === "Manage Tour Bookings") {
                 navigate("/admin/managetourbookings")
+              }
+              else if (card.title === "Manage Partners") {
+                navigate("/admin/managepartners")
               }
             }}
             className={`bg-gradient-to-r ${card.color} p-6 rounded-2xl shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer aspect-square flex flex-col justify-center items-center text-center relative`}

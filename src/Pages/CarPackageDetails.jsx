@@ -397,15 +397,16 @@ const CarPackageDetails = () => {
     return (
         <div className="w-full bg-gray-50">
             {/* Package Header */}
-            <div className="relative h-[450px] w-full">
+            <div className="hero-section">
                 <img
+                    style={{ marginTop: "-8vh" }}
                     src={carDetails?.thumbnailUrl}
                     alt="package thumbnail"
-                    className="h-full w-full object-cover"
+                    className="hero-img"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+                <div className='absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent'></div>
 
                 {/* Text Content */}
                 <div className="absolute bottom-6 left-6 right-6 text-white drop-shadow-lg flex justify-between">

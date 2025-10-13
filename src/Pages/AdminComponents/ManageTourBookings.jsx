@@ -1,49 +1,3 @@
-// import React, { useEffect, useState } from 'react'
-// import { useDispatch, useSelector } from 'react-redux'
-// import { getTourAwaiting, getTourAwaitingByStatus } from '../../Redux/store/adminTourSlice'
-
-// const ManageTourBookings = () => {
-//   const [status, setStatus] = useState("IN_PROGRESS")
-//   const [tab, setTab] = useState("Open")
-//   const { tourAwaiting, tourAwaitingLoading, tourAwaitingError, tourAwaitingByStatus, tourAwaitingLoadingByStatus, tourAwaitingErrorByStatus } = useSelector((state) => state.adminTour)
-//   const dispatch = useDispatch()
-//   useEffect(() => {
-//     dispatch(getTourAwaiting());
-
-
-//     const interval = setInterval(() => {
-//       dispatch(getTourAwaiting());
-//     }, 300000);
-
-
-//     return () => clearInterval(interval);
-//   }, [dispatch]);
-
-
-//   useEffect(() => {
-//     console.log(tourAwaiting)
-//   }, [tourAwaiting])
-
-//   useEffect(() => {
-//     if (tab !== "Open") {
-//       if (tab === "In Progress") {
-//         dispatch(getTourAwaitingByStatus({ queryStatus: "IN_PROGRESS" }))
-//       } else if (tab === "Resolved") {
-//         dispatch(getTourAwaitingByStatus({ queryStatus: "RESOLVED" }))
-//       } else if (tab === "Closed") {
-//         dispatch(getTourAwaitingByStatus({ queryStatus: "CLOSED" }))
-//       }
-//     }
-//   }, [tab])
-
-
-
-//   return (
-//     <div>ManageTourBookings</div>
-//   )
-// }
-
-// export default ManageTourBookings
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -79,7 +33,7 @@ const ManageTourBookings = () => {
     if (tab !== "Open") {
       let queryStatus;
       if (tab === "In Progress") queryStatus = "IN_PROGRESS";
-      if (tab === "Resolved") queryStatus = "RESOLVED";
+      if (tab === "Confirmed") queryStatus = "RESOLVED";
       if (tab === "Closed") queryStatus = "CLOSED";
 
       dispatch(getTourAwaitingByStatus(queryStatus));
@@ -102,7 +56,7 @@ const ManageTourBookings = () => {
       if (tab !== "Open") {
         let queryStatus;
         if (tab === "In Progress") queryStatus = "IN_PROGRESS";
-        if (tab === "Resolved") queryStatus = "RESOLVED";
+        if (tab === "Confirmed") queryStatus = "RESOLVED";
         if (tab === "Closed") queryStatus = "CLOSED";
 
         dispatch(getTourAwaitingByStatus(queryStatus));
@@ -112,7 +66,7 @@ const ManageTourBookings = () => {
       if (tab !== "Open") {
         let queryStatus;
         if (tab === "In Progress") queryStatus = "IN_PROGRESS";
-        if (tab === "Resolved") queryStatus = "RESOLVED";
+        if (tab === "Confirmed") queryStatus = "RESOLVED";
         if (tab === "Closed") queryStatus = "CLOSED";
 
         dispatch(getTourAwaitingByStatus(queryStatus));
@@ -126,7 +80,7 @@ const ManageTourBookings = () => {
       if (tab !== "Open") {
         let queryStatus;
         if (tab === "In Progress") queryStatus = "IN_PROGRESS";
-        if (tab === "Resolved") queryStatus = "RESOLVED";
+        if (tab === "Confirmed") queryStatus = "RESOLVED";
         if (tab === "Closed") queryStatus = "CLOSED";
 
         dispatch(getTourAwaitingByStatus(queryStatus));
@@ -136,7 +90,7 @@ const ManageTourBookings = () => {
       if (tab !== "Open") {
         let queryStatus;
         if (tab === "In Progress") queryStatus = "IN_PROGRESS";
-        if (tab === "Resolved") queryStatus = "RESOLVED";
+        if (tab === "Confirmed") queryStatus = "RESOLVED";
         if (tab === "Closed") queryStatus = "CLOSED";
 
         dispatch(getTourAwaitingByStatus(queryStatus));
@@ -189,7 +143,7 @@ const ManageTourBookings = () => {
         </div>
       );
     }
-    if (tab === "Resolved") {
+    if (tab === "Confirmed") {
       return (
         <button
         onClick={async() => handleCancel(booking.ticketId)}
@@ -203,10 +157,10 @@ const ManageTourBookings = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen p-6">
       {/* Tabs */}
       <div style={{marginBottom:'5px'}} className="flex gap-4 mb-6">
-        {["Open", "In Progress", "Resolved", "Closed"].map((t) => (
+        {["Open", "In Progress", "Confirmed", "Closed"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}

@@ -56,6 +56,7 @@ import ProtectedRoute, { AuthProtectedRoute } from "../Components/ProtectedRoute
 import { Skeleton } from "@mui/material";
 import { FaFilter } from "react-icons/fa";
 import AdminProtectedRoute from "../Components/AdminProtectedRoute";
+// import ManagePartners from "../Pages/AdminComponents/ManagePartners";
 
 const HomePage = lazy(() => import("../Pages/HomePage"));
 const Profile = lazy(() => import("../Pages/Profile"));
@@ -75,7 +76,7 @@ const CarPackageDetails=lazy(()=>import("../Pages/CarPackageDetails"))
 const ManageCarBookings=lazy(()=>import("../Pages/AdminComponents/ManageCarBookings"))
 const PackageSearchResults=lazy(()=> import("../Pages/PackageSearchResults"))
 const TourDetails=lazy(()=>import("../Pages/TourDetails"))
-
+const ManagePartners=lazy(()=>import("../Pages/AdminComponents/ManagePartners"))
 
 export const routes = [
   {
@@ -162,6 +163,15 @@ export const routes = [
     element: (
       <AdminProtectedRoute>
         <ManageTourBookings />
+      </AdminProtectedRoute>
+    ),
+    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+  },
+  {
+    path: "/admin/managepartners",
+    element: (
+      <AdminProtectedRoute>
+        <ManagePartners />
       </AdminProtectedRoute>
     ),
     fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,

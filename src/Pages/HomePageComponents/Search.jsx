@@ -60,7 +60,6 @@ const Search = () => {
 
           {/* <div className="searchSection"> */}
           <div className="pt-5">
-
             <div className="bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl border border-gray-100">
               <div className="flex items-center gap-3 p-3 sm:p-4 border-b border-gray-200">
                 <div className="flex items-center gap-2 bg-white/60 rounded-full p-1 shadow-inner">
