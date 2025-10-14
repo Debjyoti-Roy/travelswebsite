@@ -104,6 +104,7 @@ import { fetchPartnerProfile } from "../Redux/store/partnerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import About from "./HomePageComponents/About";
+import RecentSearches from "./HomePageComponents/RecentSearches";
 
 const HomePage = () => {
   const topRef = useRef(null);
@@ -113,6 +114,7 @@ const HomePage = () => {
   const partnerState = useSelector((state) => state.partner);
   const [status, setStatus] = useState(401);
   const [rejectionStatus, setRejectionStatus] = useState("");
+  const [selectedTab, setSelectedTab] = useState("");
 
   // Runs only when the tab is opened for the first time
   useEffect(() => {
@@ -161,7 +163,8 @@ const HomePage = () => {
 
   return (
     <>
-      <Search ref={topRef} />
+      <Search ref={topRef} selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+      <RecentSearches selectedTab={selectedTab} />
       <About />
       <Query />
     </>

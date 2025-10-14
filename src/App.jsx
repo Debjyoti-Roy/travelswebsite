@@ -40,9 +40,6 @@ function App() {
         </Router>
       </AuthProvider>
     </PrimeReactProvider>
-    // <div className="flex items-center justify-center h-screen">
-    //   <p>Loading payment page...</p>
-    // </div>
   );
 }
 

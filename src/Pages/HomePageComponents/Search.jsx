@@ -24,11 +24,10 @@ function TabButton({ label, Icon, active, onClick }) {
   );
 }
 
-const Search = () => {
+const Search = ({ selectedTab, setSelectedTab }) => {
   const topRef = useRef(null);
 
   useEffect(() => {
-
     const navbarHeight = 80;
     const elementTop = topRef.current.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({
@@ -38,14 +37,14 @@ const Search = () => {
 
   }, []);
   const images = [img, img2, img3, img4, img5];
-
-  // Pick one random image only once per reload
   const randomImg = useMemo(() => {
     const index = Math.floor(Math.random() * images.length);
     return images[index];
   }, []);
   const [tab, setTab] = useState("Package");
-  const [pic, setPic] = useState("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Crect fill='%232589f3' width='1600' height='900'/%3E%3Cpolygon fill='%234ea3f8' points='957 450 539 900 1396 900'/%3E%3Cpolygon fill='%235dacf2' points='957 450 872.9 900 1396 900'/%3E%3Cpolygon fill='%2367b8f5' points='-60 900 398 662 816 900'/%3E%3Cpolygon fill='%2372c4f7' points='337 900 398 662 816 900'/%3E%3Cpolygon fill='%237dd0f9' points='1203 546 1552 900 876 900'/%3E%3Cpolygon fill='%2388dcfb' points='1203 546 1552 900 1162 900'/%3E%3Cpolygon fill='%2393e8fd' points='641 695 886 900 367 900'/%3E%3Cpolygon fill='%239ef4ff' points='587 900 641 695 886 900'/%3E%3Cpolygon fill='%23a9ffff' points='1710 900 1401 632 1096 900'/%3E%3Cpolygon fill='%23b4ffff' points='1710 900 1401 632 1365 900'/%3E%3Cpolygon fill='%23bfffff' points='1210 900 971 687 725 900'/%3E%3Cpolygon fill='%23caffff' points='943 900 1210 900 971 687'/%3E%3C/svg%3E")
+  useEffect(() => {
+    setSelectedTab(tab);
+  }, [tab]);
   return (
     <>
       <div ref={topRef} className="hero-section">

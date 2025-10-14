@@ -378,8 +378,23 @@ const HotelSearchResult = () => {
   }, [fetchHotels]);
 
   useEffect(() => {
-    // console.log("Search results updated:", searchResults);
-  }, [searchResults]);
+    if (state) {
+      // Step 1: Delete the old cookie if it exists
+      if (document.cookie.split("; ").find((row) => row.startsWith("hotelState="))) {
+        document.cookie = "hotelState=; path=/; max-age=0"; // instantly expires the cookie
+      }
+    
+      // Step 2: Add the new data
+      document.cookie = `hotelState=${encodeURIComponent(
+        JSON.stringify(state)
+      )}; path=/; max-age=2592000`; // 30 days = 2592000 seconds
+    
+      // console.log("Cookie updated with:", state);
+    }
+  }, [state])
+  
+
+
 
   const hotelDetails = (id, startingPrice) => {
     // console.log(id)

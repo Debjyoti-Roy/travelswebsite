@@ -294,6 +294,21 @@ const CarPackageSearchResults = () => {
         }
         navigate("/carpackagedetails", { state: data })
     }
+    useEffect(() => {
+        if (state) {
+          // Step 1: Delete the old cookie if it exists
+          if (document.cookie.split("; ").find((row) => row.startsWith("carPackageState="))) {
+            document.cookie = "carPackageState=; path=/; max-age=0"; // instantly expires the cookie
+          }
+        
+          // Step 2: Add the new data
+          document.cookie = `carPackageState=${encodeURIComponent(
+            JSON.stringify(state)
+          )}; path=/; max-age=2592000`;
+        
+          // console.log("Cookie updated with:", state);
+        }
+      }, [state])
 
 
     return (

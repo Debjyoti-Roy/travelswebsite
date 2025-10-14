@@ -1,27 +1,6 @@
-// import React, { useEffect } from 'react'
-// import { useDispatch, useSelector } from 'react-redux'
-// import { getAllPartnerRequests } from '../../Redux/store/adminPartnerSlice';
-
-// const ManagePartners = () => {
-//     const { requests, loading, error } = useSelector((state) => state.adminPartner);
-//     const dispatch = useDispatch()
-//     useEffect(() => {
-//       dispatch(getAllPartnerRequests())
-//     }, [])
-//     useEffect(() => {
-//       console.log(requests)
-//     }, [requests])
-    
-    
-//     return (
-//         <div className='min-h-screen p-6'>ManagePartners</div>
-//     )
-// }
-
-// export default ManagePartners
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllPartnerRequests } from "../../Redux/store/adminPartnerSlice";
+import { getAllPartnerRequests, setPartnerAccept, setPartnerReject } from "../../Redux/store/adminPartnerSlice";
 
 const ManagePartners = () => {
   const dispatch = useDispatch();
@@ -31,17 +10,61 @@ const ManagePartners = () => {
     dispatch(getAllPartnerRequests());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log(requests);
-  }, [requests]);
-
   const handleAccept = (id) => {
     console.log("Accepted:", id);
+    dispatch(setPartnerAccept(id))
+      .unwrap()
+      .then((res) => {
+        // console.log("Partner approved successfully:", res);
+        toast.success("Partner approved successfully", {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+        // Optionally refresh partner list
+        dispatch(getAllPartnerRequests());
+      })
+      .catch((err) => {
+        toast.error("Error approving partner", {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+      });
   };
 
   const handleReject = (id) => {
     console.log("Rejected:", id);
+    dispatch(setPartnerReject(id))
+      .unwrap()
+      .then((res) => {
+        // console.log("Partner rejected successfully:", res);
+        toast.success("Partner rejected successfully", {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+        // Optionally refresh partner list
+        dispatch(getAllPartnerRequests());
+      })
+      .catch((err) => {
+        toast.error("Error rejecting partner", {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+      });
   };
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="min-h-screen p-6">

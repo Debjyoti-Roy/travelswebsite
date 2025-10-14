@@ -19,6 +19,13 @@
   color: #1e40af; /* blue-600 */
 }
 
+.slick-prev:before,
+.slick-next:before {
+  color: #1e3a8a !important; /* Tailwind's blue-900 */
+  font-size: 28px !important;
+}
+
+
 .NavSection {
   padding-top: 1.5vh;
   padding-bottom: 1.5vh;

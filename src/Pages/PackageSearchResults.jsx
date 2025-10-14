@@ -262,6 +262,21 @@ const PackageSearchResults = () => {
         }
         navigate("/tourdetails", { state: data })
     }
+    useEffect(() => {
+        if (state) {
+          // Step 1: Delete the old cookie if it exists
+          if (document.cookie.split("; ").find((row) => row.startsWith("packageState="))) {
+            document.cookie = "packageState=; path=/; max-age=0"; // instantly expires the cookie
+          }
+        
+          // Step 2: Add the new data
+          document.cookie = `packageState=${encodeURIComponent(
+            JSON.stringify(state)
+          )}; path=/; max-age=2592000`; // 30 days = 2592000 seconds
+        
+          // console.log("Cookie updated with:", state);
+        }
+      }, [state])
     return (
         <div className="max-w-screen overflow-x-hidden">
             <div
