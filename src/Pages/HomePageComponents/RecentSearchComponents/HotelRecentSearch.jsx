@@ -4,6 +4,7 @@ import Slider from 'react-slick';
 import { motion } from 'framer-motion';
 import { searchHotels } from '../../../Redux/store/hotelSlice';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const settings = {
     dots: true,
@@ -22,6 +23,7 @@ const settings = {
 
 const HotelRecentSearch = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { searchResults, loading, error } = useSelector((state) => state.hotel);
     const [hotels, setHotels] = useState([])
     const getCookie = (name) => {
@@ -54,6 +56,21 @@ const HotelRecentSearch = () => {
         // console.log(searchResults.content)
         setHotels(searchResults.content)
     }, [searchResults])
+
+    const handleBookNow=async(startingPrice, hotel)=>{
+        const savedData = getCookie('hotelState');
+        const parsedData = JSON.parse(savedData);
+        const data = {
+            room: parsedData.rooms,
+            location: parsedData.location,
+            checkIn: parsedData.startDate,
+            checkOut: parsedData.endDate,
+            id: hotel.id,
+            total: parsedData.total,
+            startingPrice: startingPrice
+          }
+          navigate("/details", { state: data })
+    }
 
 
     return (
@@ -114,7 +131,7 @@ const HotelRecentSearch = () => {
                                         <button
                                             onClick={() =>
                                                 handleBookNow(
-                                                    hotel.startingPrice.toLocaleString("en-IN"),
+                                                    hotel.startingPrice,
                                                     hotel
                                                 )
                                             }

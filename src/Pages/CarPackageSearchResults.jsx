@@ -528,7 +528,7 @@ const CarPackageSearchResults = () => {
                                                                     </span>
                                                                 </div>
 
-                                                                <p className="text-gray-600 text-sm md:text-base mt-2">
+                                                                <p className="text-gray-600 text-sm md:text-base mt-2 line-clamp-4">
                                                                     {pkg.description}
                                                                 </p>
 

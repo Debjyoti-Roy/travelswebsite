@@ -4,10 +4,11 @@ import { getPackages } from '../../../Redux/store/carPackageSlice';
 import Slider from 'react-slick';
 import { MdHotel } from 'react-icons/md';
 import { FaCarSide } from 'react-icons/fa';
-import { motion } from 'framer-motion'; // <-- import framer motion
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -24,6 +25,7 @@ const settings = {
 const CarRecentSearch = () => {
     const dispatch = useDispatch();
     const { packages } = useSelector((state) => state.carPackage);
+    const navigate = useNavigate()
 
     const getCookie = (name) => {
         const cookie = document.cookie.split('; ').find((row) => row.startsWith(name + '='));
@@ -45,8 +47,14 @@ const CarRecentSearch = () => {
         }
     }, [dispatch]);
 
-    const handleBookNow = (price, pkg) => {
-        console.log('Booking package:', pkg.title, 'for price:', price);
+    const handleBookNow = (pkg) => {
+        const savedData = getCookie('carPackageState');
+        const parsedData = JSON.parse(savedData);
+        const data={
+            id:pkg.id,
+            travelDate:parsedData.travelDate
+        }
+        navigate("/carpackagedetails", { state: data })
     };
 
     return (
@@ -70,40 +78,7 @@ const CarRecentSearch = () => {
                                     />
                                 </div>
 
-                                {/* <div className="p-6 flex flex-col h-full">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{pkg.title}</h2>
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{pkg.description}</p>
-
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <MdHotel className="text-blue-600 text-xl" />
-                                        <span className="text-gray-800">
-                                            <span className="font-semibold">Accommodation</span>
-                                            <br />
-                                            <span className="text-gray-600">{pkg.hotelType || 'Standard'}</span>
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <FaCarSide className="text-green-600 text-xl" />
-                                        <span className="text-gray-800">
-                                            <span className="font-semibold">Transportation</span>
-                                            <br />
-                                            <span className="text-gray-600">{pkg.carTypes || 'Comfort'}</span>
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center justify-between mt-auto">
-                                        <span className="text-lg font-bold text-gray-900">
-                                            ₹{pkg.price.toLocaleString('en-IN')}
-                                        </span>
-                                        <button
-                                            onClick={() => handleBookNow(pkg.price.toLocaleString('en-IN'), pkg)}
-                                            className="cursor-pointer px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
-                                        >
-                                            Book Now →
-                                        </button>
-                                    </div>
-                                </div> */}
+                           
                                 <div className="p-6 flex flex-col h-full">
                                     {/* Title */}
                                     <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1 min-h-[28px]">
@@ -139,7 +114,7 @@ const CarRecentSearch = () => {
                                             ₹{pkg.price.toLocaleString("en-IN")}
                                         </span>
                                         <button
-                                            onClick={() => handleBookNow(pkg.price.toLocaleString("en-IN"), pkg)}
+                                            onClick={() => handleBookNow(pkg)}
                                             className="cursor-pointer px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
                                         >
                                             Book Now →
@@ -168,7 +143,6 @@ const CarRecentSearch = () => {
                                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                     />
                                 </div>
-
                                 <div className="p-6 flex flex-col h-full">
                                     <h2 className="text-xl font-bold text-gray-900 mb-2">{pkg.title}</h2>
                                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">{pkg.description}</p>
@@ -178,7 +152,7 @@ const CarRecentSearch = () => {
                                             ₹{pkg.price.toLocaleString('en-IN')}
                                         </span>
                                         <button
-                                            onClick={() => handleBookNow(pkg.price.toLocaleString('en-IN'), pkg)}
+                                            onClick={() => handleBookNow(pkg)}
                                             className="cursor-pointer px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
                                         >
                                             Book Now →

@@ -321,7 +321,6 @@ const HotelSearchResult = () => {
   const { state } = location;
   const dispatch = useDispatch();
   const { searchResults, loading, error } = useSelector((state) => state.hotel);
-
   const [page, setPage] = useState(0);
   const navigate = useNavigate()
 

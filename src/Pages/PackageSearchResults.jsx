@@ -494,7 +494,7 @@ const PackageSearchResults = () => {
                                                                     </span>
                                                                 </div>
 
-                                                                <p className="text-gray-600 text-sm md:text-base mt-2">
+                                                                <p className="text-gray-600 text-sm md:text-base mt-2 line-clamp-3">
                                                                     {pkg.description}
                                                                 </p>
 

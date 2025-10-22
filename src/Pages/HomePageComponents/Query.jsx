@@ -193,7 +193,7 @@ const Query = () => {
   };
   return (
     <>
-      <div className="flex flex-col gap-[50px] justify-center items-center min-h-screen bg-blue-50 p-4 pt-[80px] lg:pt-0">
+      <div className="flex flex-col gap-[50px] justify-center items-center min-h-screen bg-blue-50 py-4 pt-[80px] lg:pt-0">
         <div className="w-[80vw] flex flex-col justify-center">
           <p className="text-bold text-4xl flex justify-center">
             Get in touch!

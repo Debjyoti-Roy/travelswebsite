@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { MdHotel } from 'react-icons/md';
 import { FaCarSide } from 'react-icons/fa';
 import Slider from 'react-slick';
+import { useNavigate } from 'react-router-dom';
 
 const settings = {
     dots: true,
@@ -23,6 +24,7 @@ const settings = {
 
 const PackageRecentSearch = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate()
     const { packages, loading, error } = useSelector((state) => state.tourPackage);
     const getCookie = (name) => {
         const cookie = document.cookie.split('; ').find((row) => row.startsWith(name + '='));
@@ -46,6 +48,18 @@ const PackageRecentSearch = () => {
     useEffect(() => {
         console.log(packages)
     }, [packages])
+
+    const handleBookNow = (id) => {
+        const savedData = getCookie('packageState');
+        const parsedData = JSON.parse(savedData);
+        const data = {
+            id: id,
+            travelDate: parsedData.travelDate
+        }
+        navigate("/tourdetails", { state: data })
+    }
+
+
 
 
     return (
@@ -123,7 +137,7 @@ const PackageRecentSearch = () => {
                                         </span>
                                         <button
                                             onClick={() =>
-                                                handleBookNow(pkg.price.toLocaleString("en-IN"), pkg)
+                                                handleBookNow(pkg.id)
                                             }
                                             className="cursor-pointer px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
                                         >
@@ -167,7 +181,7 @@ const PackageRecentSearch = () => {
                                         </span>
                                         <button
                                             onClick={() =>
-                                                handleBookNow(pkg.price.toLocaleString("en-IN"), pkg)
+                                                handleBookNow(pkg.id)
                                             }
                                             className="cursor-pointer px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
                                         >
