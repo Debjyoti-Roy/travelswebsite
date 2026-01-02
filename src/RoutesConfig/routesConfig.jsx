@@ -77,6 +77,7 @@ const ManageCarBookings=lazy(()=>import("../Pages/AdminComponents/ManageCarBooki
 const PackageSearchResults=lazy(()=> import("../Pages/PackageSearchResults"))
 const TourDetails=lazy(()=>import("../Pages/TourDetails"))
 const ManagePartners=lazy(()=>import("../Pages/AdminComponents/ManagePartners"))
+const CarRoutes=lazy(()=>import("../Pages/AdminComponents/CarRoutes"))
 
 export const routes = [
   {
@@ -172,6 +173,15 @@ export const routes = [
     element: (
       <AdminProtectedRoute>
         <ManagePartners />
+      </AdminProtectedRoute>
+    ),
+    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+  },
+  {
+    path: "/admin/carroutes",
+    element: (
+      <AdminProtectedRoute>
+        <CarRoutes />
       </AdminProtectedRoute>
     ),
     fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
