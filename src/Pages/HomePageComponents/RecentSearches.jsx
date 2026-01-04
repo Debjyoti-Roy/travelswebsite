@@ -2,10 +2,11 @@ import React, { useEffect } from 'react'
 import CarRecentSearch from './RecentSearchComponents/CarRecentSearch'
 import PackageRecentSearch from './RecentSearchComponents/PackageRecentSearch'
 import HotelRecentSearch from './RecentSearchComponents/HotelRecentSearch'
+import PickupRoutes from './PickupRouteComponent/PickupRoutes'
 
 
 
-const RecentSearches = ({ selectedTab }) => {
+const RecentSearches = ({ selectedTab, pickupFlag, pickupRoutesDetails }) => {
 
   useEffect(() => {
     if (selectedTab === "Packages") { }
@@ -51,6 +52,16 @@ const RecentSearches = ({ selectedTab }) => {
 
           {/* Car Recent Search Component */}
           <CarRecentSearch />
+        </section>
+      )}
+      {selectedTab === "Pickup" && pickupFlag && (
+        <section className="lg:w-[70%] w-[90%] text-center flex flex-col items-center gap-6">
+          {/* Heading */}
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Checkout the routes available
+          </h2>
+          <PickupRoutes pickupRoutesDetails={pickupRoutesDetails} />
+
         </section>
       )}
     </div>

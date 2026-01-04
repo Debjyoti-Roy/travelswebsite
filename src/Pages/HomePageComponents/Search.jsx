@@ -8,7 +8,8 @@ import img3 from "../../assets/bg2.jpg"
 import img4 from "../../assets/bg3.jpg"
 import img5 from "../../assets/bg4.jpg"
 import CarRental from "./CarRental";
-import { FaBoxOpen, FaCar, FaHotel } from "react-icons/fa";
+import { FaBoxOpen, FaCar, FaHotel, FaMapMarkerAlt } from "react-icons/fa";
+import Pickup from "./Pickup";
 
 function TabButton({ label, Icon, active, onClick }) {
   return (
@@ -24,7 +25,7 @@ function TabButton({ label, Icon, active, onClick }) {
   );
 }
 
-const Search = ({ selectedTab, setSelectedTab }) => {
+const Search = ({ selectedTab, setSelectedTab, setPickFlag, setPickupRoutesDetails }) => {
   const topRef = useRef(null);
 
   useEffect(() => {
@@ -42,9 +43,17 @@ const Search = ({ selectedTab, setSelectedTab }) => {
     return images[index];
   }, []);
   const [tab, setTab] = useState("Package");
+  const [pickupFlag, setPickupFlag] = useState(false);
+  const [pickRoutesDetails, setPickRoutesDetails] = useState({});
   useEffect(() => {
     setSelectedTab(tab);
   }, [tab]);
+  useEffect(() => {
+    setPickFlag(pickupFlag);  
+  }, [pickupFlag]);
+  useEffect(() => {
+    setPickupRoutesDetails(pickRoutesDetails);
+  }, [pickRoutesDetails]);
   return (
     <>
       <div ref={topRef} className="hero-section">
@@ -80,6 +89,12 @@ const Search = ({ selectedTab, setSelectedTab }) => {
                     active={tab === "Cars"}
                     onClick={() => setTab("Cars")}
                   />
+                  <TabButton
+                    label="Pickup"
+                    Icon={FaMapMarkerAlt}
+                    active={tab === "Pickup"}
+                    onClick={() => setTab("Pickup")}
+                  />
                 </div>
 
 
@@ -90,6 +105,7 @@ const Search = ({ selectedTab, setSelectedTab }) => {
                 {tab === "Package" && <PackagesSearch />}
                 {tab === "Hotels" && <Hotelsearch />}
                 {tab === "Cars" && <CarRental />}
+                {tab === "Pickup" && <Pickup setPickupFlag={setPickupFlag} setPickRoutesDetails={setPickRoutesDetails} />}
               </div>
             </div>
           </div>

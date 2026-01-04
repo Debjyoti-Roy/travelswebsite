@@ -110,6 +110,8 @@ const HomePage = () => {
   const topRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [pickupFlag, setPickupFlag] = useState(false);
+  const [pickupRoutesDetails, setPickupRoutesDetails] = useState({});
 
   const partnerState = useSelector((state) => state.partner);
   const [status, setStatus] = useState(401);
@@ -163,8 +165,8 @@ const HomePage = () => {
 
   return (
     <>
-      <Search ref={topRef} selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-      <RecentSearches selectedTab={selectedTab} />
+      <Search ref={topRef} selectedTab={selectedTab} setSelectedTab={setSelectedTab} setPickFlag={setPickupFlag} setPickupRoutesDetails={setPickupRoutesDetails} />
+      <RecentSearches selectedTab={selectedTab} pickupFlag={pickupFlag} pickupRoutesDetails={pickupRoutesDetails} />
       <About />
       <Query />
     </>
