@@ -166,7 +166,7 @@ const HomePage = () => {
   return (
     <>
       <Search ref={topRef} selectedTab={selectedTab} setSelectedTab={setSelectedTab} setPickFlag={setPickupFlag} setPickupRoutesDetails={setPickupRoutesDetails} />
-      <RecentSearches selectedTab={selectedTab} pickupFlag={pickupFlag} pickupRoutesDetails={pickupRoutesDetails} />
+      <RecentSearches selectedTab={selectedTab} pickupFlag={pickupFlag} setPickupFlag={setPickupFlag} pickupRoutesDetails={pickupRoutesDetails} />
       <About />
       <Query />
     </>

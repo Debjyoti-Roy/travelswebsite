@@ -6,7 +6,7 @@ import PickupRoutes from './PickupRouteComponent/PickupRoutes'
 
 
 
-const RecentSearches = ({ selectedTab, pickupFlag, pickupRoutesDetails }) => {
+const RecentSearches = ({ selectedTab, pickupFlag, setPickupFlag, pickupRoutesDetails }) => {
 
   useEffect(() => {
     if (selectedTab === "Packages") { }
@@ -14,8 +14,15 @@ const RecentSearches = ({ selectedTab, pickupFlag, pickupRoutesDetails }) => {
     else if (selectedTab === "Cars") {
 
     }
-    console.log(selectedTab)
+    // console.log(selectedTab)
   }, [selectedTab])
+
+  useEffect(() => {
+    if(selectedTab!=="Pickup"i){
+       setPickupFlag(false)
+    }
+  }, [selectedTab])
+  
 
 
 
@@ -57,9 +64,9 @@ const RecentSearches = ({ selectedTab, pickupFlag, pickupRoutesDetails }) => {
       {selectedTab === "Pickup" && pickupFlag && (
         <section className="lg:w-[70%] w-[90%] text-center flex flex-col items-center gap-6">
           {/* Heading */}
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+          {/* <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
             Checkout the routes available
-          </h2>
+          </h2> */}
           <PickupRoutes pickupRoutesDetails={pickupRoutesDetails} />
 
         </section>

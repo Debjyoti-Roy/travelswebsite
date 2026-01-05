@@ -22,11 +22,13 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
     const dispatch = useDispatch();
     const { pickupLocations, pickupRoutes, loadingLocations, loadingRoutes, errorLocations, errorRoutes } = useSelector((state) => state.pickup);
     
-    const [pickupLocation, setPickupLocation] = useState("");
+    const [pickupLocation, setPickupLocation] = useState(null); // Object with { name, id }
+    const [pickupInputValue, setPickupInputValue] = useState(""); // For input field
     const [pickupSuggestions, setPickupSuggestions] = useState([]);
     const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
     
-    const [dropLocation, setDropLocation] = useState("");
+    const [dropLocation, setDropLocation] = useState(null); // Object with { name, id }
+    const [dropInputValue, setDropInputValue] = useState(""); // For input field
     const [dropSuggestions, setDropSuggestions] = useState([]);
     const [showDropSuggestions, setShowDropSuggestions] = useState(false);
     
@@ -39,17 +41,15 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
         dispatch(getPickupLocations());
     }, [dispatch]);
 
-    // Get location names from pickupLocations
-    const locationNames = pickupLocations.map(location => location.name);
-
     // Handle pickup location input change
     const handlePickupInputChange = (e) => {
         const value = e.target.value;
-        setPickupLocation(value);
+        setPickupInputValue(value);
+        setPickupLocation(null); // Clear selected location when typing
 
         if (value.length > 0) {
-            const filtered = locationNames.filter((name) =>
-                name.toLowerCase().includes(value.toLowerCase())
+            const filtered = pickupLocations.filter((location) =>
+                location.name.toLowerCase().includes(value.toLowerCase())
             );
             setPickupSuggestions(filtered);
             setShowPickupSuggestions(true);
@@ -62,11 +62,12 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
     // Handle drop location input change
     const handleDropInputChange = (e) => {
         const value = e.target.value;
-        setDropLocation(value);
+        setDropInputValue(value);
+        setDropLocation(null); // Clear selected location when typing
 
         if (value.length > 0) {
-            const filtered = locationNames.filter((name) =>
-                name.toLowerCase().includes(value.toLowerCase())
+            const filtered = pickupLocations.filter((location) =>
+                location.name.toLowerCase().includes(value.toLowerCase())
             );
             setDropSuggestions(filtered);
             setShowDropSuggestions(true);
@@ -77,21 +78,25 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
     };
 
     // Handle suggestion click
-    const handlePickupSuggestionClick = (value) => {
-        setPickupLocation(value);
+    const handlePickupSuggestionClick = (location) => {
+        setPickupLocation(location); // Set full object with { name, id }
+        setPickupInputValue(location.name);
         setShowPickupSuggestions(false);
     };
 
-    const handleDropSuggestionClick = (value) => {
-        setDropLocation(value);
+    const handleDropSuggestionClick = (location) => {
+        setDropLocation(location); // Set full object with { name, id }
+        setDropInputValue(location.name);
         setShowDropSuggestions(false);
     };
 
     // Handle search
     const handleSearch = () => {
         const searchData = {
-            pickupLocation,
-            dropLocation,
+            pickupLocation: pickupLocation?.name || null,
+            pickupLocationId: pickupLocation?.id || null,
+            dropLocation: dropLocation?.name || null,
+            dropLocationId: dropLocation?.id || null,
             numberOfPeople,
             dateTime: dateTime ? dateTime.toLocaleString() : null
         };
@@ -134,21 +139,21 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
                             <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
                             <input
                                 type="text"
-                                value={pickupLocation}
+                                value={pickupInputValue}
                                 onChange={handlePickupInputChange}
-                                onFocus={() => pickupLocation && setShowPickupSuggestions(true)}
+                                onFocus={() => pickupInputValue && setShowPickupSuggestions(true)}
                                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter Pickup Location"
                             />
                             {showPickupSuggestions && pickupSuggestions.length > 0 && (
                                 <ul className="absolute z-10 bg-white border border-gray-200 rounded-xl mt-1 w-full max-h-40 overflow-y-auto shadow-lg">
-                                    {pickupSuggestions.map((s, index) => (
+                                    {pickupSuggestions.map((location, index) => (
                                         <li
-                                            key={index}
-                                            onClick={() => handlePickupSuggestionClick(s)}
+                                            key={location.id || index}
+                                            onClick={() => handlePickupSuggestionClick(location)}
                                             className="px-4 py-2 cursor-pointer hover:bg-blue-100 text-left"
                                         >
-                                            {s}
+                                            {location.name}
                                         </li>
                                     ))}
                                 </ul>
@@ -163,21 +168,21 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
                             <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
                             <input
                                 type="text"
-                                value={dropLocation}
+                                value={dropInputValue}
                                 onChange={handleDropInputChange}
-                                onFocus={() => dropLocation && setShowDropSuggestions(true)}
+                                onFocus={() => dropInputValue && setShowDropSuggestions(true)}
                                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter Drop Location"
                             />
                             {showDropSuggestions && dropSuggestions.length > 0 && (
                                 <ul className="absolute z-10 bg-white border border-gray-200 rounded-xl mt-1 w-full max-h-40 overflow-y-auto shadow-lg">
-                                    {dropSuggestions.map((s, index) => (
+                                    {dropSuggestions.map((location, index) => (
                                         <li
-                                            key={index}
-                                            onClick={() => handleDropSuggestionClick(s)}
+                                            key={location.id || index}
+                                            onClick={() => handleDropSuggestionClick(location)}
                                             className="px-4 py-2 cursor-pointer hover:bg-blue-100 text-left"
                                         >
-                                            {s}
+                                            {location.name}
                                         </li>
                                     ))}
                                 </ul>
