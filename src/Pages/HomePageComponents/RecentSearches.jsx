@@ -18,7 +18,7 @@ const RecentSearches = ({ selectedTab, pickupFlag, setPickupFlag, pickupRoutesDe
   }, [selectedTab])
 
   useEffect(() => {
-    if(selectedTab!=="Pickup"i){
+    if(selectedTab!=="Pickup"){
        setPickupFlag(false)
     }
   }, [selectedTab])
