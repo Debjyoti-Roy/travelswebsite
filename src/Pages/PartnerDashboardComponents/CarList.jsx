@@ -1,21 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlinePlus, AiOutlineEdit } from "react-icons/ai";
 import AddCar from "./AddCar";
 import EditCar from "./editCar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { editStatus } from "../../Redux/store/partnerCar";
 import toast from "react-hot-toast";
+import { FaCarSide, FaRegClipboard } from "react-icons/fa";
+import { confirmRegisterforPickup, resetConfirmRegisterforPickup } from "../../Redux/store/carPackageBookingsSlice";
+import { useNavigate } from "react-router-dom";
+import { setPickupActive } from "../../Redux/store/driveModeSlice";
 
 const CarList = ({ cars, counter }) => {
-    const dispatch=useDispatch()
+    const dispatch = useDispatch()
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false)
     const [specificCar, setSpecificCar] = useState({})
+    const navigate = useNavigate()
+
+    const { loading, success, error } = useSelector(
+        (state) => state.carPackageBookings
+    );
+
+    const drive = async (carId, pickupActive) => {
+        dispatch(setPickupActive(pickupActive));
+        navigate(`/drivemode/${carId}`)
+    }
+
+
+    useEffect(() => {
+        console.log(cars)
+    }, [cars])
+
+    const handleRegister = async (carId) => {
+        dispatch(confirmRegisterforPickup({ carId }));
+
+    }
+
+    useEffect(() => {
+        if (success) {
+            counter()
+
+            // reset slice so it doesn't re-trigger
+            dispatch(resetConfirmRegisterforPickup());
+
+            // optional: close modal
+            setShowEditModal(false);
+        }
+
+        if (error) {
+            toast.error(error?.message || "Registration failed");
+        }
+    }, [success, error, dispatch]);
+
+
 
     const handleStatusChange = async (id) => {
         // console.log(id)
         const token = localStorage.getItem("token")
-        const resultAction = await dispatch(editStatus({ token, carId:id }));
+        const resultAction = await dispatch(editStatus({ token, carId: id }));
         if (editStatus.fulfilled.match(resultAction)) {
             toast.success("Car Status Changed Successfully!!", {
                 style: {
@@ -79,6 +121,35 @@ const CarList = ({ cars, counter }) => {
                             {/* Right side buttons */}
                             <div className="flex items-center gap-2 self-center">
                                 {/* Edit button */}
+
+                                <button
+                                    onClick={() => {
+                                        if (!car?.isPickUpActive) {
+                                            handleRegister(car.id)
+                                        } else {
+                                            drive(car.id, car.isPickUpActive)
+                                        }
+                                    }}
+                                    className={`flex cursor-pointer items-center gap-2 px-3 py-2 rounded-md transition
+    ${car?.isPickUpActive
+                                            ? "bg-green-600 hover:bg-green-700 text-white"
+                                            : "bg-blue-600 hover:bg-blue-700 text-white"
+                                        }
+  `}
+                                >
+                                    {!car?.isPickUpActive ? (
+                                        <>
+                                            <FaRegClipboard size={18} />
+                                            Register for Pickup
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaCarSide size={18} />
+                                            Drive Mode
+                                        </>
+                                    )}
+                                </button>
+
                                 <button
                                     onClick={() => {
                                         setSpecificCar(car);
@@ -92,12 +163,12 @@ const CarList = ({ cars, counter }) => {
 
                                 {/* Activate / Deactivate button */}
                                 <button
-                                    onClick={async() =>
+                                    onClick={async () =>
                                         await handleStatusChange(car.id)
                                     }
                                     className={`flex items-center gap-2 px-3 py-2 rounded-md transition ${car.isActive
-                                            ? "bg-red-500 hover:bg-red-600 text-white"
-                                            : "bg-green-500 hover:bg-green-600 text-white"
+                                        ? "bg-red-500 hover:bg-red-600 text-white"
+                                        : "bg-green-500 hover:bg-green-600 text-white"
                                         }`}
                                 >
                                     {car.isActive ? "Deactivate" : "Activate"}

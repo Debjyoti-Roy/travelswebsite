@@ -78,6 +78,7 @@ const PackageSearchResults=lazy(()=> import("../Pages/PackageSearchResults"))
 const TourDetails=lazy(()=>import("../Pages/TourDetails"))
 const ManagePartners=lazy(()=>import("../Pages/AdminComponents/ManagePartners"))
 const CarRoutes=lazy(()=>import("../Pages/AdminComponents/CarRoutes"))
+const DriveMode=lazy(()=>import("../Pages/DriveMode"))
 
 export const routes = [
   {
@@ -586,6 +587,11 @@ export const routes = [
       </div>
     </div>
   </div>,
+  },
+  {
+    path: "/drivemode/:carId",
+    element: <DriveMode />,
+    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
   },
 
 ];

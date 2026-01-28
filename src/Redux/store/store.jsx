@@ -16,6 +16,8 @@ import adminTourReducer from "./adminTourSlice"
 import adminPartnerReducer from "./adminPartnerSlice"
 import routeReducer from "./routeSlice"
 import pickupReducer from "./pickupSlice"
+import carPackageBookingsReducer from './carPackageBookingsSlice'
+import driveModeReducer from './driveModeSlice.jsx'
 export const store = configureStore({
   reducer: {
     user: userReducer,
@@ -26,13 +28,15 @@ export const store = configureStore({
     payment: paymentReducer,
     analytics: analyticsReducer,
     admin: adminReducer,
-    admincar: adminCarReducer,  
-    carPackage:carPackageReducer,
-    partnerCar:partnercarReducers,
-    tourPackage:tourPackageReducer,
-    adminTour:adminTourReducer,
-    adminPartner:adminPartnerReducer,
-    routes:routeReducer,
-    pickup:pickupReducer
+    admincar: adminCarReducer,
+    carPackage: carPackageReducer,
+    partnerCar: partnercarReducers,
+    tourPackage: tourPackageReducer,
+    adminTour: adminTourReducer,
+    adminPartner: adminPartnerReducer,
+    routes: routeReducer,
+    pickup: pickupReducer,
+    carPackageBookings: carPackageBookingsReducer,
+    driveMode: driveModeReducer,
   },
 });
