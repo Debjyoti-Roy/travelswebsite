@@ -220,6 +220,14 @@ export const updateStatus = createAsyncThunk(
     }
 );
 
+//   useEffect(() => {
+//         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+//         if (!isMobile) {
+//           navigate("/", { replace: true });
+//         }
+//       }, [navigate]);
+
 export const updateLocation = createAsyncThunk(
     "partner/updateLocation",
     async ({ carId, latitude, longitude }, { rejectWithValue }) => {
@@ -362,7 +370,7 @@ const confirmBookingSlice = createSlice({
             .addCase(updateStatus.fulfilled, (state, action) => {
                 state.updateStatusLoading = false;
                 state.updateStatusSuccess = true;
-                state.updateStatusData = action.payload;
+                // state.updateStatusData = action.payload;
             })
             .addCase(updateStatus.rejected, (state, action) => {
                 state.updateStatusLoading = false;

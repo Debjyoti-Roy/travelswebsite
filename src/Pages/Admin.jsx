@@ -14,7 +14,7 @@ const Admin = () => {
   );
   const { awaitingtourCount, awaitingtourCountLoading, awaitingtourCountError } = useSelector((state) => state.adminTour)
 
-  
+
 
   useEffect(() => {
     dispatch(countAwaiting());
@@ -27,7 +27,7 @@ const Admin = () => {
     }, 300000);
     return () => clearInterval(interval);
   }, [dispatch]);
-  
+
   const cards = [
     {
       title: "Manage Partner",
@@ -40,7 +40,7 @@ const Admin = () => {
       color: "from-sky-500 to-blue-600"
     },
     {
-      title: "Manage Car Bookings",
+      title: "Manage Car Package Bookings",
       desc: "View and manage car rental bookings.",
       color: "from-cyan-500 to-blue-500"
     },
@@ -68,6 +68,11 @@ const Admin = () => {
       title: "Manage Routes",
       desc: "Create, update, and manage routes.",
       color: "from-indigo-500 to-purple-600"
+    },
+    {
+      title: "Manage Car Pickup Bookings",
+      desc: "Create, update, and manage car pickup bookings.",
+      color: "from-indigo-500 to-purple-600"
     }
   ];
 
@@ -89,7 +94,7 @@ const Admin = () => {
               else if (card.title === "Manage Tour Package") {
                 navigate("/admin/managetourpackage")
               }
-              else if (card.title === "Manage Car Bookings") {
+              else if (card.title === "Manage Car Package Bookings") {
                 navigate("/admin/managecarbookings")
               }
               else if (card.title === "Manage Tour Bookings") {
@@ -101,6 +106,9 @@ const Admin = () => {
               else if (card.title === "Manage Routes") {
                 navigate("/admin/carroutes")
               }
+              else if (card.title === "Manage Car Pickup Bookings") {
+                navigate("/admin/carpickupbookings")
+              }
             }}
             className={`bg-gradient-to-r ${card.color} p-6 rounded-2xl shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer aspect-square flex flex-col justify-center items-center text-center relative`}
           >
@@ -110,7 +118,7 @@ const Admin = () => {
                 {loading ? "..." : error ? "!" : awaitingCount}
               </div>
             )}
-            {card.title === "Manage Car Bookings" && (
+            {card.title === "Manage Car Package Bookings" && (
               <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-lg">
                 {loading ? "..." : error ? "!" : carAwaitingCount}
               </div>
