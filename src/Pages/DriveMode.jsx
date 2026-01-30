@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCurrentBooking, updateLocation, updateStatus } from "../Redux/store/carPackageBookingsSlice";
 // import { setPickupActive } from "../Redux/store/driveModeSlice";
-import { FaMapMarkerAlt, FaUser, FaPhone, FaCalendarAlt, FaMoneyBillWave } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUser, FaPhone, FaCalendarAlt, FaMoneyBillWave, FaMapMarkedAlt } from "react-icons/fa";
 import { setPickupActive } from "../Redux/store/driveModeSlice";
 
 const formatDateTime = (isoString) => {
@@ -45,9 +45,15 @@ const DriveMode = () => {
         }
     }, [navigate]);
 
+    useEffect(() => {
+        console.log(currentBookingData)
+    }, [currentBookingData])
+
+
     // Fetch GPS location (mobile-only usage)
     useEffect(() => {
-        if (!navigator.geolocation) {
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!navigator.geolocation && !isMobile) {
             setGpsCoords((prev) => ({ ...prev, error: "Geolocation not supported" }));
             return;
         }
@@ -91,9 +97,9 @@ const DriveMode = () => {
     };
 
     useEffect(() => {
-      console.log(mobileShow)
+        console.log(mobileShow)
     }, [mobileShow])
-    
+
 
 
     const handleSetInactive = () => {
@@ -182,6 +188,21 @@ const DriveMode = () => {
                                 </p>
                             </div>
                         </div>
+                        {currentBookingData.pickUpLatitude &&
+                            currentBookingData.pickUpLongitude && (
+                                <div className="pt-3">
+                                    <a
+                                        href={`https://www.google.com/maps?q=${currentBookingData.pickUpLatitude},${currentBookingData.pickUpLongitude}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 active:scale-95"
+                                    >
+                                        <FaMapMarkedAlt />
+                                        Open Pickup Location
+                                    </a>
+                                </div>
+                            )}
+
 
                         {/* Set Active / Set Inactive based on pickupActive */}
 
@@ -214,7 +235,7 @@ const DriveMode = () => {
                             onClick={handleSetActive}
                             className="flex-1 rounded-xl bg-green-500 px-4 py-3 font-medium text-white shadow-sm active:bg-green-600"
                         >
-                            Mard Active for Pickup
+                            Mark Active for Pickup
                         </button>
                     )}
                 </div>
