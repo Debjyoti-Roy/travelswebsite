@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPickupBookings } from "../../Redux/store/adminCarPickupSlice";
+import { useNavigate } from "react-router-dom";
+import { setCurrentPickupBookings } from "../../Redux/store/driveModeSlice";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -17,6 +19,7 @@ const formatDate = (isoString) => {
 const CarPickupBookings = () => {
   const [tab, setTab] = React.useState("Pending");
   const dispatch = useDispatch();
+  const navigate=useNavigate()
   const {
     pickupBookings,
     getPickupBookingsLoading,
@@ -30,14 +33,15 @@ const CarPickupBookings = () => {
   }, [dispatch, status]);
 
   const handleCancel = (booking) => {
-    // TODO: wire to cancel API
     console.log("Cancel", booking.id);
   };
 
   const handleFindDrivers = (booking) => {
-    // TODO: wire to find drivers flow
-    console.log("Find drivers", booking.id);
+    const encodedBooking = btoa(encodeURIComponent(JSON.stringify(booking)));
+    dispatch(setCurrentPickupBookings(booking))
+    navigate(`/admin/carpickupbookings/findpickupdriver`);
   };
+  
 
   const data = pickupBookings ?? [];
   const loading = getPickupBookingsLoading;
@@ -75,7 +79,7 @@ const CarPickupBookings = () => {
               <th className="p-3">Price</th>
               <th className="p-3">Pick Up</th>
               <th className="p-3">Drop Off</th>
-              <th className="p-3">Distance</th>
+              <th className="p-3">Distance (in Km)</th>
               <th className="p-3">People</th>
               {showActions && (
                 <th className="p-3 text-center">Actions</th>

@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   pickupActive: false,
+  booking: {}
 };
 
 const driveModeSlice = createSlice({
@@ -15,8 +16,14 @@ const driveModeSlice = createSlice({
     resetDriveMode: (state) => {
       state.pickupActive = false;
     },
+    setCurrentPickupBookings: (state, action) => {
+      state.booking = action.payload
+    },
+    resetCurrentPickupBookings: (state) => {
+      state.booking = {}
+    }
   },
 });
 
-export const { setPickupActive, resetDriveMode } = driveModeSlice.actions;
+export const { setPickupActive, resetDriveMode, setCurrentPickupBookings, resetCurrentPickupBookings } = driveModeSlice.actions;
 export default driveModeSlice.reducer;
