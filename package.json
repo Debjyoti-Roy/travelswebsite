@@ -38,6 +38,7 @@
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
+    "react-loader-spinner": "^8.0.2",
     "react-masonry-css": "^1.0.16",
     "react-redux": "^9.2.0",
     "react-responsive-carousel": "^3.2.23",

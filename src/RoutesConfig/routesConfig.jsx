@@ -56,6 +56,7 @@ import ProtectedRoute, { AuthProtectedRoute } from "../Components/ProtectedRoute
 import { Skeleton } from "@mui/material";
 import { FaFilter } from "react-icons/fa";
 import AdminProtectedRoute from "../Components/AdminProtectedRoute";
+import { InfinitySpin } from "react-loader-spinner";
 // import ManagePartners from "../Pages/AdminComponents/ManagePartners";
 
 const HomePage = lazy(() => import("../Pages/HomePage"));
@@ -72,21 +73,23 @@ const ManageTourPackage = lazy(() => import("../Pages/AdminComponents/ManageTour
 const ManageTourBookings = lazy(() => import("../Pages/AdminComponents/ManageTourBookings"))
 const PaymentPage = lazy(() => import("../Pages/PaymentPage"));
 const CarPackageSearchResults = lazy(() => import("../Pages/CarPackageSearchResults"))
-const CarPackageDetails=lazy(()=>import("../Pages/CarPackageDetails"))
-const ManageCarBookings=lazy(()=>import("../Pages/AdminComponents/ManageCarBookings"))
-const PackageSearchResults=lazy(()=> import("../Pages/PackageSearchResults"))
-const TourDetails=lazy(()=>import("../Pages/TourDetails"))
-const ManagePartners=lazy(()=>import("../Pages/AdminComponents/ManagePartners"))
-const CarRoutes=lazy(()=>import("../Pages/AdminComponents/CarRoutes"))
-const DriveMode=lazy(()=>import("../Pages/DriveMode"))
-const CarPickupBookings=lazy(()=>import("../Pages/AdminComponents/CarPickupBookings"))
-const FindPickupDriver=lazy(()=>import("../Pages/AdminComponents/FindPickupDriver"))
+const CarPackageDetails = lazy(() => import("../Pages/CarPackageDetails"))
+const ManageCarBookings = lazy(() => import("../Pages/AdminComponents/ManageCarBookings"))
+const PackageSearchResults = lazy(() => import("../Pages/PackageSearchResults"))
+const TourDetails = lazy(() => import("../Pages/TourDetails"))
+const ManagePartners = lazy(() => import("../Pages/AdminComponents/ManagePartners"))
+const CarRoutes = lazy(() => import("../Pages/AdminComponents/CarRoutes"))
+const DriveMode = lazy(() => import("../Pages/DriveMode"))
+const CarPickupBookings = lazy(() => import("../Pages/AdminComponents/CarPickupBookings"))
+const FindPickupDriver = lazy(() => import("../Pages/AdminComponents/FindPickupDriver"))
 
 export const routes = [
   {
     path: "/",
     element: <HomePage />,
-    fallback: <div>Loading Home...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/profile",
@@ -95,12 +98,16 @@ export const routes = [
         <Profile />
       </AuthProtectedRoute>
     ),
-    fallback: <div>Loading Profile...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/partner",
     element: <Partner />,
-    fallback: <div>Loading Partner Page...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/partnerdashboard",
@@ -109,7 +116,9 @@ export const routes = [
         <PartnerDashboard />
       </ProtectedRoute>
     ),
-    fallback: <div>Loading Partner Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin",
@@ -119,7 +128,9 @@ export const routes = [
         <Admin />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin/managehotelbooking",
@@ -129,7 +140,9 @@ export const routes = [
         <ManageHotelBooking />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin/managecarbookings",
@@ -139,7 +152,9 @@ export const routes = [
         <ManageCarBookings />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin/managecarpackage",
@@ -149,7 +164,9 @@ export const routes = [
         <ManageCarPackage />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin/managetourpackage",
@@ -159,7 +176,9 @@ export const routes = [
         <ManageTourPackage />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin/managetourbookings",
@@ -169,7 +188,9 @@ export const routes = [
         <ManageTourBookings />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/admin/managepartners",
@@ -356,7 +377,9 @@ export const routes = [
   {
     path: "/carpackagesearch",
     element: <CarPackageSearchResults />,
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/tourpackagesearch",
@@ -541,77 +564,87 @@ export const routes = [
         <MyBookings />
       </AuthProtectedRoute>
     ),
-    fallback: <div>Loading Your Bookings...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/pay-bookings",
     element: <PaymentPage />,
-    fallback: <div>Loading Payment Page...</div>,
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
   {
     path: "/carpackagedetails",
     element: <CarPackageDetails />,
     fallback: <div className="min-h-screen w-full bg-gray-50">
-    <div className="relative h-[450px] w-full">
-      <Skeleton variant="rectangular" width="100%" height="100%" />
-      <div className="absolute bottom-6 left-6 right-6">
-        <Skeleton variant="text" width="60%" height={40} />
-        <Skeleton variant="text" width="40%" height={25} />
+      <div className="relative h-[450px] w-full">
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+        <div className="absolute bottom-6 left-6 right-6">
+          <Skeleton variant="text" width="60%" height={40} />
+          <Skeleton variant="text" width="40%" height={25} />
+        </div>
       </div>
-    </div>
 
-    {/* About Section */}
-    <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
-      <Skeleton variant="text" width="40%" height={35} className="mb-4" />
-      <Skeleton variant="rectangular" height={120} className="rounded-lg" />
+      {/* About Section */}
+      <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
+        <Skeleton variant="text" width="40%" height={35} className="mb-4" />
+        <Skeleton variant="rectangular" height={120} className="rounded-lg" />
 
-      {/* Rooms Placeholder */}
-      <div className="pt-10 space-y-4">
-        {[...Array(2)].map((_, i) => (
-          <div key={i} className="bg-white p-4 rounded-xl shadow-sm">
-            <Skeleton variant="text" width="50%" height={30} />
-            <Skeleton variant="text" width="30%" height={20} className="mt-2" />
-            <Skeleton variant="text" width="70%" height={20} className="mt-2" />
-          </div>
-        ))}
+        {/* Rooms Placeholder */}
+        <div className="pt-10 space-y-4">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-white p-4 rounded-xl shadow-sm">
+              <Skeleton variant="text" width="50%" height={30} />
+              <Skeleton variant="text" width="30%" height={20} className="mt-2" />
+              <Skeleton variant="text" width="70%" height={20} className="mt-2" />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </div>,
+    </div>,
   },
   {
     path: "/tourdetails",
     element: <TourDetails />,
     fallback: <div className="min-h-screen w-full bg-gray-50">
-    <div className="relative h-[450px] w-full">
-      <Skeleton variant="rectangular" width="100%" height="100%" />
-      <div className="absolute bottom-6 left-6 right-6">
-        <Skeleton variant="text" width="60%" height={40} />
-        <Skeleton variant="text" width="40%" height={25} />
+      <div className="relative h-[450px] w-full">
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+        <div className="absolute bottom-6 left-6 right-6">
+          <Skeleton variant="text" width="60%" height={40} />
+          <Skeleton variant="text" width="40%" height={25} />
+        </div>
       </div>
-    </div>
 
-    {/* About Section */}
-    <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
-      <Skeleton variant="text" width="40%" height={35} className="mb-4" />
-      <Skeleton variant="rectangular" height={120} className="rounded-lg" />
+      {/* About Section */}
+      <div className="px-6 pt-8 pb-4 w-full max-w-7xl mx-auto">
+        <Skeleton variant="text" width="40%" height={35} className="mb-4" />
+        <Skeleton variant="rectangular" height={120} className="rounded-lg" />
 
-      {/* Rooms Placeholder */}
-      <div className="pt-10 space-y-4">
-        {[...Array(2)].map((_, i) => (
-          <div key={i} className="bg-white p-4 rounded-xl shadow-sm">
-            <Skeleton variant="text" width="50%" height={30} />
-            <Skeleton variant="text" width="30%" height={20} className="mt-2" />
-            <Skeleton variant="text" width="70%" height={20} className="mt-2" />
-          </div>
-        ))}
+        {/* Rooms Placeholder */}
+        <div className="pt-10 space-y-4">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-white p-4 rounded-xl shadow-sm">
+              <Skeleton variant="text" width="50%" height={30} />
+              <Skeleton variant="text" width="30%" height={20} className="mt-2" />
+              <Skeleton variant="text" width="70%" height={20} className="mt-2" />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </div>,
+    </div>,
   },
   {
     path: "/drivemode/:carId",
-    element: <DriveMode />,
-    fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
+    element: (
+      <ProtectedRoute>
+        <DriveMode />
+      </ProtectedRoute>
+    ),
+    fallback: <div className="min-h-screen w-full flex items-center justify-center">
+      <InfinitySpin width="200" color="#2563eb" />
+    </div>,
   },
 
 ];

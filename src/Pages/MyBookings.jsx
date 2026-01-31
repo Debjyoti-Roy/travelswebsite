@@ -10,11 +10,11 @@ const MyBookings = () => {
   return (
     <div className="min-h-screen flex flex-col items-center pt-10 pb-20">
       {/* Page Heading */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">My Bookings</h1>
+      <h1 style={{marginBottom:'5px'}} className="text-3xl font-bold text-gray-800 mb-8">My Bookings</h1>
 
-      <div className="w-full lg:w-[70%] px-4 flex gap-4">
+      <div className="w-full lg:w-[70%] px-4 flex flex-col md:flex-row gap-4">
         {/* Vertical Tabs */}
-        <div className="min-w-[200px] border-r border-gray-200">
+        <div className="w-full md:w-[20%] border-r border-gray-200">
           {/* Hotel Bookings */}
           <div
             onClick={() => setTab(0)}

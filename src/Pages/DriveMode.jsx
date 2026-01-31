@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCurrentBooking, updateLocation, updateStatus } from "../Redux/store/carPackageBookingsSlice";
+import { finishTrip, getCurrentBooking, resetCurrentBooking, resetFinishTrip, updateLocation, updateStatus } from "../Redux/store/carPackageBookingsSlice";
 // import { setPickupActive } from "../Redux/store/driveModeSlice";
 import { FaMapMarkerAlt, FaUser, FaPhone, FaCalendarAlt, FaMoneyBillWave, FaMapMarkedAlt } from "react-icons/fa";
 import { setPickupActive } from "../Redux/store/driveModeSlice";
+import toast from "react-hot-toast";
 
 const formatDateTime = (isoString) => {
     if (!isoString) return "—";
@@ -29,7 +30,7 @@ const DriveMode = () => {
     const [mobileShow, setMobileShow] = useState(true)
     const { carId } = useParams();
     const [status, setStatus] = useState()
-    const { currentBookingLoading, currentBookingSuccess, currentBookingData, currentBookingError, updateStatusSuccess, updateStatusError, updateStatusLoading } =
+    const { currentBookingLoading, currentBookingSuccess, currentBookingData, currentBookingError, updateStatusSuccess, updateStatusError, updateStatusLoading, finishTripLoading, finishTripSuccess, finishTripError } =
         useSelector((state) => state.carPackageBookings);
     const pickupActive = useSelector((state) => state.driveMode.pickupActive);
 
@@ -109,6 +110,27 @@ const DriveMode = () => {
         setStatus(false)
         // Add any other logic when setting inactive
     };
+
+    const handleFinishTrip = () => {
+
+        console.log(carId)
+        console.log(currentBookingData)
+
+        // bookingId:
+        dispatch(finishTrip({ carId, tripId: currentBookingData.bookingId }))
+
+    }
+
+    useEffect(() => {
+        if (finishTripSuccess) {
+            toast.success("Trip successfully finished")
+            dispatch(resetFinishTrip())
+            dispatch(resetCurrentBooking())
+            dispatch(getCurrentBooking({ carId }));
+
+        }
+    }, [finishTripSuccess])
+
 
     return (
         <div className="min-h-screen bg-gray-100 p-4">
@@ -220,25 +242,38 @@ const DriveMode = () => {
                         <p className="text-center text-gray-500">No bookings available</p>
                     </div>
                 )}
-                <div style={{ marginTop: "20px" }} className="mt-5 flex gap-3">
-                    {pickupActive ? (
+                {(!currentBookingLoading && hasBookingData(currentBookingData)) ? (
+                    <div style={{ marginTop: "20px" }} className="mt-5 flex gap-3">
                         <button
                             type="button"
-                            onClick={handleSetInactive}
+                            onClick={handleFinishTrip}
                             className="flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white shadow-sm active:bg-red-600"
                         >
-                            Mark Inactive for Pickup
+                            Finish Trip
                         </button>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={handleSetActive}
-                            className="flex-1 rounded-xl bg-green-500 px-4 py-3 font-medium text-white shadow-sm active:bg-green-600"
-                        >
-                            Mark Active for Pickup
-                        </button>
-                    )}
-                </div>
+                    </div>
+                ) : (
+
+                    <div style={{ marginTop: "20px" }} className="mt-5 flex gap-3">
+                        {pickupActive ? (
+                            <button
+                                type="button"
+                                onClick={handleSetInactive}
+                                className="flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white shadow-sm active:bg-red-600"
+                            >
+                                Mark Inactive for Pickup
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleSetActive}
+                                className="flex-1 rounded-xl bg-green-500 px-4 py-3 font-medium text-white shadow-sm active:bg-green-600"
+                            >
+                                Mark Active for Pickup
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Desktop: optional message (page is mobile-focused) */}

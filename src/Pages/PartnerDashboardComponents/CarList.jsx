@@ -81,7 +81,7 @@ const CarList = ({ cars, counter }) => {
     }
     return (
         <>
-            <div className="p-6">
+            <div className="p-1">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-800">Car List</h2>
@@ -119,7 +119,7 @@ const CarList = ({ cars, counter }) => {
                             </div>
 
                             {/* Right side buttons */}
-                            <div className="flex items-center gap-2 self-center">
+                            <div className="flex flex-col md:flex-row items-center gap-2 self-center">
                                 {/* Edit button */}
 
                                 <button
@@ -155,7 +155,7 @@ const CarList = ({ cars, counter }) => {
                                         setSpecificCar(car);
                                         setShowEditModal(true);
                                     }}
-                                    className="flex items-center gap-2 bg-yellow-500 text-white px-3 py-2 rounded-md hover:bg-yellow-600 transition"
+                                    className="flex w-full justify-center md:w-auto md:justify-start items-center gap-2 bg-yellow-500 text-white px-3 py-2 rounded-md hover:bg-yellow-600 transition"
                                 >
                                     <AiOutlineEdit size={18} />
                                     Edit
@@ -166,7 +166,7 @@ const CarList = ({ cars, counter }) => {
                                     onClick={async () =>
                                         await handleStatusChange(car.id)
                                     }
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition ${car.isActive
+                                    className={`flex w-full justify-center md:w-auto md:justify-start items-center gap-2 px-3 py-2 rounded-md transition ${car.isActive
                                         ? "bg-red-500 hover:bg-red-600 text-white"
                                         : "bg-green-500 hover:bg-green-600 text-white"
                                         }`}

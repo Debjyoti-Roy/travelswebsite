@@ -277,6 +277,32 @@ export const getCurrentBooking = createAsyncThunk(
         }
     }
 );
+export const finishTrip = createAsyncThunk(
+    "partner/finishTrip",
+    async ({ carId, tripId }, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await api.patch(
+                "/v1/partner/car-package-bookings/finish-trip",
+                {},
+                {
+                    params: { carId, tripId },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "ngrok-skip-browser-warning": "xyz",
+                    },
+                }
+            );
+
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data || { message: "Get current booking failed" }
+            );
+        }
+    }
+);
 
 /* ===================== INITIAL STATE ===================== */
 
@@ -304,6 +330,12 @@ const initialState = {
     currentBookingSuccess: false,
     currentBookingData: null,
     currentBookingError: null,
+
+    /* ---- FINISH TRIP ---- */
+    finishTripLoading: false,
+    finishTripSuccess: false,
+    finishTripError: null
+
 };
 
 /* ===================== SLICE ===================== */
@@ -341,6 +373,12 @@ const confirmBookingSlice = createSlice({
             state.currentBookingData = null;
             state.currentBookingError = null;
         },
+
+        resetFinishTrip: (state) => {
+            state.finishTripLoading = false;
+            state.finishTripSuccess = false;
+            state.finishTripError = null
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -405,6 +443,20 @@ const confirmBookingSlice = createSlice({
             .addCase(getCurrentBooking.rejected, (state, action) => {
                 state.currentBookingLoading = false;
                 state.currentBookingError = action.payload;
+            })
+
+            /* -------- Finish Trip -------- */
+            .addCase(finishTrip.pending, (state) => {
+                state.finishTripLoading = true;
+                state.finishTripError = null;
+            })
+            .addCase(finishTrip.fulfilled, (state) => {
+                state.finishTripLoading = false;
+                state.finishTripSuccess = true;
+            })
+            .addCase(finishTrip.rejected, (state, action) => {
+                state.finishTripLoading = false;
+                state.finishTripError = action.payload;
             });
     },
 });
@@ -416,6 +468,7 @@ export const {
     resetUpdateStatus,
     resetUpdateLocation,
     resetCurrentBooking,
+    resetFinishTrip
 } = confirmBookingSlice.actions;
 
 export default confirmBookingSlice.reducer;
