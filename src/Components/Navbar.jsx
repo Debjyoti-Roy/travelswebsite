@@ -555,12 +555,12 @@ const Navbar = () => {
                           My Bookings
                         </button>
 
-                        <button
+                        {/* <button
 
                           className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                           <FiHelpCircle className="text-gray-500 text-lg" />
                           Help & Center
-                        </button>
+                        </button> */}
 
                         <hr className="my-1 border-gray-200" />
 
@@ -665,13 +665,13 @@ const Navbar = () => {
                           <FiClipboard className="text-gray-500 text-lg" />
                           My Bookings
                         </button>
-
-                        <button
+                        
+                        {/* <button
 
                           className="px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition">
                           <FiHelpCircle className="text-gray-500 text-lg" />
                           Help & Center
-                        </button>
+                        </button> */}
 
                         <hr className="my-1 border-gray-200" />
 

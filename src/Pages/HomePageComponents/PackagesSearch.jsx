@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaMapPin, FaCalendar } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,6 +21,8 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
 ));
 
 const PackagesSearch = () => {
+  const destinationRef = useRef(null);
+  const dateRef = useRef(null);
   const navigate = useNavigate();
   const [travelDate, setTravelDate] = useState(null);
   const [from, setFrom] = useState("");
@@ -69,6 +71,28 @@ const PackagesSearch = () => {
     setShowSuggestions(false);
   };
 
+  //Outside click handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        destinationRef.current &&
+        !destinationRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false);
+      }
+      if (
+        dateRef.current &&
+        !dateRef.current.contains(event.target)
+      ) {
+        setShowDateOptions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [])
+
   const handleSubmit = () => {
     if (!from || !travelDate) {
       toast.error("Please select both destination and date", {
@@ -108,7 +132,7 @@ const PackagesSearch = () => {
         <div className="w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
 
           {/* Destination Suggestive Input */}
-          <div className="flex-1 w-full relative">
+          <div ref={destinationRef} className="flex-1 w-full relative">
             <label className="block flex pb-1 text-md font-medium mb-1">Destination</label>
             <div className="relative">
               <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
@@ -137,7 +161,7 @@ const PackagesSearch = () => {
           </div>
 
           {/* Travel Date */}
-          <div className="flex-1 w-full">
+          <div ref={dateRef} className="flex-1 w-full">
             <label className="block text-md font-medium mb-1 flex pb-1">Date</label>
             <div className="relative">
               <DatePicker

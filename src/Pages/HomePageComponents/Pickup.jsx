@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getPickupLocations } from '../../Redux/store/pickupSlice';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendar, FaMapPin, FaUsers } from "react-icons/fa";
+import toast from 'react-hot-toast';
 
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
   <div
@@ -19,6 +20,11 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
 ));
 
 const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
+    
+const pickupRef = useRef(null);
+const dropRef = useRef(null);
+const peopleRef = useRef(null);
+const dateRef = useRef(null);
     const dispatch = useDispatch();
     const { pickupLocations, pickupRoutes, loadingLocations, loadingRoutes, errorLocations, errorRoutes } = useSelector((state) => state.pickup);
     
@@ -92,18 +98,34 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
 
     // Handle search
     const handleSearch = () => {
+        if (!dateTime) {
+          toast.error("Please select pickup date & time");
+          return;
+        }
+      
+        const now = new Date();
+        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+      
+        if (dateTime < oneHourFromNow) {
+          toast.error("Pickup time must be after 1 hour from now!");
+          return;
+        }
+      
         const searchData = {
-            pickupLocation: pickupLocation?.name || null,
-            pickupLocationId: pickupLocation?.id || null,
-            dropLocation: dropLocation?.name || null,
-            dropLocationId: dropLocation?.id || null,
-            numberOfPeople,
-            dateTime: dateTime ? dateTime.toLocaleString() : null
+          pickupLocation: pickupLocation?.name || null,
+          pickupLocationId: pickupLocation?.id || null,
+          dropLocation: dropLocation?.name || null,
+          dropLocationId: dropLocation?.id || null,
+          numberOfPeople,
+          dateTime: dateTime.toISOString(), // ✅ better than toLocaleString
         };
+      
         console.log("Search Data:", searchData);
+      
         setPickupFlag(true);
         setPickRoutesDetails(searchData);
-    };
+      };
+      
 
     // Filter time to allow times from now onwards (including times less than 1 hour from now)
     const filterTime = (time) => {
@@ -125,6 +147,59 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
         return true;
     };
 
+    //Outside click handler
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (
+            pickupRef.current &&
+            !pickupRef.current.contains(event.target)
+          ) {
+            setShowPickupSuggestions(false);
+          }
+          if (
+            peopleRef.current &&
+            !peopleRef.current.contains(event.target)
+          ) {
+            setShowPeopleOptions(false);
+          }
+      
+          if (
+            dropRef.current &&
+            !dropRef.current.contains(event.target)
+          ) {
+            setShowDropSuggestions(false);
+          }
+        //   if (
+        //     dateRef.current &&
+        //     !dateRef.current.contains(event.target)
+        //   ) {
+        //     setShowDateOptions(false);
+        //   }
+        };
+      
+        document.addEventListener("mousedown", handleClickOutside);
+      
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, []);
+      const getMinTime = () => {
+        const now = new Date();
+        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+      
+        if (
+          dateTime &&
+          oneHourFromNow.toDateString() === dateTime.toDateString()
+        ) {
+          return oneHourFromNow;
+        }
+      
+        return new Date(new Date().setHours(0, 0, 0, 0));
+      };
+      const getMaxTime = () => {
+        return new Date(new Date().setHours(23, 45, 0, 0));
+      };
+
     return (
         <div className="package-search-container">
             <h2 className="flex lg:justify-start justify-center font-bold lg:pl-[15px] text-2xl text-black pt-[5px] pb-[5px]">
@@ -133,7 +208,7 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
             <div className="flex w-full lg:p-[10px] p-2">
                 <div className="w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
                     {/* Pickup Location Suggestive Input */}
-                    <div className="flex-1 w-full relative">
+                    <div ref={pickupRef} className="flex-1 w-full relative">
                         <label className="block flex pb-1 text-md font-medium mb-1">Pickup Location</label>
                         <div className="relative">
                             <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
@@ -162,7 +237,7 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
                     </div>
 
                     {/* Drop Location Suggestive Input */}
-                    <div className="flex-1 w-full relative">
+                    <div ref={dropRef} className="flex-1 w-full relative">
                         <label className="block flex pb-1 text-md font-medium mb-1">Drop Location</label>
                         <div className="relative">
                             <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
@@ -191,7 +266,7 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
                     </div>
 
                     {/* Number of People */}
-                    <div className="relative flex-1 w-full">
+                    <div ref={peopleRef} className="relative flex-1 w-full">
                         <label className="block text-md font-medium mb-1 flex pb-1">Number of People</label>
                         <div
                             onClick={() => setShowPeopleOptions(!showPeopleOptions)}
@@ -234,7 +309,7 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
                     </div>
 
                     {/* Date and Time */}
-                    <div className="flex-1 w-full">
+                    <div ref={dateRef} className="flex-1 w-full">
                         <label className="block text-md font-medium mb-1 flex pb-1">Date & Time</label>
                         <div className="relative">
                             <DatePicker
@@ -251,6 +326,9 @@ const Pickup = ({ setPickupFlag, setPickRoutesDetails }) => {
                                 popperPlacement="bottom-start"
                                 popperClassName="custom-datepicker"
                                 className="w-full"
+                                portalId="root-portal"
+                                minTime={getMinTime()}
+                                maxTime={getMaxTime()}
                             />
                         </div>
                     </div>

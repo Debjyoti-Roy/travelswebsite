@@ -75,6 +75,9 @@ const HotelRecentSearch = () => {
 
     return (
         <div className="w-full mt-6">
+            {/* <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Continue searching for Hotels
+          </h2> */}
             {hotels?.length >= 3 ? (
                 // ✅ Show Carousel if there are 3 or more hotels
                 <Slider {...settings}>

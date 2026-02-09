@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { places } from "./Places";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -23,16 +23,20 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
 ));
 
 const Hotelsearch = () => {
+  const locationRef = useRef(null);
+  const guestRef = useRef(null)
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [showGuestOptions, setShowGuestOptions] = useState(false);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [location, setLocation] = useState("")
-  const [locationOptions, setLocationOptions] = useState([])
+  const [location, setLocation] = useState("");
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -121,17 +125,53 @@ const Hotelsearch = () => {
     navigate("/hotelsearch", { state: myData });
   }
 
+  // Location suggestion input handlers
+  const handleLocationInputChange = (e) => {
+    const value = e.target.value;
+    setLocation(value);
+    if (value.length > 0) {
+      const filtered = locationOptions.filter((opt) =>
+        opt.toLowerCase().includes(value.toLowerCase())
+      );
+      setLocationSuggestions(filtered);
+      setShowLocationSuggestions(true);
+    } else {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const handleLocationSuggestionClick = (value) => {
+    setLocation(value);
+    setShowLocationSuggestions(false);
+  };
+
   useEffect(() => {
     const job = async () => {
-      const options = await dispatch(getLocations())
-      
-      console.log(options.payload.data)
-      if (options.payload.status === 200) {
-        setLocationOptions(options.payload.data)
+      const options = await dispatch(getLocations());
+      if (options.payload?.status === 200) {
+        setLocationOptions(options.payload.data || []);
       }
-    }
-    job()
-  }, [])
+    };
+    job();
+  }, [dispatch]);
+
+  // Close location suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        locationRef.current &&
+        !locationRef.current.contains(event.target)
+      ) {
+        setShowLocationSuggestions(false);
+      }
+      if(guestRef.current && !guestRef.current.contains(event.target.parentElement)){
+        setShowGuestOptions(false)
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const tomorrow = addDays(new Date(), 1);
 
@@ -145,22 +185,31 @@ const Hotelsearch = () => {
 
         <div className="w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-2 items-center">
         {/* <div className="w-full mx-auto bg-white rounded-3xl px-3 py-2 flex flex-col lg:flex-row gap-4 lg:gap-2 items-center"> */}
-          <div className="flex-1 w-full">
+          <div ref={locationRef} className="flex-1 w-full relative">
             <label className="block flex pb-1 text-md font-medium mb-1">Location</label>
             <div className="relative">
-              <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
-              <select
+              <FaMapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5 z-[1]" />
+              <input
+                type="text"
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={handleLocationInputChange}
+                onFocus={() => location && setShowLocationSuggestions(true)}
                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Location</option>
-                {locationOptions.map((place, index) => (
-                  <option key={index} value={place}>
-                    {place}
-                  </option>
-                ))}
-              </select>
+                placeholder="Enter location"
+              />
+              {showLocationSuggestions && locationSuggestions.length > 0 && (
+                <ul className="absolute z-10 bg-white border border-gray-200 rounded-xl mt-1 w-full max-h-40 overflow-y-auto shadow-lg">
+                  {locationSuggestions.map((place, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleLocationSuggestionClick(place)}
+                      className="px-4 py-2 cursor-pointer hover:bg-blue-100 text-left"
+                    >
+                      {place}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
@@ -201,7 +250,7 @@ const Hotelsearch = () => {
             </div>
 
             {showGuestOptions && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg p-4 z-10">
+              <div ref={guestRef} className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg p-4 z-10">
                 <div className="flex justify-between items-center mb-2">
                   <span>Adults</span>
                   <div className="flex items-center gap-2">

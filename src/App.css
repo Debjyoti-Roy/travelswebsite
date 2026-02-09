@@ -67,6 +67,11 @@
   margin-top: -8vh;
 }
 
+.react-datepicker{
+  display: flex !important;
+  max-height: 200px !important;
+}
+
 /* .hero-section::before {
   content: "";
   position: absolute;
