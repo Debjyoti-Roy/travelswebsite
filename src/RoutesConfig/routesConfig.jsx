@@ -2,6 +2,8 @@ import { lazy } from "react";
 import ProtectedRoute, { AuthProtectedRoute } from "../Components/ProtectedRoute";
 import AdminProtectedRoute from "../Components/AdminProtectedRoute";
 import { InfinitySpin } from "react-loader-spinner";
+import loading from '../assets/Lottie/InfinityLoader.json'
+import Lottie from "lottie-react";
 // import ManagePartners from "../Pages/AdminComponents/ManagePartners";
 
 const HomePage = lazy(() => import("../Pages/HomePage"));
@@ -32,9 +34,16 @@ export const routes = [
   {
     path: "/",
     element: <HomePage />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/profile",
@@ -43,16 +52,30 @@ export const routes = [
         <Profile />
       </AuthProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/partner",
     element: <Partner />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/partnerdashboard",
@@ -61,9 +84,16 @@ export const routes = [
         <PartnerDashboard />
       </ProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin",
@@ -73,9 +103,16 @@ export const routes = [
         <Admin />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/managehotelbooking",
@@ -85,9 +122,16 @@ export const routes = [
         <ManageHotelBooking />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/managecarbookings",
@@ -97,9 +141,16 @@ export const routes = [
         <ManageCarBookings />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/managecarpackage",
@@ -109,9 +160,16 @@ export const routes = [
         <ManageCarPackage />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/managetourpackage",
@@ -121,9 +179,16 @@ export const routes = [
         <ManageTourPackage />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/managetourbookings",
@@ -133,9 +198,16 @@ export const routes = [
         <ManageTourBookings />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/managepartners",
@@ -144,9 +216,16 @@ export const routes = [
         <ManagePartners />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/carroutes",
@@ -155,9 +234,16 @@ export const routes = [
         <CarRoutes />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/carpickupbookings",
@@ -166,9 +252,16 @@ export const routes = [
         <CarPickupBookings />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/admin/carpickupbookings/findpickupdriver",
@@ -177,39 +270,74 @@ export const routes = [
         <FindPickupDriver />
       </AdminProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/hotelsearch",
     element: <HotelSearchResult />,
     // fallback: <div>Searching Hotels...</div>,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    )
   },
   {
     path: "/carpackagesearch",
     element: <CarPackageSearchResults />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/tourpackagesearch",
     element: <PackageSearchResults />,
     // fallback: <div className="min-h-screen">Loading Admin Dashboard...</div>,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    )
   },
   {
     path: "/details",
     element: <HotelDetails />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/mybookings",
@@ -218,30 +346,58 @@ export const routes = [
         <MyBookings />
       </AuthProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/pay-bookings",
     element: <PaymentPage />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/carpackagedetails",
     element: <CarPackageDetails />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/tourdetails",
     element: <TourDetails />,
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-    <InfinitySpin width="200" color="#2563eb" />
-  </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
   {
     path: "/drivemode/:carId",
@@ -250,8 +406,15 @@ export const routes = [
         <DriveMode />
       </ProtectedRoute>
     ),
-    fallback: <div className="min-h-screen w-full flex items-center justify-center">
-      <InfinitySpin width="200" color="#2563eb" />
-    </div>,
+    fallback: (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-64 h-64"> 
+          <Lottie 
+            animationData={loading} 
+            loop={true}
+          />
+        </div>
+      </div>
+    ),
   },
 ];
