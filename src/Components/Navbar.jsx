@@ -430,6 +430,28 @@ const Navbar = () => {
 
   const { pathname } = useLocation();
 
+  const scrollToSection = (sectionId) => {
+    if (pathname !== "/") {
+      // Navigate to home and pass the section ID in state
+      navigate("/", { state: { scrollTo: sectionId } });
+    } else {
+      // Already on home, just scroll
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const offset = 80; // Your navbar height
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+  
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    }
+  };
+
   const isTransparentRoute = ["/", "/details", "/carpackagedetails", "/tourdetails"].includes(pathname);
 
 
@@ -453,12 +475,12 @@ const Navbar = () => {
               `}>
                 Home
               </li>
-              <li className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
+              <li onClick={() => scrollToSection("about-section")} className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
                  ${isTransparentRoute ?scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white":"text-blue-600 hover:text-blue-500 after:bg-blue-500"}
               `}>
                 About
               </li>
-              <li className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
+              <li onClick={() => scrollToSection("query-section")} className={`cursor-pointer relative transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 hover:after:w-full
                  ${isTransparentRoute ?scrolled ? "text-blue-600 hover:text-blue-500 after:bg-blue-500" : "text-white hover:text-white after:bg-white":"text-blue-600 hover:text-blue-500 after:bg-blue-500"}
               `}>
                 Contact us
@@ -703,10 +725,10 @@ const Navbar = () => {
                 }} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
                   Home
                 </li>
-                <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
+                <li onClick={() => scrollToSection("about-section")} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
                   About
                 </li>
-                <li className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
+                <li onClick={() => scrollToSection("query-section")} className="cursor-pointer relative text-gray-700 hover:text-blue-600 transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">
                   Contact us
                 </li>
                 <li

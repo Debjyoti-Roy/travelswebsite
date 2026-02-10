@@ -33,7 +33,7 @@
 //     }
 //     window.addEventListener("tokenUpdated", partner);
 
-    
+
 //     partner();
 
 //     return () => window.removeEventListener("tokenUpdated", partner);
@@ -41,33 +41,33 @@
 
 //   useEffect(() => {
 //     let isRefreshing = false;
-  
+
 //     const beforeUnloadHandler = () => {
 //       if (!isRefreshing) {
 //         localStorage.setItem("navigation", JSON.stringify(false));
 //       }
 //     };
-  
+
 //     const visibilityChangeHandler = () => {
-      
+
 //       if (document.visibilityState === "hidden") {
-        
+
 //         isRefreshing = true;
 //         setTimeout(() => {
 //           isRefreshing = false;
 //         }, 1000);
 //       }
 //     };
-  
+
 //     window.addEventListener("beforeunload", beforeUnloadHandler);
 //     document.addEventListener("visibilitychange", visibilityChangeHandler);
-  
+
 //     return () => {
 //       window.removeEventListener("beforeunload", beforeUnloadHandler);
 //       document.removeEventListener("visibilitychange", visibilityChangeHandler);
 //     };
 //   }, []);
-  
+
 
 // useEffect(() => {
 //   const hasNavigated = JSON.parse(localStorage.getItem("navigation") || "false");
@@ -102,11 +102,12 @@ import Search from "./HomePageComponents/Search";
 import Query from "./HomePageComponents/Query";
 import { fetchPartnerProfile } from "../Redux/store/partnerSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import About from "./HomePageComponents/About";
 import RecentSearches from "./HomePageComponents/RecentSearches";
 
 const HomePage = () => {
+  const location = useLocation();
   const topRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -143,6 +144,29 @@ const HomePage = () => {
     return () => window.removeEventListener("tokenUpdated", partner);
   }, [dispatch]);
 
+  //Autoscroll to about and contact us
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const sectionId = location.state.scrollTo;
+      
+      // Small timeout to ensure the DOM is fully rendered
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const navbarHeight = 80;
+          const elementTop = element.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({
+            top: elementTop - navbarHeight,
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+
+      // Clear state so it doesn't scroll again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
   // Check conditions and navigate only once
   useEffect(() => {
     const hasNavigated = JSON.parse(localStorage.getItem("navigation") || "false");
@@ -167,8 +191,14 @@ const HomePage = () => {
     <>
       <Search ref={topRef} selectedTab={selectedTab} setSelectedTab={setSelectedTab} setPickFlag={setPickupFlag} setPickupRoutesDetails={setPickupRoutesDetails} />
       <RecentSearches selectedTab={selectedTab} pickupFlag={pickupFlag} setPickupFlag={setPickupFlag} pickupRoutesDetails={pickupRoutesDetails} />
-      <About />
-      <Query />
+      {/* <About />
+      <Query /> */}
+      <div id="about-section">
+        <About />
+      </div>
+      <div id="query-section">
+        <Query />
+      </div>
     </>
   );
 };
